@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import FeedList from "@/components/FeedList";
+import Icon from "@/components/Icon";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
 import { STATUS_LABEL } from "@/lib/format";
@@ -63,7 +64,7 @@ function Explore() {
     <>
       <TopBar title="공지 탐색" sub="관심 있는 소식을 빠르게 찾아보세요." />
       <label className="search" style={{ margin: "0 0 20px", maxWidth: "none" }}>
-        ⌕{" "}
+        <Icon name="search" />{" "}
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}

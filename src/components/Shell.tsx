@@ -3,25 +3,26 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
 import { setSession, useSession } from "@/lib/session";
 
-type NavItem = [href: string, icon: string, label: string];
+type NavItem = [href: string, icon: IconName, label: string];
 
 const STUDENT_NAV: NavItem[] = [
-  ["/home", "⌂", "홈"],
-  ["/explore", "⌕", "탐색"],
-  ["/schedule", "◫", "일정"],
-  ["/my", "☺", "MY"],
+  ["/home", "home", "홈"],
+  ["/explore", "search", "탐색"],
+  ["/schedule", "calendar", "일정"],
+  ["/my", "user", "MY"],
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  ["/admin/dashboard", "▦", "대시보드"],
-  ["/admin/notices", "▤", "공지 관리"],
-  ["/admin/notices/new", "✎", "공지 작성"],
-  ["/admin/schedule", "◫", "일정"],
-  ["/admin/organization", "⚙", "조직 관리"],
+  ["/admin/dashboard", "grid", "대시보드"],
+  ["/admin/notices", "list", "공지 관리"],
+  ["/admin/notices/new", "edit", "공지 작성"],
+  ["/admin/schedule", "calendar", "일정"],
+  ["/admin/organization", "settings", "조직 관리"],
 ];
 
 function isActive(pathname: string, href: string, all: NavItem[]) {
@@ -51,7 +52,9 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
 
   const link = (n: NavItem) => (
     <Link key={n[0]} href={n[0]} className={isActive(pathname, n[0], nav) ? "active" : ""}>
-      <span className="icon">{n[1]}</span>
+      <span className="icon">
+        <Icon name={n[1]} />
+      </span>
       {n[2]}
     </Link>
   );
