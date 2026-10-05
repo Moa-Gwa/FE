@@ -106,7 +106,7 @@ export default function MyPage() {
           <div className="empty">
             아직 저장한 공지가 없어요.
             <br />
-            관심 있는 공지의 ♡를 눌러보세요.
+            관심 있는 공지의 ☆를 눌러보세요.
           </div>
         )}
       </section>

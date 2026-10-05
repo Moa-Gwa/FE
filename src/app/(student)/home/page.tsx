@@ -14,7 +14,7 @@ import type { FeedItem, FeedPage } from "@/types";
 const CATEGORY_ICON: Record<string, string> = {
   ACADEMIC: "▤",
   SCHOLARSHIP: "◈",
-  WELFARE: "♡",
+  WELFARE: "✚",
   EVENT: "✳",
   SNACK: "◍",
   PARTNERSHIP: "⚑",
