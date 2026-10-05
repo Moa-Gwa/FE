@@ -1,7 +1,17 @@
-export default function Home() {
-  return (
-    <main className="flex flex-1 items-center justify-center">
-      <h1 className="text-2xl font-bold">모아과</h1>
-    </main>
-  );
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSession } from "@/lib/session";
+
+export default function Index() {
+  const session = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session === undefined) return;
+    router.replace(!session ? "/login" : session.role === "ADMIN" ? "/admin/dashboard" : "/home");
+  }, [session, router]);
+
+  return null;
 }
