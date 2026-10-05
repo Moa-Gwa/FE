@@ -68,7 +68,7 @@ export default function StudentHome() {
             ))}
           </div>
         ) : (
-          <div className="empty">지금 확인할 긴급·진행 중 공지가 없어요.</div>
+          <div className="empty">지금 확인할 중요·진행 중 공지가 없어요.</div>
         )}
       </section>
 
