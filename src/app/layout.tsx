@@ -3,11 +3,14 @@ import localFont from "next/font/local";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
-// Pretendard (SIL OFL), self-hosted variable font
-const pretendard = localFont({
-  src: "../fonts/PretendardVariable.woff2",
-  variable: "--font-pretendard",
-  weight: "45 920",
+// Spoqa Han Sans Neo (SIL OFL), self-hosted subset
+const spoqa = localFont({
+  src: [
+    { path: "../fonts/SpoqaHanSansNeo-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/SpoqaHanSansNeo-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/SpoqaHanSansNeo-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-spoqa",
   display: "swap",
 });
 
@@ -19,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${pretendard.variable}`}>
+    <html lang="ko" className={`${spoqa.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>
