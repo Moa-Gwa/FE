@@ -4,7 +4,7 @@ import type { DisplayStatus } from "@/types";
 export default function StatusBadge({ status, urgent }: { status: DisplayStatus | null; urgent?: boolean }) {
   return (
     <>
-      {urgent && <span className="pill red">긴급</span>}
+      {urgent && <span className="pill red">중요</span>}
       {status && <span className={`pill ${STATUS_TONE[status]}`}>{STATUS_LABEL[status]}</span>}
     </>
   );
