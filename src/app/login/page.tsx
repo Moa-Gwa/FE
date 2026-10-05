@@ -6,7 +6,7 @@ import { useState } from "react";
 import Logo from "@/components/Logo";
 import { api } from "@/lib/api";
 import { setSession } from "@/lib/session";
-import type { OrgRef } from "@/types";
+import type { OrgRef, OrganizationView, Category } from "@/types";
 
 const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
 const SHOW_DEV_LOGIN = process.env.NODE_ENV !== "production";
@@ -56,6 +56,49 @@ export default function LoginPage() {
     }
   }
 
+  /** Dev only: sign in as a ready-made student (interests pre-filled) and go straight to the home screen. */
+  async function quickStudent() {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await api<{ token: string; nickname: string }>("/auth/dev-student", {
+        method: "POST",
+        auth: false,
+        body: { nickname: "체험학생" },
+      });
+      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: true });
+      const [depts, councils, categories] = await Promise.all([
+        api<OrganizationView[]>("/organizations?type=DEPARTMENT", { auth: false }),
+        api<OrganizationView[]>("/organizations?type=STUDENT_GOVERNMENT", { auth: false }),
+        api<Category[]>("/categories", { auth: false }),
+      ]);
+      const major = depts.find((d) => d.name === "컴퓨터정보공학부") ?? depts[0];
+      await api("/me/profile", {
+        method: "PUT",
+        body: {
+          nickname: res.nickname,
+          primaryDepartmentId: major?.id ?? null,
+          departmentIds: [],
+          organizationIds: councils.map((c) => c.id),
+          categoryIds: categories.filter((c) => ["EVENT", "SCHOLARSHIP"].includes(c.code)).map((c) => c.id),
+        },
+      });
+      router.replace("/home");
+    } catch (e) {
+      setSession(null);
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function quickAdmin() {
+    const form = new FormData();
+    form.set("loginId", "student-council");
+    form.set("password", "moagwa1234");
+    await admin(form);
+  }
+
   function kakao() {
     const redirect = `${window.location.origin}/login/kakao`;
     window.location.href =
@@ -77,6 +120,18 @@ export default function LoginPage() {
         <p className="muted">흩어진 공지를 모아, 더 쉽고 빠르게.</p>
 
         {error && <p className="error" style={{ marginTop: 18 }}>{error}</p>}
+
+        {mode === "choose" && SHOW_DEV_LOGIN && (
+          <div className="role-buttons" style={{ marginTop: 22, marginBottom: 0 }}>
+            <button className="primary" disabled={busy} onClick={quickStudent}>
+              ⚡ 바로 체험하기 (학생 · 홈으로 이동)
+            </button>
+            <button className="secondary" disabled={busy} onClick={quickAdmin}>
+              ⚡ 관리자로 체험하기 (총학생회)
+            </button>
+            <span className="hint">개발용 버튼이에요. 배포 환경에서는 보이지 않아요.</span>
+          </div>
+        )}
 
         {mode === "choose" && (
           <div className="role-buttons">
