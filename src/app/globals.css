@@ -112,3 +112,10 @@ h1,h2{font-weight:700}h3{font-weight:500}
 .search{font-size:22px;gap:11px}.search input{font-size:14px}
 .category{min-width:84px;padding:14px 8px;font-size:12px;text-align:center}
 .category span{font-size:28px;margin:0 auto 6px;line-height:1;display:grid;place-items:center}
+
+/* radios/checkboxes must not inherit the text-input styling of .form-group input */
+.form-group input[type="radio"],.form-group input[type="checkbox"],.check input,.radio-row input{width:auto;padding:0;border:0;margin:0;flex:none;accent-color:var(--lav-strong)}
+.radio-row{gap:10px}
+.radio-row label{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;padding:9px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer}
+.radio-row label:has(input:checked){border-color:var(--lav-strong);background:var(--lav);color:var(--lav-strong)}
+.check{white-space:normal}
