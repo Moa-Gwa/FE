@@ -9,6 +9,11 @@ export interface OrgRef {
   type: OrgType;
 }
 
+export type BlockLayout = "CAROUSEL" | "STACK";
+export type Block =
+  | { type: "TEXT"; text: string }
+  | { type: "IMAGES"; images: string[]; layout: BlockLayout };
+
 export interface FeedItem {
   source: Source;
   id: number;
@@ -45,6 +50,7 @@ export interface NoticeDetail {
   contentHtml: string | null;
   categories: string[];
   images: string[];
+  blocks: Block[] | null;
   urgent: boolean;
   publishedAt: string;
   updatedAt: string;
@@ -117,6 +123,7 @@ export interface AdminNotice {
   categoryIds: number[];
   categoryCodes: string[];
   imageUrls: string[];
+  blocks: Block[] | null;
   status: NoticeStatus;
   displayStatus: DisplayStatus | null;
   urgent: boolean;
@@ -135,9 +142,8 @@ export interface AdminNotice {
 
 export interface NoticeInput {
   title: string;
-  description: string;
+  blocks: Block[];
   categoryIds: number[];
-  imageUrls: string[];
   eventStartAt: string | null;
   eventEndAt: string | null;
   deadlineAt: string | null;
