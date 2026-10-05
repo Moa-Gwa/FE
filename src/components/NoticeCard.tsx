@@ -47,7 +47,7 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
             disabled={toggle.isPending}
             onClick={() => toggle.mutate()}
           >
-            {item.bookmarked ? "♥" : "♡"}
+            {item.bookmarked ? "★" : "☆"}
           </button>
         )}
       </div>
