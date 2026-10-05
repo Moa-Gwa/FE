@@ -133,7 +133,7 @@ export default function NoticePage() {
 
           <div className="btn-row">
             <button className="primary" disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
-              {n.bookmarked ? "♥ 저장됨" : "♡ 내 공지에 저장"}
+              {n.bookmarked ? "★ 저장됨" : "☆ 내 공지에 저장"}
             </button>
             <button className="secondary" onClick={share}>
               공유
