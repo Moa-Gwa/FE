@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import NoticeCard from "@/components/NoticeCard";
 import { useToast } from "@/components/Providers";
@@ -9,7 +10,7 @@ import TopBar from "@/components/TopBar";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
 import { api } from "@/lib/api";
 import { STATUS_LABEL } from "@/lib/format";
-import { useSession } from "@/lib/session";
+import { setSession, useSession } from "@/lib/session";
 import type { FeedItem, NotificationSettings, Profile } from "@/types";
 
 const SETTINGS: [keyof NotificationSettings, string][] = [
@@ -21,6 +22,7 @@ const SETTINGS: [keyof NotificationSettings, string][] = [
 
 export default function MyPage() {
   const session = useSession();
+  const router = useRouter();
   const qc = useQueryClient();
   const toast = useToast();
   const { categories } = useCategories();
@@ -133,6 +135,18 @@ export default function MyPage() {
           ))}
           <p className="hint">푸시(FCM) 알림은 준비 중이에요. 지금은 앱 안 알림센터로 전달돼요.</p>
         </div>
+      </section>
+
+      <section className="section">
+        <button
+          className="secondary danger"
+          onClick={() => {
+            setSession(null);
+            router.replace("/login");
+          }}
+        >
+          로그아웃
+        </button>
       </section>
     </>
   );
