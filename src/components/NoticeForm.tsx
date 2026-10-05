@@ -217,7 +217,7 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
 
         <label className="check">
           <input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} />
-          긴급 공지 (학내 NOW 우선 노출, 중요 알림)
+          중요 공지 (학내 NOW 우선 노출, 알림 우선 발송)
         </label>
 
         <div className="form-actions">
@@ -247,7 +247,7 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
                   {categories.find((c) => c.id === id)?.name}
                 </span>
               ))}
-              {urgent && <span className="pill red">긴급</span>}
+              {urgent && <span className="pill red">중요</span>}
             </div>
             <h1 style={{ fontSize: 22, margin: "12px 0" }}>{title || "(제목 없음)"}</h1>
             {images[0] && <img className="thumb" style={{ height: "auto", maxHeight: 280, objectFit: "contain" }} src={assetUrl(images[0])} alt="" />}

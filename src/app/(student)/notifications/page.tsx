@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
 import type { NotificationItem } from "@/types";
 
-const TYPE_LABEL: Record<string, string> = { NEW_NOTICE: "새 공지", URGENT: "긴급 공지" };
+const TYPE_LABEL: Record<string, string> = { NEW_NOTICE: "새 공지", URGENT: "중요 공지" };
 
 export default function NotificationsPage() {
   const router = useRouter();
