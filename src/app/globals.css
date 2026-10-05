@@ -88,9 +88,9 @@ h1,h2{font-weight:700}h3{font-weight:500}
 
 /* ---- student phone frame (all screen widths) ---- */
 .m-bg{min-height:100vh;background:#efeaf3}
-.m-shell{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 40px rgba(74,52,99,.1)}
+.m-shell{max-width:600px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 40px rgba(74,52,99,.1)}
 .main-m{padding:22px 17px 92px}
-.m-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,480px);z-index:3;display:flex;justify-content:space-around;padding:9px 5px max(9px,env(safe-area-inset-bottom));background:#fffffff0;backdrop-filter:blur(9px);border-top:1px solid var(--line)}
+.m-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,600px);z-index:3;display:flex;justify-content:space-around;padding:9px 5px max(9px,env(safe-area-inset-bottom));background:#fffffff0;backdrop-filter:blur(9px);border-top:1px solid var(--line)}
 .m-nav a{color:var(--sub);font-size:10px;display:grid;gap:3px;place-items:center;flex:1}
 .m-nav a.active{color:var(--lav-strong)}
 .m-nav .icon{font-size:18px}
@@ -101,3 +101,14 @@ h1,h2{font-weight:700}h3{font-weight:500}
 .m-shell .calendar-grid{gap:3px}
 .m-shell .search{max-width:none}
 .m-shell .profile-card{flex-wrap:wrap}
+
+/* ---- larger icons ---- */
+.svg-icon{display:block;flex:none}
+.icon{font-size:24px;display:inline-grid;place-items:center}
+.nav .icon{width:26px;font-size:22px}
+.m-nav{padding-top:8px}.m-nav a{font-size:11px;gap:4px}.m-nav .icon{font-size:26px}
+.round-button{width:46px;height:46px;font-size:24px}
+.round-button .badge-count{right:2px;top:1px}
+.search{font-size:22px;gap:11px}.search input{font-size:14px}
+.category{min-width:84px;padding:14px 8px;font-size:12px;text-align:center}
+.category span{font-size:28px;margin:0 auto 6px;line-height:1;display:grid;place-items:center}

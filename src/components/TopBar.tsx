@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { NotificationItem } from "@/types";
@@ -27,10 +28,11 @@ export default function TopBar({ title, sub, actions }: { title: string; sub?: s
         {isStudent && (
           <>
             <Link className="round-button" href="/explore" aria-label="검색">
-              ⌕
+              <Icon name="search" />
             </Link>
             <Link className="round-button" href="/notifications" aria-label="알림">
-              ♧{count > 0 && <span className="badge-count">{count > 9 ? "9+" : count}</span>}
+              <Icon name="bell" />
+              {count > 0 && <span className="badge-count">{count > 9 ? "9+" : count}</span>}
             </Link>
           </>
         )}

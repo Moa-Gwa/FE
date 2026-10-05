@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import FeedList from "@/components/FeedList";
+import Icon, { type IconName } from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
@@ -11,16 +12,16 @@ import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { FeedItem, FeedPage } from "@/types";
 
-const CATEGORY_ICON: Record<string, string> = {
-  ACADEMIC: "▤",
-  SCHOLARSHIP: "◈",
-  WELFARE: "✚",
-  EVENT: "✳",
-  SNACK: "◍",
-  PARTNERSHIP: "⚑",
-  STUDENT_FEE: "₩",
-  RECRUIT: "✎",
-  ETC: "◌",
+const CATEGORY_ICON: Record<string, IconName> = {
+  ACADEMIC: "book",
+  SCHOLARSHIP: "award",
+  WELFARE: "gift",
+  EVENT: "sparkle",
+  SNACK: "coffee",
+  PARTNERSHIP: "tag",
+  STUDENT_FEE: "wallet",
+  RECRUIT: "megaphone",
+  ETC: "dots",
 };
 
 export default function StudentHome() {
@@ -50,7 +51,7 @@ export default function StudentHome() {
             router.push(q ? `/explore?q=${encodeURIComponent(q)}` : "/explore");
           }}
         >
-          ⌕ <input name="q" placeholder="어떤 공지를 찾고 있나요?" aria-label="공지 검색" />
+          <Icon name="search" /> <input name="q" placeholder="어떤 공지를 찾고 있나요?" aria-label="공지 검색" />
         </form>
       </section>
 
@@ -81,7 +82,9 @@ export default function StudentHome() {
         <div className="category-row">
           {categories.map((c) => (
             <Link key={c.code} href={`/explore?category=${c.code}`} className="category">
-              <span>{CATEGORY_ICON[c.code] ?? "✦"}</span>
+              <span>
+                <Icon name={CATEGORY_ICON[c.code] ?? "dots"} />
+              </span>
               {c.name}
             </Link>
           ))}
