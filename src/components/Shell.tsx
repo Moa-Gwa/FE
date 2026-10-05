@@ -56,20 +56,32 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     </Link>
   );
 
+  if (role === "STUDENT") {
+    // students always get the phone-sized layout, centered on wide screens
+    return (
+      <div className="m-bg">
+        <div className="m-shell">
+          <main className="main-m">{children}</main>
+          <nav className="m-nav" aria-label="주 메뉴">
+            {nav.map((n) => link(n))}
+          </nav>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="shell">
       <aside className="side">
         <Logo />
-        <div className={`role-tag ${role === "ADMIN" ? "admin" : ""}`}>
-          {role === "STUDENT" ? "STUDENT PORTAL" : "ADMIN CONSOLE"}
-        </div>
+        <div className="role-tag admin">ADMIN CONSOLE</div>
         <nav className="nav">{nav.map((n) => link(n))}</nav>
         <div className="side-bottom">
           <div className="profile-mini">
             <div className="avatar">{session.name.slice(0, 1)}</div>
             <div>
               <strong>{session.name}</strong>
-              <span>{role === "ADMIN" ? session.organization?.name : "학생"}</span>
+              <span>{session.organization?.name}</span>
             </div>
           </div>
           <p className="list-note">
