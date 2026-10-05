@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
 import { useToast } from "@/components/Providers";
 import StatusBadge from "@/components/StatusBadge";
@@ -77,7 +78,7 @@ export default function NoticePage() {
 
       {n && (
         <article className="detail-card">
-          <Carousel images={n.images} />
+          {!n.blocks?.length && <Carousel images={n.images} />}
           <div className="chips">
             {(n.categories.length ? n.categories : [null]).map((c) => (
               <span key={c ?? "none"} className={`pill ${c === "EVENT" ? "pink" : ""}`}>
@@ -124,7 +125,11 @@ export default function NoticePage() {
             </dl>
           )}
 
-          {n.contentHtml ? (
+          {n.blocks && n.blocks.length > 0 ? (
+            <div style={{ margin: "22px 0" }}>
+              <BlocksView blocks={n.blocks} />
+            </div>
+          ) : n.contentHtml ? (
             // crawled HTML is sanitized by the backend (no scripts, styles or event handlers)
             <div className="html-body" dangerouslySetInnerHTML={{ __html: n.contentHtml }} />
           ) : (
