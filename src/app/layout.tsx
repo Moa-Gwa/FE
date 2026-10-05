@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { DM_Sans, Gowun_Dodum } from "next/font/google";
+import localFont from "next/font/local";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
-const dm = DM_Sans({ variable: "--font-dm", subsets: ["latin"] });
-const gowun = Gowun_Dodum({ variable: "--font-gowun", weight: "400", preload: false });
+// Pretendard (SIL OFL), self-hosted variable font
+const pretendard = localFont({
+  src: "../fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+  weight: "45 920",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "모아과 — 학내 통합 공지",
@@ -14,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${dm.variable} ${gowun.variable}`}>
+    <html lang="ko" className={`${pretendard.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>
