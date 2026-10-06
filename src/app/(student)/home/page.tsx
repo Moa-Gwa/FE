@@ -22,6 +22,7 @@ const CATEGORY_ICON: Record<string, IconName> = {
   PARTNERSHIP: "tag",
   STUDENT_FEE: "wallet",
   RECRUIT: "megaphone",
+  CAREER: "briefcase",
   ETC: "dots",
 };
 
