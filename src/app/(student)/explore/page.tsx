@@ -50,49 +50,107 @@ function Explore() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
-  const chips = (key: string, current: string, options: string[][]) => (
-    <div className="chips">
-      {options.map(([value, label]) => (
-        <button key={value} className={`chip ${current === value ? "on" : ""}`} onClick={() => set(key, value)}>
-          {label}
-        </button>
-      ))}
-    </div>
-  );
+  const [sheet, setSheet] = useState(false);
+  const [draftStatus, setDraftStatus] = useState(status);
+  const [draftSort, setDraftSort] = useState(sort);
+  const openSheet = () => {
+    setDraftStatus(status);
+    setDraftSort(sort);
+    setSheet(true);
+  };
+  const applySheet = () => {
+    const next = new URLSearchParams(params.toString());
+    if (draftStatus) next.set("status", draftStatus);
+    else next.delete("status");
+    if (draftSort && draftSort !== "latest") next.set("sort", draftSort);
+    else next.delete("sort");
+    router.replace(`/explore${next.size ? `?${next}` : ""}`, { scroll: false });
+    setSheet(false);
+  };
+  const activeFilters = (status ? 1 : 0) + (sort !== "latest" ? 1 : 0);
 
   return (
     <>
       <TopBar title="공지 탐색" sub="관심 있는 소식을 빠르게 찾아보세요." />
-      <label className="search" style={{ margin: "0 0 20px", maxWidth: "none" }}>
+      <label className="search">
         <Icon name="search" />{" "}
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="공지 제목, 조직, 키워드 검색"
+          placeholder="공지 제목, 학과, 키워드"
           aria-label="공지 검색"
         />
       </label>
 
-      <div className="filters">
-        <div className="filter-row">
-          <b>발행 주체</b>
-          {chips("orgType", orgType, ORG_TYPES)}
-        </div>
-        <div className="filter-row">
-          <b>카테고리</b>
-          {chips("category", category, [["", "전체"], ...categories.map((c) => [c.code, c.name])])}
-        </div>
-        <div className="filter-row">
-          <b>상태</b>
-          {chips("status", status, STATUSES)}
-        </div>
-        <div className="filter-row">
-          <b>정렬</b>
-          {chips("sort", sort, SORTS)}
-        </div>
+      <nav className="segmented" aria-label="발행 주체">
+        {ORG_TYPES.map(([value, label]) => (
+          <button key={value} className={orgType === value ? "on" : ""} aria-pressed={orgType === value} onClick={() => set("orgType", value)}>
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="chip-scroll" role="group" aria-label="카테고리">
+        {[["", "전체"], ...categories.map((c) => [c.code, c.name])].map(([value, label]) => (
+          <button key={value} className={`chip ${category === value ? "on" : ""}`} aria-pressed={category === value} onClick={() => set("category", value)}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="list-toolbar">
+        <span>{SORTS.find(([v]) => v === sort)?.[1]}{status ? ` · ${STATUS_LABEL[status as keyof typeof STATUS_LABEL]}` : ""}</span>
+        <button className="pill-link" onClick={openSheet} aria-haspopup="dialog">
+          <Icon name="filter" /> 상태·정렬{activeFilters > 0 ? ` ${activeFilters}` : ""}
+        </button>
       </div>
 
       <FeedList params={{ orgType, category, status, sort, q }} />
+
+      {sheet && (
+        <div className="sheet-back" onClick={() => setSheet(false)}>
+          <section className="sheet" role="dialog" aria-modal="true" aria-label="필터" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <div className="row-between">
+              <h2>필터</h2>
+              <button className="icon-button" aria-label="닫기" onClick={() => setSheet(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="sheet-label">상태</div>
+            <div className="chips">
+              {STATUSES.map(([value, label]) => (
+                <button key={value} className={`chip ${draftStatus === value ? "on" : ""}`} aria-pressed={draftStatus === value} onClick={() => setDraftStatus(value)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="sheet-label">정렬</div>
+            <div className="radio-list">
+              {SORTS.map(([value, label]) => (
+                <label key={value}>
+                  {label}
+                  <input type="radio" name="sort" checked={draftSort === value} onChange={() => setDraftSort(value)} />
+                </label>
+              ))}
+            </div>
+            <div className="sheet-actions">
+              <button
+                className="ghost"
+                onClick={() => {
+                  setDraftStatus("");
+                  setDraftSort("latest");
+                }}
+              >
+                초기화
+              </button>
+              <button className="primary" onClick={applySheet}>
+                결과 보기
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }

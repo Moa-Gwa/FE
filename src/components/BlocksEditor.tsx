@@ -58,13 +58,13 @@ export default function BlocksEditor({
 
   return (
     <div className="blocks-editor">
-      {blocks.length === 0 && <div className="empty">아래 버튼으로 글이나 이미지를 추가해 보세요.</div>}
+      {blocks.length === 0 && <div className="empty">위 도구 막대에서 글이나 이미지를 추가해 보세요.</div>}
       {blocks.map((b, i) => (
         <div key={b.key}>
           {i === 0 && insertBar(0)}
-          <div className="block-card">
+          <div className={`block-card ${b.type === "TEXT" ? "is-text" : "is-images"}`}>
             <div className="block-head">
-              <b>{b.type === "TEXT" ? "글" : `이미지 (${b.images.length}장)`}</b>
+              <b>{b.type === "TEXT" ? "" : `이미지 ${b.images.length}장`}</b>
               <div className="actions">
                 <button type="button" aria-label="위로" disabled={i === 0} onClick={() => onChange(move(blocks, i, i - 1))}>
                   ↑
@@ -114,7 +114,7 @@ function AutoTextarea({ value, onChange }: { value: string; onChange: (v: string
       }}
       className="block-text"
       value={value}
-      placeholder="내용을 입력하세요"
+      placeholder="공지 내용을 적어 보세요…"
       onChange={(e) => {
         onChange(e.target.value);
         fit(e.target);

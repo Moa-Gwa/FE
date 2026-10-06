@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -21,6 +22,7 @@ const CATEGORY_ICON: Record<string, IconName> = {
   PARTNERSHIP: "tag",
   STUDENT_FEE: "wallet",
   RECRUIT: "megaphone",
+  CAREER: "briefcase",
   ETC: "dots",
 };
 
@@ -36,13 +38,19 @@ export default function StudentHome() {
       <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." />
 
       <section className="hero">
-        <div className="eyebrow">CAMPUS NOTICE, ALL IN ONE</div>
+        <img className="hero-art" src="/moa-gwa-logo.png" alt="" />
         <h2>
-          놓치면 아쉬운
+          놓치기 쉬운
           <br />
-          학교 소식이에요
+          학교 소식,
+          <br />
+          <em>모아과</em>에서 한눈에
         </h2>
-        <p>학사부터 행사까지, 나에게 필요한 공지를 한 곳에서 확인하세요.</p>
+        <p>
+          중요한 학내 공지를 빠르고
+          <br />
+          간편하게 확인해 보세요.
+        </p>
         <form
           className="search"
           onSubmit={(e) => {
@@ -58,6 +66,9 @@ export default function StudentHome() {
       <section className="section">
         <div className="section-heading">
           <h2>학내 NOW</h2>
+          <Link href="/explore?status=ONGOING" className="pill-link">
+            전체 보기 <Icon name="chevron" />
+          </Link>
         </div>
         {now.isPending ? (
           <div className="empty">불러오는 중…</div>
@@ -95,7 +106,7 @@ export default function StudentHome() {
         <div className="section-heading">
           <h2>나를 위한 공지</h2>
           <Link href="/my/interests" className="link-btn">
-            관심정보 설정
+            관심 설정
           </Link>
         </div>
         {forMe.data && forMe.data.items.length > 0 ? (
@@ -119,7 +130,7 @@ export default function StudentHome() {
         <div className="section-heading">
           <h2>최신 공지</h2>
         </div>
-        <FeedList />
+        <FeedList limit={5} moreHref="/explore" />
       </section>
     </>
   );
