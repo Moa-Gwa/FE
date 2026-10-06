@@ -12,6 +12,7 @@ export default function Calendar({
   selected,
   onSelect,
   onMove,
+  range,
 }: {
   year: number;
   month: number;
@@ -19,6 +20,8 @@ export default function Calendar({
   selected: string | null;
   onSelect: (day: string) => void;
   onMove: (delta: number) => void;
+  /** inclusive "YYYY-MM-DD" bounds to tint (e.g. this week) */
+  range?: { from: string; to: string } | null;
 }) {
   const first = new Date(year, month, 1);
   const count = new Date(year, month + 1, 0).getDate();
@@ -49,17 +52,20 @@ export default function Calendar({
         ))}
         {Array.from({ length: count }, (_, i) => {
           const key = `${year}-${pad(month + 1)}-${pad(i + 1)}`;
+          const inRange = !!range && key >= range.from && key <= range.to;
+          const edge = inRange ? `${key === range!.from ? "range-start" : ""} ${key === range!.to ? "range-end" : ""}` : "";
           return (
             <div
               key={key}
               role="button"
               tabIndex={0}
               aria-label={`${month + 1}월 ${i + 1}일`}
-              className={`day ${markedDays.has(key) ? "event" : ""} ${key === today ? "today" : ""} ${key === selected ? "selected" : ""}`}
+              className={`day ${markedDays.has(key) ? "event" : ""} ${key === today ? "today" : ""} ${key === selected ? "selected" : ""} ${inRange ? "in-range" : ""} ${edge}`}
               onClick={() => onSelect(key)}
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect(key)}
             >
-              {i + 1}
+              <span className="day-num">{i + 1}</span>
+              {markedDays.has(key) && <i className="day-dot" aria-hidden="true" />}
             </div>
           );
         })}
