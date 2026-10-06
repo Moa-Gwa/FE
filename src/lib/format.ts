@@ -40,12 +40,29 @@ export const STATUS_LABEL: Record<DisplayStatus, string> = {
 };
 
 export const STATUS_TONE: Record<DisplayStatus, string> = {
-  UPCOMING: "",
-  ONGOING: "mint",
-  DEADLINE_SOON: "pink",
+  UPCOMING: "gray",
+  ONGOING: "gray",
+  DEADLINE_SOON: "hot",
   CLOSED: "gray",
   ENDED: "gray",
 };
+
+/** Two-letter badge for an organization avatar: "총학생회" → "총학", "AI융합학부 학생회" → "AI", "행정학과" → "행정". */
+export function orgInitials(name: string): string {
+  const n = name.trim();
+  const latin = n.match(/^[A-Za-z]+/);
+  if (latin) return latin[0].slice(0, 3).toUpperCase();
+  if (/^총학생회/.test(n)) return "총학";
+  const core = n.replace(/\s+/g, "").replace(/^컴퓨터/, "컴").replace(/^소프트웨어/, "소");
+  return core.slice(0, 2);
+}
+
+/** Alternates avatar tones so neighbouring rows don't all look the same. */
+export function orgTone(name: string): "coral" | "lilac" {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) | 0;
+  return Math.abs(h) % 2 === 0 ? "coral" : "lilac";
+}
 
 export const ORG_TYPE_LABEL: Record<OrgType, string> = {
   UNIVERSITY: "대학",

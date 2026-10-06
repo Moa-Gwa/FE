@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Logo from "@/components/Logo";
+import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { setSession } from "@/lib/session";
 import type { OrgRef, OrganizationView, Category } from "@/types";
@@ -109,46 +109,57 @@ export default function LoginPage() {
   return (
     <main className="login-shell">
       <section className="login-card">
-        <div className="brand-orb">
-          <img src="/moa-gwa-logo.png" alt="" />
+        <div className="login-hero">
+          <img className="brand-orb" src="/moa-gwa-logo.png" alt="모아과 로고" />
+          <div className="brand-name">모아과</div>
+          <h1>
+            우리 학교 소식을
+            <br />
+            <em>한곳에서</em> 만나보세요
+          </h1>
+          <p className="muted">흩어진 공지를 모아, 더 쉽고 빠르게.</p>
         </div>
-        <Logo />
-        <h1>
-          우리 학교 소식을
-          <br />한곳에서 만나보세요
-        </h1>
-        <p className="muted">흩어진 공지를 모아, 더 쉽고 빠르게.</p>
 
         {error && <p className="error" style={{ marginTop: 18 }}>{error}</p>}
-
-        {mode === "choose" && SHOW_DEV_LOGIN && (
-          <div className="role-buttons" style={{ marginTop: 22, marginBottom: 0 }}>
-            <button className="primary" disabled={busy} onClick={quickStudent}>
-              ⚡ 바로 체험하기 (학생 · 홈으로 이동)
-            </button>
-            <button className="secondary" disabled={busy} onClick={quickAdmin}>
-              ⚡ 관리자로 체험하기 (총학생회)
-            </button>
-            <span className="hint">개발용 버튼이에요. 배포 환경에서는 보이지 않아요.</span>
-          </div>
-        )}
 
         {mode === "choose" && (
           <div className="role-buttons">
             <button className="role" onClick={() => setMode("student")}>
-              <span className="role-icon">☺</span>
+              <span className="role-icon">
+                <Icon name="cap" />
+              </span>
               <span>
                 <strong>학생으로 시작</strong>
                 <span>나에게 필요한 공지와 일정을 확인해요</span>
               </span>
+              <span className="role-go" aria-hidden="true">
+                <Icon name="chevron" />
+              </span>
             </button>
             <button className="role admin" onClick={() => setMode("admin")}>
-              <span className="role-icon">⚙</span>
+              <span className="role-icon">
+                <Icon name="megaphone" />
+              </span>
               <span>
                 <strong>관리자로 시작</strong>
                 <span>공지와 학내 일정을 관리해요</span>
               </span>
+              <span className="role-go" aria-hidden="true">
+                <Icon name="chevron" />
+              </span>
             </button>
+          </div>
+        )}
+
+        {mode === "choose" && SHOW_DEV_LOGIN && (
+          <div className="dev-buttons">
+            <button disabled={busy} onClick={quickStudent}>
+              학생으로 체험하기
+            </button>
+            <button disabled={busy} onClick={quickAdmin}>
+              관리자로 체험하기
+            </button>
+            <span className="hint">개발용 버튼이에요. 배포 환경에서는 보이지 않아요.</span>
           </div>
         )}
 

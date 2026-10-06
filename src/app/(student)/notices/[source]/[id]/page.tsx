@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
+import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
@@ -137,8 +138,8 @@ export default function NoticePage() {
           )}
 
           <div className="btn-row">
-            <button className="primary" disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
-              {n.bookmarked ? "★ 저장됨" : "☆ 내 공지에 저장"}
+            <button className="primary with-icon" aria-pressed={n.bookmarked} disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
+              <Icon name="bookmark" /> {n.bookmarked ? "저장됨" : "내 공지에 저장"}
             </button>
             <button className="secondary" onClick={share}>
               공유

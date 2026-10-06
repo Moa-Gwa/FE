@@ -91,6 +91,29 @@ const PATHS = {
       <circle cx="18" cy="12" r="1" />
     </>
   ),
+  cap: (
+    <>
+      <path d="M2 9l10-5 10 5-10 5z" />
+      <path d="M6 11v5c2 2 10 2 12 0v-5" />
+    </>
+  ),
+  bookmark: <path d="M6 4h12v17l-6-4-6 4z" />,
+  chevron: <path d="m9 6 6 6-6 6" />,
+  logout: <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10" />,
+  filter: (
+    <>
+      <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12" />
+      <circle cx="16" cy="6" r="2" />
+      <circle cx="10" cy="12" r="2" />
+      <circle cx="18" cy="18" r="2" />
+    </>
+  ),
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.5 8.5-2 5-5 2 2-5z" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;
@@ -104,7 +127,7 @@ export default function Icon({ name, size = "1em" }: { name: IconName; size?: nu
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.9}
+      strokeWidth={1.8}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

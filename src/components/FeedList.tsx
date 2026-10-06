@@ -1,7 +1,9 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
+import Icon from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
 import { api } from "@/lib/api";
 import type { FeedPage } from "@/types";
@@ -12,11 +14,16 @@ export default function FeedList({
   path = "/feed",
   emptyText = "조건에 맞는 공지가 없어요.",
   onTotal,
+  limit,
+  moreHref,
 }: {
   params?: Record<string, string | undefined>;
   path?: string;
   emptyText?: string;
   onTotal?: (n: number) => void;
+  /** Show only the first `limit` items (no infinite scroll) and a "더 보기" link to `moreHref`. */
+  limit?: number;
+  moreHref?: string;
 }) {
   const query = useInfiniteQuery({
     queryKey: ["feed", path, params],
@@ -49,6 +56,23 @@ export default function FeedList({
   if (query.isError) return <div className="error">{(query.error as Error).message}</div>;
   if (query.isPending) return <div className="empty">불러오는 중…</div>;
   if (items.length === 0) return <div className="empty">{emptyText}</div>;
+
+  if (limit) {
+    return (
+      <>
+        <div className="notice-list">
+          {items.slice(0, limit).map((item) => (
+            <NoticeCard key={`${item.source}-${item.id}`} item={item} />
+          ))}
+        </div>
+        {moreHref && (items.length > limit || hasNextPage) && (
+          <Link href={moreHref} className="more-button">
+            최신 공지 더 보기 <Icon name="chevron" />
+          </Link>
+        )}
+      </>
+    );
+  }
 
   return (
     <>

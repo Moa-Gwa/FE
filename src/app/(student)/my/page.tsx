@@ -108,7 +108,7 @@ export default function MyPage() {
           <div className="empty">
             아직 저장한 공지가 없어요.
             <br />
-            관심 있는 공지의 ☆를 눌러보세요.
+            관심 있는 공지의 북마크를 눌러 모아보세요.
           </div>
         )}
       </section>
@@ -139,7 +139,7 @@ export default function MyPage() {
 
       <section className="section">
         <button
-          className="secondary danger"
+          className="logout-wide"
           onClick={() => {
             setSession(null);
             router.replace("/login");
