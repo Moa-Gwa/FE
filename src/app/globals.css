@@ -351,3 +351,25 @@ span.chip.on{background:var(--coral-soft);color:var(--coral-strong)}
 .notice-list .notice-card:hover,.grid.two > .notice-card:hover{box-shadow:none;background:#FAF9FB}
 .notice-list .notice-card + .notice-card::before,.grid.two > .notice-card + .notice-card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:var(--line)}
 @media(min-width:821px){.shell .grid.two:has(> .notice-card){grid-template-columns:minmax(0,1fr)}}
+
+/* ---- less rounded: tighter radii everywhere, rectangular fixed tab bar ---- */
+:root{--round:12px}
+.hero,.login-hero,.profile-card,.insight,.deadline-card{border-radius:16px}
+.notice-list,.grid.two:has(> .notice-card),.empty,.form-card,.detail-card,.calendar,.stat,.table-wrap,.block-card,.modal,.radio-list,.segmented,.role,.notice-card{border-radius:12px}
+.notice-list .notice-card,.grid.two > .notice-card{border-radius:0}
+.category{border-radius:12px}.category span{border-radius:8px}
+.segmented button{border-radius:8px}
+.chip,.tab,.radio-row label{border-radius:8px}
+.pill,.tag,.status{border-radius:6px}
+.pill-link{border-radius:8px}
+.round-button,.icon-button{border-radius:12px}
+.nc-avatar,.role .role-icon,.avatar,.profile-card .avatar{border-radius:12px}
+.notice-card .save,.nc-go,.role-go{border-radius:8px}
+.search,.primary,.secondary,.ghost,.more-button,.logout-wide,.sheet-actions button,.dev-buttons button,.field,.select,.form-group input,.form-group textarea,.form-group select,.block-text,.thumb,.info-grid{border-radius:10px}
+.sheet{border-radius:16px 16px 0 0}
+.sheet-back{padding:0}
+
+/* bottom tab bar: full-width rectangle fixed to the bottom */
+.m-nav{bottom:0;left:50%;transform:translateX(-50%);width:min(100%,600px);height:auto;min-height:64px;padding:6px 4px max(6px,env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);border-radius:0;background:rgba(255,255,255,.94);box-shadow:none}
+.main-m{padding-bottom:96px}
+@media(max-width:820px){.mobile-nav{left:0;right:0;bottom:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;background:rgba(255,255,255,.94)}.main{padding-bottom:92px}}
