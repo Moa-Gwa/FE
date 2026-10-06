@@ -758,3 +758,4 @@ body{color:var(--g900)}
 .type-deadline{color:var(--coral-strong)}
 .type-publish{color:#2272EB}
 .type-event{color:var(--lilac-strong)}
+.sched-meta,.sched-meta b{font-size:14px;font-weight:600}
