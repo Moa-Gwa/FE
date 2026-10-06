@@ -2,12 +2,14 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import { useCategories } from "@/hooks/useMeta";
 import BlocksEditor, { countImages, MAX_IMAGES, newKey, type EditorBlock } from "@/components/BlocksEditor";
 import BlocksView from "@/components/BlocksView";
-import { api } from "@/lib/api";
+import DateTimeField from "@/components/DateTimeField";
+import { api, assetUrl } from "@/lib/api";
 import { fromLocalInput, toLocalInput } from "@/lib/format";
 import type { AdminNotice, Block, NoticeInput } from "@/types";
 
@@ -48,18 +50,44 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
   const [urgent, setUrgent] = useState(initial?.urgent ?? false);
   const [mode, setMode] = useState<"NOW" | "SCHEDULED">(initial?.status === "SCHEDULED" ? "SCHEDULED" : "NOW");
   const [publishAt, setPublishAt] = useState(toLocalInput(initial?.status === "SCHEDULED" ? initial.publishAt : null));
-  const [preview, setPreview] = useState(false);
+  const [step, setStep] = useState<"write" | "publish">("write");
+  const [showPreview, setShowPreview] = useState(true);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
 
   const published = initial?.status === "PUBLISHED" || initial?.status === "CLOSED";
+  const clean = useMemo(() => cleanBlocks(blocks), [blocks]);
 
-  function problems(forPublish: boolean): string | null {
-    if (categoryIds.length === 0) return "카테고리를 1개 이상 선택해 주세요.";
+  // "dirty" = anything typed since the page opened; used to confirm before leaving
+  const [snapshot] = useState(() => JSON.stringify([initial?.title ?? "", cleanBlocks(initialBlocks(initial))]));
+  const dirty = JSON.stringify([title, clean]) !== snapshot;
+
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [title]);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  function writeProblems(): string | null {
     if (!title.trim()) return "제목을 입력해 주세요.";
-    const clean = cleanBlocks(blocks);
     if (!clean.some((b) => b.type === "TEXT")) return "본문 글을 입력해 주세요.";
     if (countImages(clean) > MAX_IMAGES) return `이미지는 최대 ${MAX_IMAGES}장까지 넣을 수 있어요.`;
+    return null;
+  }
+
+  function problems(forPublish: boolean): string | null {
+    const w = writeProblems();
+    if (w) return w;
+    if (categoryIds.length === 0) return "카테고리를 1개 이상 선택해 주세요.";
     if (eventStart && eventEnd && new Date(eventEnd) <= new Date(eventStart)) return "행사 종료 시각은 시작 이후여야 해요.";
     if (forPublish && !published && mode === "SCHEDULED" && (!publishAt || new Date(publishAt) <= new Date()))
       return "예약 게시 시각은 현재 이후여야 해요.";
@@ -71,7 +99,7 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
     mutationFn: (publishMode: NoticeInput["publishMode"]) => {
       const body: NoticeInput = {
         title: title.trim(),
-        blocks: cleanBlocks(blocks),
+        blocks: clean,
         categoryIds,
         eventStartAt: fromLocalInput(eventStart),
         eventEndAt: fromLocalInput(eventEnd),
@@ -93,11 +121,27 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
     onError: (e) => setError(e.message),
   });
 
+  // a draft or scheduled notice is published via the primary button; a live notice just saves in place
+  const primaryMode: NoticeInput["publishMode"] = published ? null : mode;
+
   function submit(publishMode: NoticeInput["publishMode"]) {
-    const problem = problems(publishMode !== "DRAFT");
+    // drafts only need a title; everything else may still be missing
+    const problem = publishMode === "DRAFT" ? (title.trim() ? null : "제목을 입력해 주세요.") : problems(true);
     if (problem) return setError(problem);
     setError("");
     save.mutate(publishMode);
+  }
+
+  function toPublish() {
+    const problem = writeProblems();
+    if (problem) return setError(problem);
+    setError("");
+    setStep("publish");
+  }
+
+  function leave() {
+    if (dirty && !confirm("작성 중인 내용이 저장되지 않아요. 나갈까요?")) return;
+    router.push("/admin/notices");
   }
 
   async function upload(files: FileList): Promise<string[]> {
@@ -125,135 +169,196 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
     else setBlocks([...blocks, { type: "TEXT", text: TEMPLATE, key: newKey() }]);
   }
 
-  // a draft or scheduled notice is published via the primary button; a live notice just saves in place
-  const primaryMode: NoticeInput["publishMode"] = published ? null : mode;
+  const addBlock = (type: "TEXT" | "IMAGES") =>
+    setBlocks([...blocks, type === "TEXT" ? { type, text: "", key: newKey() } : { type, images: [], layout: "CAROUSEL", key: newKey() }]);
+
+  const catNames = categoryIds.map((id) => categories.find((c) => c.id === id)?.name).filter(Boolean);
+  const firstImage = clean.find((b) => b.type === "IMAGES");
+  const excerpt = (clean.find((b) => b.type === "TEXT") as Extract<Block, { type: "TEXT" }> | undefined)?.text.replace(/\s+/g, " ").slice(0, 120);
+  const primaryLabel = published ? "변경사항 저장" : mode === "SCHEDULED" ? "예약 게시" : "게시하기";
 
   return (
-    <>
-      <form
-        className="form-card stack"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit(primaryMode);
-        }}
-      >
-        {error && <div className="error">{error}</div>}
+    <div className={`writer ${showPreview ? "" : "no-preview"}`}>
+      {/* ---------- write: title + body, live preview on the right ---------- */}
+      <section className="writer-edit" aria-label="공지 작성">
+        <div className="writer-scroll">
+          <div className="writer-inner">
+            <textarea
+              ref={titleRef}
+              className="writer-title"
+              rows={1}
+              value={title}
+              maxLength={40}
+              onChange={(e) => setTitle(e.target.value.replace(/\n/g, ""))}
+              placeholder="제목을 입력하세요"
+              aria-label="제목"
+            />
+            <div className="writer-rule" aria-hidden="true" />
+            <div className="writer-meta">
+              <span className="counter">{title.length} / 40</span>
+              {initial && <span className="writer-status">{published ? "게시 중인 공지 수정" : "임시저장된 공지"}</span>}
+            </div>
 
-        <div className="form-group">
-          <label>카테고리 (1개 이상)</label>
-          <div className="chips">
-            {categories.map((c) => (
-              <button
-                type="button"
-                key={c.id}
-                className={`chip ${categoryIds.includes(c.id) ? "on" : ""}`}
-                onClick={() => setCategoryIds((cur) => (cur.includes(c.id) ? cur.filter((x) => x !== c.id) : [...cur, c.id]))}
-              >
-                {c.name}
+            <div className="writer-toolbar" role="toolbar" aria-label="본문 도구">
+              <button type="button" onClick={() => addBlock("TEXT")}>
+                <Icon name="edit" /> 글
               </button>
+              <button type="button" disabled={countImages(blocks) >= MAX_IMAGES} onClick={() => addBlock("IMAGES")}>
+                <Icon name="grid" /> 이미지
+              </button>
+              <span className="tb-sep" />
+              <button type="button" onClick={applyTemplate}>
+                템플릿 넣기
+              </button>
+              <button type="button" className="tb-preview" aria-pressed={showPreview} onClick={() => setShowPreview((v) => !v)}>
+                {showPreview ? "미리보기 닫기" : "미리보기"}
+              </button>
+            </div>
+
+            {error && step === "write" && <div className="error writer-error">{error}</div>}
+            <BlocksEditor blocks={blocks} onChange={setBlocks} onUpload={upload} uploading={uploading} />
+          </div>
+        </div>
+
+        <footer className="writer-foot">
+          <button type="button" className="writer-exit" onClick={leave}>
+            <Icon name="chevron" /> 나가기
+          </button>
+          <div className="writer-foot-actions">
+            {!published && (
+              <button type="button" className="ghost" disabled={save.isPending} onClick={() => submit("DRAFT")}>
+                임시저장
+              </button>
+            )}
+            <button type="button" className="primary" onClick={toPublish}>
+              {published ? "저장하기" : "게시하기"}
+            </button>
+          </div>
+        </footer>
+      </section>
+
+      <aside className="writer-preview" aria-label="미리보기">
+        <div className="writer-inner">
+          <div className="wp-label">학생에게 보이는 모습</div>
+          <div className="wp-badges">
+            {urgent && <span className="pill hot">중요</span>}
+            {catNames.map((n) => (
+              <span className="pill" key={n}>
+                {n}
+              </span>
             ))}
           </div>
+          <h1 className="wp-title">{title || <span className="wp-empty">제목</span>}</h1>
+          {clean.length ? <BlocksView blocks={clean} /> : <p className="wp-empty">본문을 입력하면 여기에 보여요.</p>}
+          {location && <p className="wp-extra">장소 · {location}</p>}
         </div>
+      </aside>
 
-        <div className="form-group">
-          <label htmlFor="title">제목</label>
-          <input id="title" value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} placeholder="공지 제목을 입력해 주세요" />
-          <div className="counter">{title.length} / 40</div>
-        </div>
-
-        <div className="form-group">
-          <div className="row-between">
-            <label>본문</label>
-            <button type="button" className="link-btn" onClick={() => applyTemplate()}>
-              템플릿 넣기
-            </button>
-          </div>
-          <BlocksEditor blocks={blocks} onChange={setBlocks} onUpload={upload} uploading={uploading} />
-        </div>
-
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="es">행사 시작</label>
-            <input id="es" type="datetime-local" value={eventStart} onChange={(e) => setEventStart(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="ee">행사 종료</label>
-            <input id="ee" type="datetime-local" value={eventEnd} min={eventStart} onChange={(e) => setEventEnd(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="dl">신청 마감</label>
-            <input id="dl" type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="loc">장소</label>
-            <input id="loc" value={location} maxLength={200} onChange={(e) => setLocation(e.target.value)} placeholder="예: 학생회관 앞 광장" />
-          </div>
-          <div className="form-group full">
-            <label htmlFor="link">외부 링크</label>
-            <input id="link" type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://" />
-          </div>
-        </div>
-
-        {!published && (
-          <div className="form-group">
-            <label>게시 방식</label>
-            <div className="radio-row">
-              <label>
-                <input type="radio" name="mode" checked={mode === "NOW"} onChange={() => setMode("NOW")} /> 즉시 게시
-              </label>
-              <label>
-                <input type="radio" name="mode" checked={mode === "SCHEDULED"} onChange={() => setMode("SCHEDULED")} /> 예약 게시
-              </label>
-            </div>
-            {mode === "SCHEDULED" && <input type="datetime-local" aria-label="예약 시각" value={publishAt} onChange={(e) => setPublishAt(e.target.value)} />}
-          </div>
-        )}
-
-        <label className="check">
-          <input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} />
-          중요 공지 (학내 NOW 우선 노출, 알림 우선 발송)
-        </label>
-
-        <div className="form-actions">
-          <button type="button" className="secondary" onClick={() => router.push("/admin/notices")}>
-            취소
-          </button>
-          <button type="button" className="secondary" onClick={() => setPreview(true)}>
-            미리보기
-          </button>
-          {!published && (
-            <button type="button" className="secondary" disabled={save.isPending} onClick={() => submit("DRAFT")}>
-              임시저장
-            </button>
-          )}
-          <button className="primary" disabled={save.isPending}>
-            {published ? "변경사항 저장" : mode === "SCHEDULED" ? "예약 게시" : "게시"}
-          </button>
-        </div>
-      </form>
-
-      {preview && (
-        <div className="modal-back" onClick={() => setPreview(false)}>
-          <div className="modal" role="dialog" aria-label="미리보기" onClick={(e) => e.stopPropagation()}>
-            <div className="chips">
-              {categoryIds.map((id) => (
-                <span className="pill" key={id}>
-                  {categories.find((c) => c.id === id)?.name}
+      {/* ---------- publish: settings step (velog "출간" screen) ---------- */}
+      {step === "publish" && (
+        <div className="publish" role="dialog" aria-modal="true" aria-label="게시 설정">
+          <div className="publish-inner">
+            <section className="publish-col">
+              <h2>공지 미리보기</h2>
+              <div className={`pub-thumb ${firstImage ? "" : "none"}`}>
+                {firstImage && firstImage.type === "IMAGES" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={assetUrl(firstImage.images[0])} alt="" />
+                ) : (
+                  <span>대표 이미지 없음</span>
+                )}
+              </div>
+              <h3 className="pub-title">{title}</h3>
+              <p className="pub-excerpt">{excerpt}</p>
+              <label className="pub-toggle">
+                <span>
+                  <b>중요 공지</b>
+                  <small>학내 NOW에 우선 노출되고 알림이 먼저 발송돼요.</small>
                 </span>
-              ))}
-              {urgent && <span className="pill red">중요</span>}
-            </div>
-            <h1 style={{ fontSize: 22, margin: "12px 0" }}>{title || "(제목 없음)"}</h1>
-            <BlocksView blocks={cleanBlocks(blocks)} />
-            {location && <p className="muted">장소: {location}</p>}
-            <div className="form-actions">
-              <button className="secondary" onClick={() => setPreview(false)}>
-                닫기
-              </button>
-            </div>
+                <button type="button" role="switch" aria-checked={urgent} className={`switch ${urgent ? "on" : ""}`} onClick={() => setUrgent(!urgent)}>
+                  <i />
+                </button>
+              </label>
+            </section>
+
+            <section className="publish-col">
+              <h2>게시 설정</h2>
+              {error && <div className="error">{error}</div>}
+
+              <div className="pub-field">
+                <span className="pub-label">카테고리 (1개 이상)</span>
+                <div className="chips">
+                  {categories.map((c) => (
+                    <button
+                      type="button"
+                      key={c.id}
+                      className={`chip ${categoryIds.includes(c.id) ? "on" : ""}`}
+                      aria-pressed={categoryIds.includes(c.id)}
+                      onClick={() => setCategoryIds((cur) => (cur.includes(c.id) ? cur.filter((x) => x !== c.id) : [...cur, c.id]))}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pub-grid">
+                <div className="pub-field">
+                  <span className="pub-label">행사 시작</span>
+                  <DateTimeField ariaLabel="행사 시작" value={eventStart} onChange={setEventStart} placeholder="선택 안 함" />
+                </div>
+                <div className="pub-field">
+                  <span className="pub-label">행사 종료</span>
+                  <DateTimeField ariaLabel="행사 종료" value={eventEnd} min={eventStart || undefined} onChange={setEventEnd} placeholder="선택 안 함" />
+                </div>
+                <div className="pub-field">
+                  <span className="pub-label">신청 마감</span>
+                  <DateTimeField ariaLabel="신청 마감" value={deadline} onChange={setDeadline} placeholder="선택 안 함" />
+                </div>
+                <label className="pub-field">
+                  <span className="pub-label">장소</span>
+                  <input value={location} maxLength={200} onChange={(e) => setLocation(e.target.value)} placeholder="예: 학생회관 앞 광장" />
+                </label>
+              </div>
+              <label className="pub-field">
+                <span className="pub-label">외부 링크</span>
+                <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://" />
+              </label>
+
+              {!published && (
+                <div className="pub-field">
+                  <span className="pub-label">게시 방식</span>
+                  <div className="pub-seg" role="radiogroup" aria-label="게시 방식">
+                    <button type="button" role="radio" aria-checked={mode === "NOW"} className={mode === "NOW" ? "on" : ""} onClick={() => setMode("NOW")}>
+                      즉시 게시
+                    </button>
+                    <button type="button" role="radio" aria-checked={mode === "SCHEDULED"} className={mode === "SCHEDULED" ? "on" : ""} onClick={() => setMode("SCHEDULED")}>
+                      예약 게시
+                    </button>
+                  </div>
+                  {mode === "SCHEDULED" && <DateTimeField ariaLabel="예약 시각" value={publishAt} onChange={setPublishAt} placeholder="게시할 시각을 선택하세요" />}
+                </div>
+              )}
+
+              <div className="publish-actions">
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => {
+                    setError("");
+                    setStep("write");
+                  }}
+                >
+                  취소
+                </button>
+                <button type="button" className="primary" disabled={save.isPending} onClick={() => submit(primaryMode)}>
+                  {primaryLabel}
+                </button>
+              </div>
+            </section>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
