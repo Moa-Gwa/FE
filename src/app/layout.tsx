@@ -17,7 +17,6 @@ const spoqa = localFont({
 export const metadata: Metadata = {
   title: "모아과 — 학내 통합 공지",
   description: "대학·학과·학생자치단체의 공지를 한곳에서 확인하세요.",
-  icons: { icon: "/moa-gwa-logo.png" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
