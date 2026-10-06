@@ -11,9 +11,9 @@ import BlocksView from "@/components/BlocksView";
 import DateTimeField from "@/components/DateTimeField";
 import { api, assetUrl } from "@/lib/api";
 import { fromLocalInput, toLocalInput } from "@/lib/format";
+import { NOTICE_TEMPLATES } from "@/lib/noticeTemplates";
 import type { AdminNotice, Block, NoticeInput } from "@/types";
 
-const TEMPLATE = "■ 일시: \n■ 장소: \n■ 대상: \n■ 신청 방법: \n■ 문의: ";
 
 /** Existing notices open as blocks; legacy plain notices become "images, then text". */
 function initialBlocks(n: AdminNotice | null): EditorBlock[] {
@@ -51,6 +51,8 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
   const [mode, setMode] = useState<"NOW" | "SCHEDULED">(initial?.status === "SCHEDULED" ? "SCHEDULED" : "NOW");
   const [publishAt, setPublishAt] = useState(toLocalInput(initial?.status === "SCHEDULED" ? initial.publishAt : null));
   const [step, setStep] = useState<"write" | "publish">("write");
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateId, setTemplateId] = useState(NOTICE_TEMPLATES[0].id);
   const [showPreview, setShowPreview] = useState(true);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -163,10 +165,13 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
     }
   }
 
-  function applyTemplate() {
-    const first = blocks.findIndex((b) => b.type === "TEXT" && b.text.trim() === "");
-    if (first >= 0) setBlocks(blocks.map((b, i) => (i === first ? { ...b, text: TEMPLATE } : b)));
-    else setBlocks([...blocks, { type: "TEXT", text: TEMPLATE, key: newKey() }]);
+  /** Fill the body with a template: replaces an empty body, otherwise appended as a new text block. */
+  function applyTemplate(text: string) {
+    const empty = !blocks.some((b) => (b.type === "TEXT" ? b.text.trim() !== "" : b.images.length > 0));
+    if (empty) setBlocks([{ type: "TEXT", text, key: newKey() }]);
+    else setBlocks([...blocks, { type: "TEXT", text, key: newKey() }]);
+    toast(empty ? "템플릿을 넣었어요. [대괄호] 부분을 바꿔 주세요." : "본문 맨 아래에 템플릿을 추가했어요.");
+    setTemplateOpen(false);
   }
 
   const addBlock = (type: "TEXT" | "IMAGES") =>
@@ -207,8 +212,8 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
                 <Icon name="grid" /> 이미지
               </button>
               <span className="tb-sep" />
-              <button type="button" onClick={applyTemplate}>
-                템플릿 넣기
+              <button type="button" onClick={() => setTemplateOpen(true)}>
+                템플릿
               </button>
               <button type="button" className="tb-preview" aria-pressed={showPreview} onClick={() => setShowPreview((v) => !v)}>
                 {showPreview ? "미리보기 닫기" : "미리보기"}
@@ -253,6 +258,41 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
           {location && <p className="wp-extra">장소 · {location}</p>}
         </div>
       </aside>
+
+      {templateOpen && (
+        <div className="modal-back" onClick={() => setTemplateOpen(false)}>
+          <div className="modal tpl-modal" role="dialog" aria-modal="true" aria-label="템플릿 선택" onClick={(e) => e.stopPropagation()}>
+            <div className="tpl-head">
+              <h2>템플릿 고르기</h2>
+              <button type="button" className="icon-button" aria-label="닫기" onClick={() => setTemplateOpen(false)}>
+                <Icon name="close" />
+              </button>
+            </div>
+            <div className="tpl-body">
+              <ul className="tpl-list" role="listbox" aria-label="템플릿">
+                {NOTICE_TEMPLATES.map((t) => (
+                  <li key={t.id}>
+                    <button type="button" role="option" aria-selected={t.id === templateId} className={t.id === templateId ? "on" : ""} onClick={() => setTemplateId(t.id)}>
+                      <b>{t.name}</b>
+                      <span>{t.desc}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <pre className="tpl-preview">{NOTICE_TEMPLATES.find((t) => t.id === templateId)?.text}</pre>
+            </div>
+            <div className="tpl-foot">
+              <span className="hint">본문이 비어 있으면 채우고, 내용이 있으면 맨 아래에 추가해요.</span>
+              <button type="button" className="ghost" onClick={() => setTemplateOpen(false)}>
+                취소
+              </button>
+              <button type="button" className="primary" onClick={() => applyTemplate(NOTICE_TEMPLATES.find((t) => t.id === templateId)!.text)}>
+                이 템플릿 쓰기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ---------- publish: settings step (velog "출간" screen) ---------- */}
       {step === "publish" && (
