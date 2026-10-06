@@ -342,3 +342,5 @@ span.chip.on{background:var(--coral-soft);color:var(--coral-strong)}
 .with-icon[aria-pressed="true"] svg{fill:currentColor}
 .actions button,.actions a{white-space:nowrap}
 .actions{flex-wrap:wrap}
+.nc-avatar{white-space:nowrap;overflow:hidden}
+.nc-avatar.long{font-size:12px;letter-spacing:-.04em}

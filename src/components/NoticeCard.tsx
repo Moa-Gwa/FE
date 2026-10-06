@@ -38,7 +38,7 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
 
   return (
     <article className={`notice-card ${compact ? "compact" : ""}`}>
-      <div className={`nc-avatar ${orgTone(org)}`} aria-hidden="true">
+      <div className={`nc-avatar ${orgTone(org)} ${orgInitials(org).length > 3 ? "long" : ""}`} aria-hidden="true">
         {orgInitials(org)}
       </div>
       <div className="nc-body">
