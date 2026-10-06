@@ -1,3 +1,4 @@
+import { ORG_INITIALS } from "@/lib/orgInitials";
 import type { DisplayStatus, OrgType } from "@/types";
 
 const TZ = "Asia/Seoul";
@@ -47,9 +48,10 @@ export const STATUS_TONE: Record<DisplayStatus, string> = {
   ENDED: "gray",
 };
 
-/** Two-letter badge for an organization avatar: "총학생회" → "총학", "AI융합학부 학생회" → "AI", "행정학과" → "행정". */
+/** Avatar badge for an organization: the editable table in lib/orgInitials.ts first, else the first two letters. */
 export function orgInitials(name: string): string {
   const n = name.trim();
+  if (ORG_INITIALS[n]) return ORG_INITIALS[n];
   const latin = n.match(/^[A-Za-z]+/);
   if (latin) return latin[0].slice(0, 3).toUpperCase();
   if (/^총학생회/.test(n)) return "총학";
