@@ -558,3 +558,27 @@ body{color:var(--g900)}
 .interests .chip.on{background:var(--coral-soft);color:var(--coral-strong);box-shadow:inset 0 0 0 1px var(--coral)}
 .cta-bar{position:sticky;bottom:64px;z-index:2;display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:12px -20px 0;padding:12px 20px;background:linear-gradient(to top,var(--g100) 70%,rgba(242,244,246,0))}
 .cta-bar button{height:56px;border-radius:16px;font-size:16px}
+
+/* ---- interests: sheet select (single) + check list (multi) ---- */
+.select-field{width:100%;height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px 0 16px;border:1px solid transparent;border-radius:12px;background:var(--g100);color:var(--g900);font:inherit;font-size:16px;text-align:left;cursor:pointer}
+.select-field.empty{color:var(--g500)}
+.select-field span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.select-field .svg-icon{width:20px;height:20px;flex:none;color:var(--g500)}
+.select-field:focus-visible{border-color:var(--coral);outline:0}
+.pick-search{display:flex;align-items:center;gap:8px;height:48px;padding:0 14px;border-radius:12px;background:var(--g100);color:var(--g500)}
+.pick-search .svg-icon{width:18px;height:18px;flex:none}
+.pick-search input{flex:1;min-width:0;height:100%;border:0;background:none;outline:0;font:inherit;font-size:15px;color:var(--g900)}
+.pick-list{list-style:none;margin:6px -20px 0;padding:0}
+.pick-list.scroll{max-height:280px;overflow:auto;overscroll-behavior:contain}
+.pick-row{width:100%;height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px;border:0;background:none;font:inherit;font-size:16px;color:var(--g800);text-align:left;cursor:pointer}
+.pick-row:hover{background:var(--g50)}
+.pick-row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-row .svg-icon{width:22px;height:22px;flex:none;color:var(--g300);stroke-width:2.2}
+.pick-row.on{color:var(--g900)}
+.pick-row.on .svg-icon{color:var(--coral-strong)}
+.pick-empty{padding:14px 20px;list-style:none}
+.select-sheet{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.select-sheet .row-between{margin-bottom:12px}
+.select-sheet .pick-list{margin:8px -20px 0}
+.sheet-scroll{max-height:56vh;overflow:auto;overscroll-behavior:contain}
+.sheet-back{z-index:20}

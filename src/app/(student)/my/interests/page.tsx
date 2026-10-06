@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
@@ -12,6 +13,97 @@ import type { Profile } from "@/types";
 
 function toggle(list: number[], id: number) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
+
+type Option = { id: number; name: string };
+
+/** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. */
+function PickList({ options, value, onToggle, searchLabel, empty }: { options: Option[]; value: number[]; onToggle: (id: number) => void; searchLabel?: string; empty: string }) {
+  const [q, setQ] = useState("");
+  const shown = options
+    .filter((o) => o.name.includes(q.trim()))
+    .sort((a, b) => Number(value.includes(b.id)) - Number(value.includes(a.id)));
+  return (
+    <div className="pick-body">
+      {searchLabel && (
+        <label className="pick-search">
+          <Icon name="search" />
+          <input placeholder={searchLabel} value={q} onChange={(e) => setQ(e.target.value)} aria-label={searchLabel} />
+        </label>
+      )}
+      <ul className={`pick-list ${searchLabel ? "scroll" : ""}`} role="listbox" aria-multiselectable="true">
+        {shown.map((o) => {
+          const on = value.includes(o.id);
+          return (
+            <li key={o.id}>
+              <button type="button" role="option" aria-selected={on} className={`pick-row ${on ? "on" : ""}`} onClick={() => onToggle(o.id)}>
+                <span>{o.name}</span>
+                <Icon name="check" />
+              </button>
+            </li>
+          );
+        })}
+        {shown.length === 0 && <li className="hint pick-empty">{options.length ? "검색 결과가 없어요." : empty}</li>}
+      </ul>
+    </div>
+  );
+}
+
+/** Single-select field that opens a bottom sheet with search. */
+function SheetSelect({ id, options, value, onChange, placeholder }: { id: string; options: Option[]; value: number | null; onChange: (id: number | null) => void; placeholder: string }) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const current = options.find((o) => o.id === value);
+  const shown = options.filter((o) => o.name.includes(q.trim()));
+  const choose = (v: number | null) => {
+    onChange(v);
+    setOpen(false);
+    setQ("");
+  };
+  return (
+    <>
+      <button type="button" id={id} className={`select-field ${current ? "" : "empty"}`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        <span>{current?.name ?? placeholder}</span>
+        <Icon name="down" />
+      </button>
+      {open && (
+        <div className="sheet-back" onClick={() => setOpen(false)}>
+          <section className="sheet select-sheet" role="dialog" aria-modal="true" aria-label="주전공 선택" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <div className="row-between">
+              <h2>주전공 선택</h2>
+              <button type="button" className="icon-button" aria-label="닫기" onClick={() => setOpen(false)}>
+                <Icon name="close" />
+              </button>
+            </div>
+            <label className="pick-search">
+              <Icon name="search" />
+              <input autoFocus placeholder="학과 검색" value={q} onChange={(e) => setQ(e.target.value)} aria-label="학과 검색" />
+            </label>
+            <ul className="pick-list sheet-scroll" role="listbox">
+              {!q && (
+                <li>
+                  <button type="button" role="option" aria-selected={value === null} className={`pick-row ${value === null ? "on" : ""}`} onClick={() => choose(null)}>
+                    <span>선택 안 함</span>
+                    <Icon name="check" />
+                  </button>
+                </li>
+              )}
+              {shown.map((o) => (
+                <li key={o.id}>
+                  <button type="button" role="option" aria-selected={o.id === value} className={`pick-row ${o.id === value ? "on" : ""}`} onClick={() => choose(o.id)}>
+                    <span>{o.name}</span>
+                    <Icon name="check" />
+                  </button>
+                </li>
+              ))}
+              {shown.length === 0 && <li className="hint pick-empty">검색 결과가 없어요.</li>}
+            </ul>
+          </section>
+        </div>
+      )}
+    </>
+  );
 }
 
 function InterestsForm({ profile }: { profile: Profile }) {
@@ -29,7 +121,6 @@ function InterestsForm({ profile }: { profile: Profile }) {
   const [depts, setDepts] = useState(profile.departmentIds);
   const [orgs, setOrgs] = useState(profile.organizationIds);
   const [cats, setCats] = useState(profile.categoryIds);
-  const [deptFilter, setDeptFilter] = useState("");
 
   const save = useMutation({
     mutationFn: () =>
@@ -53,8 +144,6 @@ function InterestsForm({ profile }: { profile: Profile }) {
     },
     onError: (e) => toast(e.message),
   });
-
-  const shownDepts = (departments.data ?? []).filter((d) => d.name.includes(deptFilter.trim()));
 
   return (
     <>
@@ -84,14 +173,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
             </div>
             <div className="form-group">
               <label htmlFor="primary">주전공</label>
-              <select id="primary" value={primary ?? ""} onChange={(e) => setPrimary(e.target.value ? Number(e.target.value) : null)}>
-                <option value="">선택 안 함</option>
-                {(departments.data ?? []).map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
+              <SheetSelect id="primary" options={departments.data ?? []} value={primary} onChange={setPrimary} placeholder="주전공을 선택해 주세요" />
               <span className="hint">복수전공·전과 예정이라면 아래 관심 학과에 추가하세요.</span>
             </div>
           </div>
@@ -102,17 +184,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
             <h2>관심 학과</h2>
             {depts.length > 0 && <span className="count">{depts.length}개 선택</span>}
           </div>
-          <div className="pick-body">
-            <input className="field" placeholder="학과 검색" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} aria-label="학과 검색" />
-            <div className="chips pick-scroll">
-              {shownDepts.map((d) => (
-                <button type="button" key={d.id} className={`chip ${depts.includes(d.id) ? "on" : ""}`} aria-pressed={depts.includes(d.id)} onClick={() => setDepts(toggle(depts, d.id))}>
-                  {d.name}
-                </button>
-              ))}
-              {shownDepts.length === 0 && <span className="hint">검색 결과가 없어요.</span>}
-            </div>
-          </div>
+          <PickList options={departments.data ?? []} value={depts} onToggle={(id) => setDepts(toggle(depts, id))} searchLabel="학과 검색" empty="등록된 학과가 없어요." />
         </section>
 
         <section className="section">
@@ -120,14 +192,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
             <h2>관심 학생자치단체</h2>
             {orgs.length > 0 && <span className="count">{orgs.length}개 선택</span>}
           </div>
-          <div className="chips pick-body">
-            {(councils.data ?? []).map((o) => (
-              <button type="button" key={o.id} className={`chip ${orgs.includes(o.id) ? "on" : ""}`} aria-pressed={orgs.includes(o.id)} onClick={() => setOrgs(toggle(orgs, o.id))}>
-                {o.name}
-              </button>
-            ))}
-            {councils.data?.length === 0 && <span className="hint">등록된 학생자치단체가 아직 없어요.</span>}
-          </div>
+          <PickList options={councils.data ?? []} value={orgs} onToggle={(id) => setOrgs(toggle(orgs, id))} empty="등록된 학생자치단체가 아직 없어요." />
         </section>
 
         <section className="section">
