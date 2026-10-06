@@ -3,8 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useToast } from "@/components/Providers";
+import Icon from "@/components/Icon";
 import ShareModal from "@/components/ShareModal";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
@@ -31,6 +32,22 @@ function Notices() {
   const tab = params.get("tab") ?? "all";
   const [q, setQ] = useState("");
   const [sharing, setSharing] = useState<AdminNotice | null>(null);
+  const [menu, setMenu] = useState<number | null>(null);
+  // close the row menu on any outside click / Escape
+  useEffect(() => {
+    if (menu === null) return;
+    const off = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as Element).closest(".more-wrap")) return;
+      setMenu(null);
+    };
+    document.addEventListener("click", off);
+    document.addEventListener("keydown", off);
+    return () => {
+      document.removeEventListener("click", off);
+      document.removeEventListener("keydown", off);
+    };
+  }, [menu]);
 
   const query = useQuery({
     queryKey: ["admin", "notices", tab, q],
@@ -76,8 +93,8 @@ function Notices() {
                 <th>카테고리</th>
                 <th>작성일</th>
                 <th>상태</th>
-                <th>조회 · 저장</th>
-                <th />
+                <th>반응</th>
+                <th aria-label="관리" />
               </tr>
             </thead>
             <tbody>
@@ -102,16 +119,41 @@ function Notices() {
                     조회 {n.viewCount} · 저장 {n.bookmarkCount}
                   </td>
                   <td className="col-actions">
-                    <div className="actions">
-                      <Link href={`/admin/notices/${n.id}/edit`}>
-                        <button>수정</button>
+                    <div className="row-actions">
+                      <Link href={`/admin/notices/${n.id}/edit`} className="row-edit">
+                        수정
                       </Link>
-                      {n.status === "PUBLISHED" && <button onClick={() => close.mutate(n.id)}>마감</button>}
-                      {(n.status === "PUBLISHED" || n.status === "CLOSED") && <button onClick={() => setSharing(n)}>공유</button>}
-                      <button onClick={() => duplicate.mutate(n.id)}>복제</button>
-                      <button className="delete" onClick={() => confirm("이 공지를 삭제할까요?") && remove.mutate(n.id)}>
-                        삭제
-                      </button>
+                      <div className="more-wrap">
+                        <button
+                          className="row-more"
+                          aria-label="더보기"
+                          aria-haspopup="menu"
+                          aria-expanded={menu === n.id}
+                          onClick={() => setMenu(menu === n.id ? null : n.id)}
+                        >
+                          <Icon name="dots" />
+                        </button>
+                        {menu === n.id && (
+                          <div className="row-menu" role="menu" onClick={() => setMenu(null)}>
+                            {n.status === "PUBLISHED" && (
+                              <button role="menuitem" onClick={() => close.mutate(n.id)}>
+                                마감 처리
+                              </button>
+                            )}
+                            {(n.status === "PUBLISHED" || n.status === "CLOSED") && (
+                              <button role="menuitem" onClick={() => setSharing(n)}>
+                                공유
+                              </button>
+                            )}
+                            <button role="menuitem" onClick={() => duplicate.mutate(n.id)}>
+                              복제
+                            </button>
+                            <button role="menuitem" className="danger-text" onClick={() => confirm("이 공지를 삭제할까요?") && remove.mutate(n.id)}>
+                              삭제
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>
