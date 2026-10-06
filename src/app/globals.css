@@ -344,3 +344,10 @@ span.chip.on{background:var(--coral-soft);color:var(--coral-strong)}
 .actions{flex-wrap:wrap}
 .nc-avatar{white-space:nowrap;overflow:hidden}
 .nc-avatar.long{font-size:12px;letter-spacing:-.04em}
+
+/* ---- notice lists: one white list, rows divided by a single line (no per-item cards) ---- */
+.notice-list,.grid.two:has(> .notice-card){gap:0;background:#fff;border-radius:20px;box-shadow:var(--card-shadow);overflow:hidden}
+.notice-list .notice-card,.grid.two > .notice-card{border-radius:0;background:transparent;box-shadow:none;padding:16px 14px 16px 16px;position:relative}
+.notice-list .notice-card:hover,.grid.two > .notice-card:hover{box-shadow:none;background:#FAF9FB}
+.notice-list .notice-card + .notice-card::before,.grid.two > .notice-card + .notice-card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:var(--line)}
+@media(min-width:821px){.shell .grid.two:has(> .notice-card){grid-template-columns:minmax(0,1fr)}}
