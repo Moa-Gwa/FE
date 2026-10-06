@@ -8,7 +8,7 @@ import { useToast } from "@/components/Providers";
 import StatusBadge from "@/components/StatusBadge";
 import { useCategories } from "@/hooks/useMeta";
 import { api, assetUrl } from "@/lib/api";
-import { dDay, fmtDate, orgInitials, orgTone } from "@/lib/format";
+import { dDay, fmtDate, orgInitials } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import type { FeedItem } from "@/types";
 
@@ -34,45 +34,39 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
   const href = `/notices/${item.source.toLowerCase()}/${item.id}`;
   const org = item.organization.name;
   const date = fmtDate(item.publishedAt).slice(5);
-  const sub = item.summary?.trim() || `${org} · 조회 ${item.viewCount}`;
+
+  const deadline = item.deadlineAt && item.status !== "CLOSED" && item.status !== "ENDED" ? dDay(item.deadlineAt) : null;
+  const meta = [item.category ? byCode(item.category) : null, org, date].filter(Boolean).join(" · ");
 
   return (
     <article className={`notice-card ${compact ? "compact" : ""}`}>
-      <div className={`nc-avatar ${orgTone(org)} ${orgInitials(org).length > 3 ? "long" : ""}`} aria-hidden="true">
+      <div className={`nc-avatar ${orgInitials(org).length > 3 ? "long" : ""}`} aria-hidden="true">
         {orgInitials(org)}
       </div>
-      <div className="nc-body">
-        <div className="nc-top">
-          {item.category && <span className="pill">{byCode(item.category)}</span>}
-          <StatusBadge status={item.status === "DEADLINE_SOON" && item.deadlineAt ? null : item.status} urgent={item.urgent} />
-          {item.deadlineAt && item.status !== "CLOSED" && item.status !== "ENDED" && (
-            <span className="pill hot">마감 {dDay(item.deadlineAt)}</span>
-          )}
-          <span className="nc-date">{date}</span>
-        </div>
-        <Link href={href} className="nc-link">
-          {!compact && item.thumbnail && <img className="thumb" src={assetUrl(item.thumbnail)} alt="" />}
-          <h3>{item.title}</h3>
-        </Link>
-        <div className="nc-bottom">
-          <span className="nc-sub">{sub}</span>
-          {isStudent ? (
-            <button
-              className={`save ${item.bookmarked ? "saved" : ""}`}
-              aria-label={item.bookmarked ? "저장 해제" : "저장"}
-              aria-pressed={item.bookmarked}
-              disabled={toggle.isPending}
-              onClick={() => toggle.mutate()}
-            >
-              <Icon name="bookmark" />
-            </button>
-          ) : (
-            <Link href={href} className="nc-go" aria-label="자세히 보기">
-              <Icon name="chevron" />
-            </Link>
-          )}
-        </div>
-      </div>
+      <Link href={href} className="nc-link nc-body">
+        <h3>{item.title}</h3>
+        <p className="nc-meta">
+          <StatusBadge status={item.status === "ONGOING" || (item.status === "DEADLINE_SOON" && deadline) ? null : item.status} urgent={item.urgent} />
+          {deadline && <span className="pill hot">마감 {deadline}</span>}
+          <span className="nc-sub">{meta}</span>
+        </p>
+      </Link>
+      {!compact && item.thumbnail && <img className="thumb" src={assetUrl(item.thumbnail)} alt="" />}
+      {isStudent ? (
+        <button
+          className={`save ${item.bookmarked ? "saved" : ""}`}
+          aria-label={item.bookmarked ? "저장 해제" : "저장"}
+          aria-pressed={item.bookmarked}
+          disabled={toggle.isPending}
+          onClick={() => toggle.mutate()}
+        >
+          <Icon name="bookmark" />
+        </button>
+      ) : (
+        <span className="nc-go" aria-hidden="true">
+          <Icon name="chevron" />
+        </span>
+      )}
     </article>
   );
 }

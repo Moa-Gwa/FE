@@ -345,31 +345,162 @@ span.chip.on{background:var(--coral-soft);color:var(--coral-strong)}
 .nc-avatar{white-space:nowrap;overflow:hidden}
 .nc-avatar.long{font-size:12px;letter-spacing:-.04em}
 
-/* ---- notice lists: one white list, rows divided by a single line (no per-item cards) ---- */
-.notice-list,.grid.two:has(> .notice-card){gap:0;background:#fff;border-radius:20px;box-shadow:var(--card-shadow);overflow:hidden}
-.notice-list .notice-card,.grid.two > .notice-card{border-radius:0;background:transparent;box-shadow:none;padding:16px 14px 16px 16px;position:relative}
-.notice-list .notice-card:hover,.grid.two > .notice-card:hover{box-shadow:none;background:#FAF9FB}
-.notice-list .notice-card + .notice-card::before,.grid.two > .notice-card + .notice-card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:var(--line)}
+
+/* =====================================================================
+   TDS (Toss Design System) structure — coral kept as the only accent
+   grey scale, flat white sections on grey, ListRow-style rows,
+   bare icons, underline tabs, small rectangular badges, no shadows.
+   (keep this block last)
+   ===================================================================== */
+:root{
+  --g50:#F9FAFB;--g100:#F2F4F6;--g200:#E5E8EB;--g300:#D1D6DB;--g400:#B0B8C1;--g500:#8B95A1;--g600:#6B7684;--g700:#4E5968;--g800:#333D4B;--g900:#191F28;
+  --ink:var(--g900);--ink-2:var(--g700);--sub:var(--g600);--faint:var(--g500);
+  --gray-soft:var(--g100);--gray-text:var(--g700);
+  --line:var(--g100);--bg:var(--g100);
+  --card-shadow:none;--shadow:none;--round:16px;
+}
+body{color:var(--g900)}
+
+/* shell */
+.m-bg{background:#E9ECEF}
+.m-shell{background:var(--g100);box-shadow:none}
+.main-m{padding:8px 20px 96px}
+
+/* top bar: plain, bare icons */
+.topbar.student{margin:0 -20px 4px;padding:0}
+.topbar.student .brandbar{padding:6px 12px 6px 20px;margin:0}
+.topbar.student .title-block{padding:14px 20px 18px}
+.topbar h1,.m-shell .topbar h1{font-size:24px;line-height:1.4;letter-spacing:-.03em;color:var(--g900)}
+.topbar p{font-size:14px;color:var(--g600);margin-top:4px}
+.quick{gap:0}
+.bar-icon{position:relative;width:40px;height:40px;display:grid;place-items:center;color:var(--g700);font-size:24px;background:none;border:0;box-shadow:none}
+.bar-icon:hover{color:var(--g900)}
+.notification-dot{right:8px;top:8px;width:6px;height:6px;box-shadow:none}
+.logo{color:var(--coral-strong)}
+
+/* hero (kept) — flat, sits inside the 20px gutter */
+.hero{margin:0;border-radius:20px;box-shadow:none}
+.search{border-radius:12px;box-shadow:none;background:#fff}
+.main-m > .search,.main-m label.search{background:#fff}
+
+/* sections = white blocks on grey (Toss home) */
+.section,.m-shell .section{margin:12px 0 0;padding:22px 0 10px;background:#fff;border-radius:20px}
+.m-shell .section{margin-left:-8px;margin-right:-8px}
+.section-heading{margin:0 0 6px;padding:0 20px}
+.section-heading h2{font-size:19px;letter-spacing:-.03em;color:var(--g900)}
+.link-btn,.section-heading button,.pill-link{display:inline-flex;align-items:center;gap:2px;height:auto;padding:4px 0;border:0;border-radius:0;background:none;font-size:14px;color:var(--g600)}
+.pill-link .svg-icon,.link-btn .svg-icon{width:14px;height:14px}
+.section .empty{margin:6px 20px 12px;border-radius:12px;background:var(--g50)}
+.empty{border-radius:16px;background:#fff;color:var(--g600);box-shadow:none}
+
+/* lists: one flat block; inside a section it inherits the section's white */
+.notice-list,.grid.two:has(> .notice-card){gap:0;background:#fff;border-radius:20px;box-shadow:none;overflow:hidden}
+.section .notice-list,.section .grid.two:has(> .notice-card){background:transparent;border-radius:0}
+.main-m > .notice-list{margin:0 -8px}
+
+/* ListRow: asset · title / description · trailing icon */
+.notice-card,.notice-list .notice-card,.grid.two > .notice-card{display:flex;align-items:center;gap:14px;padding:14px 16px 14px 20px;border:0;border-radius:0;background:transparent;box-shadow:none;position:relative}
+.notice-card:hover,.notice-list .notice-card:hover,.grid.two > .notice-card:hover{transform:none;box-shadow:none;background:var(--g50)}
+.notice-list .notice-card + .notice-card::before,.grid.two > .notice-card + .notice-card::before{content:none}
+.nc-avatar{width:40px;height:40px;flex:none;border-radius:12px;background:var(--g100);color:var(--g700);font-size:13px;letter-spacing:-.03em}
+.nc-avatar.long{font-size:11px}
+.nc-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.notice-card h3{margin:0;font-size:16px;line-height:1.45;letter-spacing:-.02em;color:var(--g800);-webkit-line-clamp:2}
+.notice-card.compact h3{-webkit-line-clamp:1;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.nc-meta{margin:0;display:flex;align-items:center;gap:4px;min-width:0}
+.nc-sub{flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nc-meta .pill + .nc-sub{margin-left:2px}
+.notice-card .thumb{width:52px;height:52px;flex:none;object-fit:cover;border-radius:10px;margin:0}
+.notice-card .save,.nc-go{margin:0;width:32px;height:32px;flex:none;display:grid;place-items:center;border:0;border-radius:0;background:none;color:var(--g400);font-size:20px}
+.notice-card .save.saved{background:none;color:var(--coral)}
+.notice-card .save.saved svg{fill:var(--coral)}
+.nc-go{font-size:16px}
+
+/* badge: small rectangle, weak fill */
+.pill{height:20px;padding:0 6px;border-radius:5px;font-size:11px;line-height:20px;background:var(--g100);color:var(--g600)}
+.pill.hot,.pill.pink,.pill.red{background:var(--coral-soft);color:var(--coral-strong)}
+.pill.gray,.pill.mint,.pill.amber{background:var(--g100);color:var(--g600)}
+.tag,.status{border-radius:5px;background:var(--g100);color:var(--g600)}
+
+/* more: full-width text row at the bottom of a list */
+.more-button{margin:4px 0 0;height:52px;border-radius:0;border-top:1px solid var(--g100);background:none;color:var(--g600);font-size:14px}
+
+/* home categories: icon + label grid, no tiles */
+.category-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px 0;padding:6px 8px 4px;overflow:visible}
+.category,.category.active,.category:hover{min-width:0;height:auto;padding:10px 0;gap:8px;border-radius:12px;background:none;box-shadow:none;color:var(--g700);font-size:12px;letter-spacing:-.02em}
+.category:hover{background:var(--g50)}
+.category span,.category:nth-child(even) span{width:auto;height:auto;border-radius:0;background:none;color:var(--coral-strong);font-size:26px}
+
+/* explore: underline tabs + flat filter buttons */
+.segmented{display:flex;gap:0;padding:0;margin:4px 0 0;border-radius:0;background:none;box-shadow:none;border-bottom:1px solid var(--g200)}
+.main-m > .segmented{margin-left:-20px;margin-right:-20px;padding:0 8px}
+.segmented button{flex:1;height:46px;border-radius:0;background:none;color:var(--g500);font-size:15px;position:relative}
+.segmented button.on{background:none;color:var(--g900)}
+.segmented button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--g900)}
+.chip-scroll{margin:0 -20px;padding:14px 20px 4px;gap:6px}
+.chip,.tab,.radio-row label{height:34px;padding:0 12px;border:0;border-radius:10px;background:#fff;color:var(--g700);font-size:14px;box-shadow:none}
+.chip.on,span.chip.on,.tab.on,.sheet .chip.on,.radio-row label:has(input:checked){background:var(--coral-strong);color:#fff}
+.chips .chip{background:var(--g100)}
+.chips .chip.on{background:var(--coral-strong);color:#fff}
+.list-toolbar{margin:10px 0 8px;padding:0;font-size:14px;color:var(--g700)}
+.list-toolbar .pill-link{color:var(--g700)}
+
+/* bottom sheet */
+.sheet-back{padding:0;background:rgba(0,0,0,.3)}
+.sheet{padding:10px 20px 20px;border:0;border-radius:24px 24px 0 0;background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.sheet-handle{background:var(--g200)}
+.sheet h2{padding:0;font-size:20px}
+.sheet-label{margin:20px 0 10px;font-size:14px;color:var(--g600)}
+.sheet .chips{padding:0}
+.radio-list{padding:0;border-radius:0;background:none}
+.radio-list label{height:54px;font-size:16px;color:var(--g800);border-bottom:0}
+.sheet-actions{grid-template-columns:1fr 2fr;gap:8px;margin-top:20px}
+
+/* buttons */
+.primary{border-radius:14px;background:var(--coral-strong);box-shadow:none;font-size:15px}
+.ghost,.sheet-actions .ghost{border-radius:14px;background:var(--g100);color:var(--g700);box-shadow:none;font-size:15px}
+.secondary,.danger,.actions button,.upload-item .ops button{border-radius:10px;background:var(--coral-soft);color:var(--coral-strong)}
+.sheet-actions button{height:56px;border-radius:16px}
+.logout-wide{height:56px;border-radius:16px;background:var(--g100);color:var(--g700)}
+.icon-button{border-radius:0;background:none;color:var(--g700)}
+.field,.select,.form-group input,.form-group textarea,.form-group select,.block-text{border-radius:12px;border-color:var(--g200)}
+
+/* login: flat list rows, no circles */
+.login-shell{background:var(--g100)}
+.login-hero{border-radius:20px;box-shadow:none}
+.role-buttons{gap:8px}
+.role{padding:18px 16px 18px 20px;border-radius:20px;background:#fff;box-shadow:none}
+.role:hover{box-shadow:none;background:var(--g50)}
+.role .role-icon,.role.admin .role-icon{width:40px;height:40px;border-radius:12px;background:var(--coral-soft);color:var(--coral-strong);font-size:22px}
+.role.admin .role-icon{background:var(--g100);color:var(--g700)}
+.role-go{width:auto;height:auto;border:0;border-radius:0;color:var(--g400);font-size:18px}
+.role-go .svg-icon{width:18px;height:18px}
+.dev-buttons button{border-radius:12px;border-color:var(--g300);color:var(--g600)}
+
+/* my */
+.profile-card{margin:0 0 0;padding:20px;border-radius:20px;background:#fff;box-shadow:none}
+.profile-card .avatar{width:52px;height:52px;background:var(--g100);color:var(--g700);box-shadow:none}
+.setting-row{border-bottom:1px solid var(--g100)}
+.section .form-card{padding:0 20px;background:none}
+.section .chips{padding:4px 20px 8px}
+.section > .hint{padding:0 20px}
+.switch{background:var(--g300)}
+
+/* shared surfaces */
+.form-card,.detail-card,.calendar,.stat,.table-wrap,.block-card,.modal{border-radius:20px;box-shadow:none}
+.insight,.deadline-card{border-radius:20px}
+.info-grid{border-radius:12px;background:var(--g50)}
+.thumb{border-radius:12px}
+.unread{background:#fff;box-shadow:inset 3px 0 0 var(--coral)}
+#toast{background:var(--g800);border-radius:14px}
+
+/* bottom tab bar: rectangle, grey inactive, coral active */
+.m-nav{bottom:0;left:50%;transform:translateX(-50%);width:min(100%,600px);height:auto;min-height:60px;padding:4px 4px max(4px,env(safe-area-inset-bottom));border:0;border-top:1px solid var(--g200);border-radius:0;background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.m-nav a{color:var(--g400);font-size:11px;gap:2px}
+.m-nav a.active{color:var(--coral-strong)}
+.m-nav a.active svg{fill:none}
+.side{background:#fff;backdrop-filter:none}
+.nav a.active,.nav button.active{background:var(--g100);color:var(--g900)}
+.mobile-nav{background:#fff;backdrop-filter:none}
+@media(max-width:820px){.mobile-nav{left:0;right:0;bottom:0;border:0;border-top:1px solid var(--g200);border-radius:0;box-shadow:none}.mobile-nav a{color:var(--g400)}.mobile-nav a.active{color:var(--coral-strong)}.main{padding-bottom:92px}}
 @media(min-width:821px){.shell .grid.two:has(> .notice-card){grid-template-columns:minmax(0,1fr)}}
-
-/* ---- less rounded: tighter radii everywhere, rectangular fixed tab bar ---- */
-:root{--round:12px}
-.hero,.login-hero,.profile-card,.insight,.deadline-card{border-radius:16px}
-.notice-list,.grid.two:has(> .notice-card),.empty,.form-card,.detail-card,.calendar,.stat,.table-wrap,.block-card,.modal,.radio-list,.segmented,.role,.notice-card{border-radius:12px}
-.notice-list .notice-card,.grid.two > .notice-card{border-radius:0}
-.category{border-radius:12px}.category span{border-radius:8px}
-.segmented button{border-radius:8px}
-.chip,.tab,.radio-row label{border-radius:8px}
-.pill,.tag,.status{border-radius:6px}
-.pill-link{border-radius:8px}
-.round-button,.icon-button{border-radius:12px}
-.nc-avatar,.role .role-icon,.avatar,.profile-card .avatar{border-radius:12px}
-.notice-card .save,.nc-go,.role-go{border-radius:8px}
-.search,.primary,.secondary,.ghost,.more-button,.logout-wide,.sheet-actions button,.dev-buttons button,.field,.select,.form-group input,.form-group textarea,.form-group select,.block-text,.thumb,.info-grid{border-radius:10px}
-.sheet{border-radius:16px 16px 0 0}
-.sheet-back{padding:0}
-
-/* bottom tab bar: full-width rectangle fixed to the bottom */
-.m-nav{bottom:0;left:50%;transform:translateX(-50%);width:min(100%,600px);height:auto;min-height:64px;padding:6px 4px max(6px,env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);border-radius:0;background:rgba(255,255,255,.94);box-shadow:none}
-.main-m{padding-bottom:96px}
-@media(max-width:820px){.mobile-nav{left:0;right:0;bottom:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;background:rgba(255,255,255,.94)}.main{padding-bottom:92px}}

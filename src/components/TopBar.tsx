@@ -23,10 +23,10 @@ export default function TopBar({ title, sub, actions }: { title: string; sub?: s
       {actions}
       {isStudent && (
         <>
-          <Link className="round-button" href="/explore" aria-label="검색">
+          <Link className="bar-icon" href="/explore" aria-label="검색">
             <Icon name="search" />
           </Link>
-          <Link className="round-button" href="/notifications" aria-label={count > 0 ? `알림, 읽지 않은 알림 ${count}개` : "알림"}>
+          <Link className="bar-icon" href="/notifications" aria-label={count > 0 ? `알림, 읽지 않은 알림 ${count}개` : "알림"}>
             <Icon name="bell" />
             {count > 0 && <span className="notification-dot" />}
           </Link>
