@@ -83,25 +83,25 @@ function Notices() {
             <tbody>
               {query.data.map((n) => (
                 <tr key={n.id}>
-                  <td>
+                  <td className="col-title">
                     <strong>{n.title}</strong>
                   </td>
-                  <td>
+                  <td className="col-cat">
                     {n.categoryCodes.map((c) => (
                       <span className="tag" key={c} style={{ marginRight: 4 }}>
                         {byCode(c)}
                       </span>
                     ))}
                   </td>
-                  <td>{fmtDate(n.createdAt)}</td>
-                  <td>
+                  <td className="col-date">{fmtDate(n.createdAt)}</td>
+                  <td className="col-status">
                     <span className={`status ${n.status === "DRAFT" ? "draft" : ""}`}>{STATUS_TEXT[n.status]}</span>{" "}
                     <StatusBadge status={n.status === "PUBLISHED" ? n.displayStatus : null} urgent={n.urgent} />
                   </td>
-                  <td>
-                    {n.viewCount} · {n.bookmarkCount}
+                  <td className="col-count">
+                    조회 {n.viewCount} · 저장 {n.bookmarkCount}
                   </td>
-                  <td>
+                  <td className="col-actions">
                     <div className="actions">
                       <Link href={`/admin/notices/${n.id}/edit`}>
                         <button>수정</button>
