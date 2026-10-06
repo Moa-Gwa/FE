@@ -587,3 +587,10 @@ body{color:var(--g900)}
 .pick-search{border:1px solid transparent}
 .pick-search:focus-within{border-color:var(--coral);background:#fff}
 .pick-search input,.pick-search input:focus{height:100%;padding:0;border:0;border-radius:0;background:none;box-shadow:none;outline:0}
+
+/* bookmark: darker on hover so it reads as tappable */
+.notice-card .save{transition:color .15s}
+.notice-card .save:hover:not(:disabled){color:var(--g700)}
+.notice-card .save.saved:hover:not(:disabled){color:var(--coral-strong)}
+.notice-card .save.saved:hover:not(:disabled) svg{fill:var(--coral-strong)}
+@media(hover:none){.notice-card .save:hover:not(:disabled){color:var(--g400)}.notice-card .save.saved:hover:not(:disabled){color:var(--coral)}.notice-card .save.saved:hover:not(:disabled) svg{fill:var(--coral)}}
