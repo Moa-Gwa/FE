@@ -750,3 +750,11 @@ body{color:var(--g900)}
   .shell .data-table td.col-date::after{content:" ·";color:var(--g400)}
   .shell .data-table td.col-actions{flex:none;margin:0 0 0 auto !important;width:auto}
 }
+
+/* admin schedule: type as colored text, no boxed badges */
+.sched-meta{margin:0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--g500)}
+.sched-meta b{font-weight:400}
+.sched-meta b::after{content:"·";margin-left:6px;color:var(--g400)}
+.type-deadline{color:var(--coral-strong)}
+.type-publish{color:#2272EB}
+.type-event{color:var(--lilac-strong)}

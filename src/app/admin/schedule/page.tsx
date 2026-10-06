@@ -38,11 +38,11 @@ export default function AdminSchedulePage() {
         <div className="notice-list">
           {items.map((i) => (
             <Link key={`${i.type}-${i.noticeId}`} href={`/admin/notices/${i.noticeId}/edit`} className="notice-card compact">
-              <div className="notice-card-top">
-                <span className={`pill ${i.type === "DEADLINE" ? "pink" : i.type === "PUBLISH" ? "amber" : ""}`}>{LABEL[i.type]}</span>
-                <span className="tag">{fmtDateTime(i.at)}</span>
-              </div>
               <h3>{i.title}</h3>
+              <p className="sched-meta">
+                <b className={`type-${i.type.toLowerCase()}`}>{LABEL[i.type]}</b>
+                <span>{fmtDateTime(i.at)}</span>
+              </p>
             </Link>
           ))}
         </div>
