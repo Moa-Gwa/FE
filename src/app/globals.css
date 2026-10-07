@@ -1000,3 +1000,8 @@ body{color:var(--g900)}
 /* copy block nudged toward the centre; illustration moves out a little to keep the gap */
 .home-top .hero-eyebrow,.home-top .hero h2,.home-top .hero p{margin-left:14px}
 .home-top .hero-art{right:-26px;width:166px}
+.home-top .hero h2{max-width:none;white-space:nowrap}
+/* two-line headline: slightly smaller so it clears the illustration */
+.home-top .hero h2{font-size:22px;line-height:1.45}
+.home-top .hero{min-height:220px}
+.home-top .hero-art{top:6px;right:-40px;width:158px}

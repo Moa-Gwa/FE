@@ -42,9 +42,7 @@ export default function StudentHome() {
         <img className="hero-art" src="/hero-illust.webp" alt="" />
         <div className="hero-eyebrow">MOA-GWA</div>
         <h2>
-          놓치기 쉬운
-          <br />
-          학교 소식,
+          놓치기 쉬운 학교 소식,
           <br />
           <em>모아과</em>에서 한눈에
         </h2>
