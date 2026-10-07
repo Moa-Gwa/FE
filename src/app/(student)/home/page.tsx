@@ -35,6 +35,7 @@ export default function StudentHome() {
 
   return (
     <>
+      <div className="home-top">
       <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." />
 
       <section className="hero">
@@ -62,6 +63,7 @@ export default function StudentHome() {
           <Icon name="search" /> <input name="q" placeholder="어떤 공지를 찾고 있나요?" aria-label="공지 검색" />
         </form>
       </section>
+      </div>
 
       <section className="section">
         <div className="section-heading">

@@ -928,3 +928,10 @@ body{color:var(--g900)}
 .tpl-foot button{height:44px;padding:0 18px;border-radius:12px;font-size:15px}
 .tpl-foot .ghost{background:var(--g100);color:var(--g700)}
 @media(max-width:720px){.tpl-body{grid-template-columns:minmax(0,1fr)}.tpl-list{display:flex;gap:4px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--g100)}.tpl-list button{white-space:nowrap}.tpl-list span{display:none}.tpl-foot .hint{display:none}}
+
+/* home: hero gradient fills the whole top (behind the header) and fades into the page */
+.home-top{position:relative;margin:-8px -20px 0;padding:8px 20px 8px;background:linear-gradient(180deg,rgba(242,244,246,0) 0%,rgba(242,244,246,0) 58%,var(--g100) 100%),var(--hero-grad)}
+.home-top .topbar.student{background:none}
+.home-top .hero{margin:0;padding:8px 0 28px;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.home-top .hero-art{top:-6px;right:0}
+.home-top .hero .search{background:#fff;box-shadow:0 4px 16px rgba(167,93,84,.08)}
