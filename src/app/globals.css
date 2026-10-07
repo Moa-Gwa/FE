@@ -997,3 +997,6 @@ body{color:var(--g900)}
 .home-top .hero-art{top:12px;right:-38px;width:172px}
 .home-top .hero-art{right:-12px}
 .home-top .hero::before{right:-56px}
+/* copy block nudged toward the centre; illustration moves out a little to keep the gap */
+.home-top .hero-eyebrow,.home-top .hero h2,.home-top .hero p{margin-left:14px}
+.home-top .hero-art{right:-26px;width:166px}
