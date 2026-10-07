@@ -39,8 +39,8 @@ export default function StudentHome() {
       <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
 
       <section className="hero">
-        <img className="hero-art" src="/moa-gwa-logo.png" alt="" />
-        <div className="hero-eyebrow">MOA-GWA NOTICE</div>
+        <img className="hero-art" src="/hero-illust.webp" alt="" />
+        <div className="hero-eyebrow">MOA-GWA</div>
         <h2>
           놓치기 쉬운
           <br />
@@ -49,9 +49,9 @@ export default function StudentHome() {
           <em>모아과</em>에서 한눈에
         </h2>
         <p>
-          중요한 학내 공지를 빠르고
+          중요한 공지부터 유익한 소식까지,
           <br />
-          간편하게 확인해 보세요.
+          지금 바로 확인해보세요.
         </p>
         <form
           className="search"
