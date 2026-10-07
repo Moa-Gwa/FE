@@ -945,5 +945,5 @@ body{color:var(--g900)}
 /* logo art: larger, bleeds off the right edge, sits in the gradient instead of floating on it */
 .home-top{overflow:hidden}
 .home-top .hero{padding-top:20px}
-.home-top .hero-art{top:6px;right:-14px;width:124px;transform:rotate(10deg);filter:none;opacity:.92;pointer-events:none}
+.home-top .hero-art{top:10px;right:22px;width:124px;transform:rotate(10deg);filter:none;opacity:.92;pointer-events:none}
 .home-top .hero h2,.home-top .hero p{position:relative;z-index:1}
