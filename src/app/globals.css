@@ -951,3 +951,4 @@ body{color:var(--g900)}
 .home-top{margin:-8px -20px 0;padding:8px 32px 8px}
 .home-top .topbar.student.home{margin:0 -8px 4px 0;padding:20px 0 0}
 .home-top .hero-art{right:30px}
+.home-top .hero-art{width:148px;top:2px;right:20px}
