@@ -1005,3 +1005,17 @@ body{color:var(--g900)}
 .home-top .hero h2{font-size:22px;line-height:1.45}
 .home-top .hero{min-height:220px}
 .home-top .hero-art{top:6px;right:-40px;width:158px}
+
+/* home top order: hero copy first, greeting below it, then search; bell pinned top-right */
+.home-top{padding-top:8px}
+.home-top .hero{padding:44px 0 8px;min-height:0}
+.home-top .topbar.student.home{position:static;margin:20px 0 0;padding:0}
+.home-top .topbar.student.home h1{font-size:17px;font-weight:600;line-height:1.4}
+.home-top .topbar.student.home p{font-size:13px;margin-top:2px}
+.home-top .home-bell{position:absolute;z-index:2;top:12px;right:16px;margin:0}
+.home-top > .search{position:relative;z-index:1;display:flex;margin:18px 0 28px;background:#fff;box-shadow:0 4px 16px rgba(167,93,84,.08)}
+.home-top .hero-art{top:34px}
+.home-top .hero::before{top:20px}
+.home-top .topbar.student.home .title-block{margin-left:14px}
+.home-top .hero-art{top:48px}
+.home-top .hero::before{top:32px}
