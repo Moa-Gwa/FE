@@ -966,3 +966,6 @@ body{color:var(--g900)}
   -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%);
           mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%)}
 .home-top::before{top:-10px}
+.home-top .hero-art{width:170px;top:-38px;right:10px;
+  -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%);
+          mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%)}
