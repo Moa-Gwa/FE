@@ -1019,3 +1019,21 @@ body{color:var(--g900)}
 .home-top .topbar.student.home .title-block{margin-left:14px}
 .home-top .hero-art{top:48px}
 .home-top .hero::before{top:32px}
+
+/* ===== home top v3 (reference): greeting → hero copy + calendar illustration → search ===== */
+.home-top .topbar.student.home{position:relative;display:flex;margin:0;padding:20px 0 0}
+.home-top .topbar.student.home .title-block{margin-left:0}
+.home-top .topbar.student.home h1{font-size:22px;font-weight:400;line-height:1.4}
+.home-top .topbar.student.home p{font-size:13px;margin-top:4px}
+.home-top .home-bell{position:static;margin:0 -8px 0 0}
+.home-top .hero{padding:44px 0 4px;min-height:0}
+.home-top .hero-eyebrow{display:none}
+.home-top .hero h2,.home-top .hero p{margin-left:0}
+.home-top .hero h2{max-width:none;white-space:normal;font-size:24px;line-height:1.5;font-weight:400;letter-spacing:-.04em;margin:0 0 14px}
+.home-top .hero h2 em{color:var(--coral-strong)}
+.home-top .hero p{font-size:13px;line-height:1.7;color:var(--g600);max-width:none}
+.home-top .hero::before{top:14px;right:-40px;width:240px;height:240px;background:radial-gradient(circle,rgba(232,224,250,.9) 0%,rgba(236,228,250,.55) 45%,rgba(240,232,248,0) 72%)}
+.home-top .hero-art{top:42px;right:-6px;width:156px;filter:drop-shadow(0 14px 22px rgba(122,92,200,.16))}
+.home-top > .search{margin:24px 0 28px}
+.home-top .hero-art{top:62px;right:-12px;width:180px}
+.home-top .hero::before{top:30px;right:-50px;width:260px;height:260px}
