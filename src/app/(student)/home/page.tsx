@@ -40,6 +40,7 @@ export default function StudentHome() {
 
       <section className="hero">
         <img className="hero-art" src="/moa-gwa-logo.png" alt="" />
+        <div className="hero-eyebrow">MOA-GWA NOTICE</div>
         <h2>
           놓치기 쉬운
           <br />

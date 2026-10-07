@@ -969,3 +969,15 @@ body{color:var(--g900)}
 .home-top .hero-art{width:170px;top:-38px;right:10px;
   -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%);
           mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%)}
+
+/* home hero text + illustration (reference style; no card) */
+.home-top .topbar.student.home h1{font-size:24px;font-weight:600;letter-spacing:-.03em}
+.home-top .hero{padding-top:28px}
+.hero-eyebrow{position:relative;z-index:1;margin:0 0 12px;font-size:12px;letter-spacing:.22em;color:var(--lilac-strong)}
+.home-top .hero h2{margin:0 0 12px;max-width:62%;font-size:24px;line-height:1.45;font-weight:700;letter-spacing:-.035em;color:var(--g900)}
+.home-top .hero h2 em{color:#B5666A}
+.home-top .hero p{font-size:13px;line-height:1.7;color:var(--g600)}
+/* illustration: upright, centred beside the copy, soft lilac halo behind it */
+.home-top::before{display:none}
+.home-top .hero::before{content:"";position:absolute;z-index:0;top:30px;right:-36px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(226,214,246,.95) 0%,rgba(233,222,247,.6) 45%,rgba(240,232,248,0) 72%);pointer-events:none}
+.home-top .hero-art{z-index:0;top:46px;right:-4px;width:158px;transform:none;opacity:1;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 14px 24px rgba(124,104,190,.18))}
