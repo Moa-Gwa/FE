@@ -962,3 +962,7 @@ body{color:var(--g900)}
 .home-top .topbar{position:relative;z-index:1}
 .home-top .hero-art{width:150px;top:4px;right:18px;transform:rotate(8deg);-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 10px 18px rgba(167,93,84,.10))}
 .home-top::before{top:30px;right:-40px;width:260px;height:260px}
+.home-top .hero-art{top:-30px;filter:none;
+  -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%);
+          mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%)}
+.home-top::before{top:-10px}
