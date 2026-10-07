@@ -952,3 +952,11 @@ body{color:var(--g900)}
 .home-top .topbar.student.home{margin:0 -8px 4px 0;padding:20px 0 0}
 .home-top .hero-art{right:30px}
 .home-top .hero-art{width:148px;top:2px;right:20px}
+/* illustration blends into the backdrop: soft glow behind, larger, cropped at the edge, edges fade out */
+.home-top::before{content:"";position:absolute;top:40px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(239,220,240,.9) 0%,rgba(246,224,226,.55) 40%,rgba(246,238,245,0) 70%);pointer-events:none}
+.home-top .hero{position:relative}
+.home-top .hero-art{z-index:0;width:196px;top:-26px;right:-40px;transform:rotate(12deg);opacity:.96;
+  -webkit-mask-image:radial-gradient(circle at 58% 42%,#000 52%,rgba(0,0,0,.5) 64%,transparent 76%);
+          mask-image:radial-gradient(circle at 58% 42%,#000 52%,rgba(0,0,0,.5) 64%,transparent 76%)}
+.home-top .hero .search{position:relative;z-index:1}
+.home-top .topbar{position:relative;z-index:1}
