@@ -947,3 +947,7 @@ body{color:var(--g900)}
 .home-top .hero{padding-top:20px}
 .home-top .hero-art{top:10px;right:22px;width:124px;transform:rotate(10deg);filter:none;opacity:.92;pointer-events:none}
 .home-top .hero h2,.home-top .hero p{position:relative;z-index:1}
+/* home top: wider side gutters so the copy + illustration sit closer to the center */
+.home-top{margin:-8px -20px 0;padding:8px 32px 8px}
+.home-top .topbar.student.home{margin:0 -8px 4px 0;padding:20px 0 0}
+.home-top .hero-art{right:30px}
