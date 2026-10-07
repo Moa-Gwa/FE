@@ -36,7 +36,7 @@ export default function StudentHome() {
   return (
     <>
       <div className="home-top">
-      <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." />
+      <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
 
       <section className="hero">
         <img className="hero-art" src="/moa-gwa-logo.png" alt="" />

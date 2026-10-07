@@ -935,3 +935,15 @@ body{color:var(--g900)}
 .home-top .hero{margin:0;padding:8px 0 28px;border-radius:0;background:none;box-shadow:none;overflow:visible}
 .home-top .hero-art{top:-6px;right:0}
 .home-top .hero .search{background:#fff;box-shadow:0 4px 16px rgba(167,93,84,.08)}
+
+/* home header: greeting + quiet bell, no logo row */
+.topbar.student.home{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 12px 0 20px}
+.topbar.student.home .title-block{padding:0 0 4px}
+.home-bell{margin-top:2px;color:var(--g600)}
+.home-bell .svg-icon{width:24px;height:24px;stroke-width:1.6}
+.home-bell .notification-dot{right:9px;top:8px;width:6px;height:6px;background:var(--coral);box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+/* logo art: larger, bleeds off the right edge, sits in the gradient instead of floating on it */
+.home-top{overflow:hidden}
+.home-top .hero{padding-top:20px}
+.home-top .hero-art{top:-4px;right:-46px;width:172px;transform:rotate(10deg);filter:none;opacity:.92;pointer-events:none}
+.home-top .hero h2,.home-top .hero p{position:relative;z-index:1}

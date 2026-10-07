@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { NotificationItem } from "@/types";
 
-export default function TopBar({ title, sub, actions }: { title: string; sub?: string; actions?: React.ReactNode }) {
+export default function TopBar({ title, sub, actions, home = false }: { title: string; sub?: string; actions?: React.ReactNode; home?: boolean }) {
   const session = useSession();
   const isStudent = session?.role === "STUDENT";
   const unread = useQuery({
@@ -34,6 +34,22 @@ export default function TopBar({ title, sub, actions }: { title: string; sub?: s
       )}
     </div>
   );
+
+  if (isStudent && home) {
+    // home: greeting on the left, notifications on the right (no logo row)
+    return (
+      <header className="topbar student home">
+        <div className="title-block">
+          <h1>{title}</h1>
+          {sub && <p>{sub}</p>}
+        </div>
+        <Link className="bar-icon home-bell" href="/notifications" aria-label={count > 0 ? `알림, 읽지 않은 알림 ${count}개` : "알림"}>
+          <Icon name="bell" />
+          {count > 0 && <span className="notification-dot" />}
+        </Link>
+      </header>
+    );
+  }
 
   if (isStudent) {
     return (
