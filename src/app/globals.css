@@ -991,3 +991,9 @@ body{color:var(--g900)}
 .home-top .hero::before{top:-20px;right:-92px;width:300px;height:300px;background:radial-gradient(circle,rgba(226,214,248,.95) 0%,rgba(232,222,248,.7) 42%,rgba(240,232,248,0) 70%)}
 .home-top .hero-art{top:-6px;right:-58px;width:196px;transform:none;opacity:1;filter:drop-shadow(0 16px 26px rgba(122,92,200,.18));-webkit-mask-image:none;mask-image:none}
 .home-top .hero .search{margin-top:24px}
+/* align the illustration with the copy block (eyebrow → subtitle), not the greeting above */
+.home-top .hero-art{top:18px;right:-44px;width:186px}
+.home-top .hero::before{top:0;right:-80px;width:280px;height:280px}
+.home-top .hero-art{top:12px;right:-38px;width:172px}
+.home-top .hero-art{right:-12px}
+.home-top .hero::before{right:-56px}
