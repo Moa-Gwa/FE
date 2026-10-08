@@ -35,22 +35,25 @@ export default function StudentHome() {
 
   return (
     <>
-      <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." />
+      <div className="home-top">
+        <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
 
-      <section className="hero">
-        <img className="hero-art" src="/moa-gwa-logo.png" alt="" />
-        <h2>
-          놓치기 쉬운
-          <br />
-          학교 소식,
-          <br />
-          <em>모아과</em>에서 한눈에
-        </h2>
-        <p>
-          중요한 학내 공지를 빠르고
-          <br />
-          간편하게 확인해 보세요.
-        </p>
+        <section className="hero">
+          <img className="hero-art" src="/hero-calendar.webp" alt="" />
+          <h2>
+            놓치기 쉬운
+            <br />
+            학교 소식,
+            <br />
+            <em>모아과</em>에서 한눈에
+          </h2>
+          <p>
+            중요한 학내 공지를 빠르고
+            <br />
+            간편하게 확인해 보세요.
+          </p>
+        </section>
+
         <form
           className="search"
           onSubmit={(e) => {
@@ -61,7 +64,7 @@ export default function StudentHome() {
         >
           <Icon name="search" /> <input name="q" placeholder="어떤 공지를 찾고 있나요?" aria-label="공지 검색" />
         </form>
-      </section>
+      </div>
 
       <section className="section">
         <div className="section-heading">

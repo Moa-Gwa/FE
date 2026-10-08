@@ -928,3 +928,112 @@ body{color:var(--g900)}
 .tpl-foot button{height:44px;padding:0 18px;border-radius:12px;font-size:15px}
 .tpl-foot .ghost{background:var(--g100);color:var(--g700)}
 @media(max-width:720px){.tpl-body{grid-template-columns:minmax(0,1fr)}.tpl-list{display:flex;gap:4px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--g100)}.tpl-list button{white-space:nowrap}.tpl-list span{display:none}.tpl-foot .hint{display:none}}
+
+/* home: hero gradient fills the whole top (behind the header) and fades into the page */
+.home-top{position:relative;margin:-8px -20px 0;padding:8px 20px 8px;background:linear-gradient(180deg,rgba(242,244,246,0) 0%,rgba(242,244,246,0) 58%,var(--g100) 100%),var(--hero-grad)}
+.home-top .topbar.student{background:none}
+.home-top .hero{margin:0;padding:8px 0 28px;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.home-top .hero-art{top:-6px;right:0}
+.home-top .hero .search{background:#fff;box-shadow:0 4px 16px rgba(167,93,84,.08)}
+
+/* home header: greeting + quiet bell, no logo row */
+.topbar.student.home{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 12px 0 20px}
+.topbar.student.home .title-block{padding:0 0 4px}
+.home-bell{margin-top:2px;color:var(--g600)}
+.home-bell .svg-icon{width:24px;height:24px;stroke-width:1.6}
+.home-bell .notification-dot{right:9px;top:8px;width:6px;height:6px;background:var(--coral);box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+/* logo art: larger, bleeds off the right edge, sits in the gradient instead of floating on it */
+.home-top{overflow:hidden}
+.home-top .hero{padding-top:20px}
+.home-top .hero-art{top:10px;right:22px;width:124px;transform:rotate(10deg);filter:none;opacity:.92;pointer-events:none}
+.home-top .hero h2,.home-top .hero p{position:relative;z-index:1}
+/* home top: wider side gutters so the copy + illustration sit closer to the center */
+.home-top{margin:-8px -20px 0;padding:8px 32px 8px}
+.home-top .topbar.student.home{margin:0 -8px 4px 0;padding:20px 0 0}
+.home-top .hero-art{right:30px}
+.home-top .hero-art{width:148px;top:2px;right:20px}
+/* illustration blends into the backdrop: soft glow behind, larger, cropped at the edge, edges fade out */
+.home-top::before{content:"";position:absolute;top:40px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(239,220,240,.9) 0%,rgba(246,224,226,.55) 40%,rgba(246,238,245,0) 70%);pointer-events:none}
+.home-top .hero{position:relative}
+.home-top .hero-art{z-index:0;width:196px;top:-26px;right:-40px;transform:rotate(12deg);opacity:.96;
+  -webkit-mask-image:radial-gradient(circle at 58% 42%,#000 52%,rgba(0,0,0,.5) 64%,transparent 76%);
+          mask-image:radial-gradient(circle at 58% 42%,#000 52%,rgba(0,0,0,.5) 64%,transparent 76%)}
+.home-top .hero .search{position:relative;z-index:1}
+.home-top .topbar{position:relative;z-index:1}
+.home-top .hero-art{width:150px;top:4px;right:18px;transform:rotate(8deg);-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 10px 18px rgba(167,93,84,.10))}
+.home-top::before{top:30px;right:-40px;width:260px;height:260px}
+.home-top .hero-art{top:-30px;filter:none;
+  -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%);
+          mask-image:radial-gradient(circle at 55% 45%,#000 58%,rgba(0,0,0,.6) 68%,transparent 80%)}
+.home-top::before{top:-10px}
+.home-top .hero-art{width:170px;top:-38px;right:10px;
+  -webkit-mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%);
+          mask-image:radial-gradient(circle at 55% 45%,#000 48%,rgba(0,0,0,.55) 62%,transparent 76%)}
+
+/* home hero text + illustration (reference style; no card) */
+.home-top .topbar.student.home h1{font-size:24px;font-weight:600;letter-spacing:-.03em}
+.home-top .hero{padding-top:28px}
+.hero-eyebrow{position:relative;z-index:1;margin:0 0 12px;font-size:12px;letter-spacing:.22em;color:var(--lilac-strong)}
+.home-top .hero h2{margin:0 0 12px;max-width:62%;font-size:24px;line-height:1.45;font-weight:700;letter-spacing:-.035em;color:var(--g900)}
+.home-top .hero h2 em{color:#B5666A}
+.home-top .hero p{font-size:13px;line-height:1.7;color:var(--g600)}
+/* illustration: upright, centred beside the copy, soft lilac halo behind it */
+.home-top::before{display:none}
+.home-top .hero::before{content:"";position:absolute;z-index:0;top:30px;right:-36px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(226,214,246,.95) 0%,rgba(233,222,247,.6) 45%,rgba(240,232,248,0) 72%);pointer-events:none}
+.home-top .hero-art{z-index:0;top:46px;right:-4px;width:158px;transform:none;opacity:1;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 14px 24px rgba(124,104,190,.18))}
+
+/* home hero — new illustration, reference layout (no card) */
+.hero-eyebrow{letter-spacing:.18em;font-size:13px;color:#B0707E;margin-bottom:14px}
+.home-top .hero{padding:24px 0 28px;min-height:250px}
+.home-top .hero h2{max-width:64%;font-size:26px;line-height:1.42;font-weight:700;letter-spacing:-.04em;margin-bottom:14px}
+.home-top .hero h2 em{color:#7A5CC8}
+.home-top .hero p{font-size:14px;line-height:1.7;color:var(--g600);max-width:70%}
+.home-top .hero::before{top:-20px;right:-92px;width:300px;height:300px;background:radial-gradient(circle,rgba(226,214,248,.95) 0%,rgba(232,222,248,.7) 42%,rgba(240,232,248,0) 70%)}
+.home-top .hero-art{top:-6px;right:-58px;width:196px;transform:none;opacity:1;filter:drop-shadow(0 16px 26px rgba(122,92,200,.18));-webkit-mask-image:none;mask-image:none}
+.home-top .hero .search{margin-top:24px}
+/* align the illustration with the copy block (eyebrow → subtitle), not the greeting above */
+.home-top .hero-art{top:18px;right:-44px;width:186px}
+.home-top .hero::before{top:0;right:-80px;width:280px;height:280px}
+.home-top .hero-art{top:12px;right:-38px;width:172px}
+.home-top .hero-art{right:-12px}
+.home-top .hero::before{right:-56px}
+/* copy block nudged toward the centre; illustration moves out a little to keep the gap */
+.home-top .hero-eyebrow,.home-top .hero h2,.home-top .hero p{margin-left:14px}
+.home-top .hero-art{right:-26px;width:166px}
+.home-top .hero h2{max-width:none;white-space:nowrap}
+/* two-line headline: slightly smaller so it clears the illustration */
+.home-top .hero h2{font-size:22px;line-height:1.45}
+.home-top .hero{min-height:220px}
+.home-top .hero-art{top:6px;right:-40px;width:158px}
+
+/* home top order: hero copy first, greeting below it, then search; bell pinned top-right */
+.home-top{padding-top:8px}
+.home-top .hero{padding:44px 0 8px;min-height:0}
+.home-top .topbar.student.home{position:static;margin:20px 0 0;padding:0}
+.home-top .topbar.student.home h1{font-size:17px;font-weight:600;line-height:1.4}
+.home-top .topbar.student.home p{font-size:13px;margin-top:2px}
+.home-top .home-bell{position:absolute;z-index:2;top:12px;right:16px;margin:0}
+.home-top > .search{position:relative;z-index:1;display:flex;margin:18px 0 28px;background:#fff;box-shadow:0 4px 16px rgba(167,93,84,.08)}
+.home-top .hero-art{top:34px}
+.home-top .hero::before{top:20px}
+.home-top .topbar.student.home .title-block{margin-left:14px}
+.home-top .hero-art{top:48px}
+.home-top .hero::before{top:32px}
+
+/* ===== home top v3 (reference): greeting → hero copy + calendar illustration → search ===== */
+.home-top .topbar.student.home{position:relative;display:flex;margin:0;padding:20px 0 0}
+.home-top .topbar.student.home .title-block{margin-left:0}
+.home-top .topbar.student.home h1{font-size:22px;font-weight:400;line-height:1.4}
+.home-top .topbar.student.home p{font-size:13px;margin-top:4px}
+.home-top .home-bell{position:static;margin:0 -8px 0 0}
+.home-top .hero{padding:44px 0 4px;min-height:0}
+.home-top .hero-eyebrow{display:none}
+.home-top .hero h2,.home-top .hero p{margin-left:0}
+.home-top .hero h2{max-width:none;white-space:normal;font-size:24px;line-height:1.5;font-weight:400;letter-spacing:-.04em;margin:0 0 14px}
+.home-top .hero h2 em{color:var(--coral-strong)}
+.home-top .hero p{font-size:13px;line-height:1.7;color:var(--g600);max-width:none}
+.home-top .hero::before{top:14px;right:-40px;width:240px;height:240px;background:radial-gradient(circle,rgba(232,224,250,.9) 0%,rgba(236,228,250,.55) 45%,rgba(240,232,248,0) 72%)}
+.home-top .hero-art{top:42px;right:-6px;width:156px;filter:drop-shadow(0 14px 22px rgba(122,92,200,.16))}
+.home-top > .search{margin:24px 0 28px}
+.home-top .hero-art{top:62px;right:-12px;width:180px}
+.home-top .hero::before{top:30px;right:-50px;width:260px;height:260px}
