@@ -8,10 +8,9 @@ import { api } from "@/lib/api";
 import { isFirebaseAuthConfigured } from "@/lib/firebase";
 import { getGoogleIdToken } from "@/lib/googleLogin";
 import { setSession } from "@/lib/session";
-import type { OrgRef, OrganizationView, Category } from "@/types";
+import type { OrgRef } from "@/types";
 
 const KAKAO_CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
-const SHOW_DEV_LOGIN = process.env.NODE_ENV !== "production";
 
 type Mode = "choose" | "student" | "admin";
 
@@ -20,25 +19,6 @@ export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("choose");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-
-  async function devStudent(formData: FormData) {
-    setBusy(true);
-    setError("");
-    try {
-      const nickname = String(formData.get("nickname") ?? "").trim();
-      const res = await api<{ token: string; nickname: string; onboarded: boolean }>("/auth/dev-student", {
-        method: "POST",
-        auth: false,
-        body: { nickname },
-      });
-      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: res.onboarded });
-      router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function admin(formData: FormData) {
     setBusy(true);
@@ -56,49 +36,6 @@ export default function LoginPage() {
     } finally {
       setBusy(false);
     }
-  }
-
-  /** Dev only: sign in as a ready-made student (interests pre-filled) and go straight to the home screen. */
-  async function quickStudent() {
-    setBusy(true);
-    setError("");
-    try {
-      const res = await api<{ token: string; nickname: string }>("/auth/dev-student", {
-        method: "POST",
-        auth: false,
-        body: { nickname: "체험학생" },
-      });
-      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: true });
-      const [depts, councils, categories] = await Promise.all([
-        api<OrganizationView[]>("/organizations?type=DEPARTMENT", { auth: false }),
-        api<OrganizationView[]>("/organizations?type=STUDENT_GOVERNMENT", { auth: false }),
-        api<Category[]>("/categories", { auth: false }),
-      ]);
-      const major = depts.find((d) => d.name === "컴퓨터정보공학부") ?? depts[0];
-      await api("/me/profile", {
-        method: "PUT",
-        body: {
-          nickname: res.nickname,
-          primaryDepartmentId: major?.id ?? null,
-          departmentIds: [],
-          organizationIds: councils.map((c) => c.id),
-          categoryIds: categories.filter((c) => ["EVENT", "SCHOLARSHIP"].includes(c.code)).map((c) => c.id),
-        },
-      });
-      router.replace("/home");
-    } catch (e) {
-      setSession(null);
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function quickAdmin() {
-    const form = new FormData();
-    form.set("loginId", "student-council");
-    form.set("password", "moagwa1234");
-    await admin(form);
   }
 
   /** 구글 로그인: Firebase로 구글 인증 → ID 토큰을 서버에 보내 우리 세션으로 교환한다. */
@@ -173,48 +110,32 @@ export default function LoginPage() {
           </div>
         )}
 
-        {mode === "choose" && SHOW_DEV_LOGIN && (
-          <div className="dev-buttons">
-            <button disabled={busy} onClick={quickStudent}>
-              학생으로 체험하기
-            </button>
-            <button disabled={busy} onClick={quickAdmin}>
-              관리자로 체험하기
-            </button>
-            <span className="hint">개발용 버튼이에요. 배포 환경에서는 보이지 않아요.</span>
-          </div>
-        )}
-
         {mode === "student" && (
           <div className="role-buttons">
             {isFirebaseAuthConfigured && (
               <button
-                className="primary"
+                type="button"
+                className="social-login google-login"
                 disabled={busy}
-                style={{ background: "#fff", color: "#3c4043", border: "1px solid #dadce0", boxShadow: "none" }}
                 onClick={google}
               >
-                Google로 시작하기
+                <img src="/auth/google-g-logo.png" alt="" aria-hidden="true" />
+                <span>Google로 로그인</span>
+                <span aria-hidden="true" />
               </button>
             )}
             {KAKAO_CLIENT_ID && (
-              <button className="primary" style={{ background: "#fee500", color: "#191919", boxShadow: "none" }} onClick={kakao}>
-                카카오로 시작하기
+              <button
+                type="button"
+                className="social-login kakao-login"
+                aria-label="카카오 로그인"
+                disabled={busy}
+                onClick={kakao}
+              >
+                <img src="/auth/kakao-login-complete-ko.svg" alt="" aria-hidden="true" />
               </button>
             )}
-            {SHOW_DEV_LOGIN && (
-              <form action={devStudent} className="stack" style={{ textAlign: "left" }}>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label htmlFor="nickname">개발용 로그인 (닉네임)</label>
-                  <input id="nickname" name="nickname" required maxLength={30} placeholder="예: 지민" />
-                  <span className="hint">카카오 앱 키가 없는 로컬 개발에서만 보입니다.</span>
-                </div>
-                <button className="primary" disabled={busy}>
-                  시작하기
-                </button>
-              </form>
-            )}
-            {!KAKAO_CLIENT_ID && !isFirebaseAuthConfigured && !SHOW_DEV_LOGIN && <p className="error">로그인이 아직 설정되지 않았습니다.</p>}
+            {!KAKAO_CLIENT_ID && !isFirebaseAuthConfigured && <p className="error">로그인이 아직 설정되지 않았습니다.</p>}
             <button className="link-btn" onClick={() => setMode("choose")}>
               ← 돌아가기
             </button>

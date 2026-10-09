@@ -287,10 +287,15 @@ h1,h2,h3,strong,b{font-weight:400}
 .role strong{font-size:15px}
 .role-go .svg-icon{width:14px;height:14px}
 .role-go{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:14px;color:var(--ink-2)}
-.dev-buttons{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dev-buttons button{height:44px;border:1px dashed #D9D6DB;border-radius:14px;background:transparent;color:var(--gray-text);font-size:12px}
-.dev-buttons .hint{grid-column:1/-1;text-align:center;font-size:11px;color:var(--faint)}
-
+.social-login{width:100%;height:46px;justify-self:center;padding:0;overflow:hidden}
+.social-login:disabled{cursor:not-allowed;opacity:.58}
+.google-login{display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:10px;padding:0 12px;border:1px solid #747775;border-radius:4px;background:#fff;color:#1f1f1f;font-family:"Google Sans",Roboto,Arial,sans-serif;font-size:14px;font-weight:500;line-height:20px}
+.google-login:hover:not(:disabled){background:#f8fafd}
+.google-login:focus-visible{outline:2px solid #0b57d0;outline-offset:2px}
+.google-login img{width:18px;height:18px;object-fit:contain}
+.kakao-login{display:grid;place-items:center;border:0;border-radius:12px;background:#fee500}
+.kakao-login img{display:block;width:224px;max-width:100%;height:46px}
+.kakao-login:focus-visible{outline:2px solid #191919;outline-offset:2px}
 /* my / settings */
 .profile-card{padding:20px 16px 20px 18px;border-radius:24px;background:var(--hero-grad);box-shadow:0 10px 28px rgba(167,93,84,.10)}
 .profile-card .avatar{width:64px;height:64px;font-size:20px;background:#fff;color:var(--coral-strong);box-shadow:0 8px 20px rgba(107,91,142,.16)}
@@ -466,7 +471,7 @@ body{color:var(--g900)}
 .field,.select,.form-group input,.form-group textarea,.form-group select,.block-text{border-radius:12px;border-color:var(--g200)}
 
 /* login: flat list rows, no circles */
-.login-shell{background:var(--g100)}
+.login-shell{background:var(--hero-grad)}
 .login-hero{border-radius:20px;box-shadow:none}
 .role-buttons{gap:8px}
 .role{padding:18px 16px 18px 20px;border-radius:20px;background:#fff;box-shadow:none}
@@ -475,8 +480,6 @@ body{color:var(--g900)}
 .role.admin .role-icon{background:var(--g100);color:var(--g700)}
 .role-go{width:auto;height:auto;border:0;border-radius:0;color:var(--g400);font-size:18px}
 .role-go .svg-icon{width:18px;height:18px}
-.dev-buttons button{border-radius:12px;border-color:var(--g300);color:var(--g600)}
-
 /* my */
 .profile-card{margin:0 0 0;padding:20px;border-radius:20px;background:#fff;box-shadow:none}
 .profile-card .avatar{width:52px;height:52px;background:var(--g100);color:var(--g700);box-shadow:none}
