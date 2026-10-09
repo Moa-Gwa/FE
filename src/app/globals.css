@@ -270,9 +270,9 @@ h1,h2,h3,strong,b{font-weight:400}
 .sheet-actions button{height:52px;border-radius:18px}
 
 /* login */
-.login-shell{background:var(--bg);padding:24px 16px}
+.login-shell{background:var(--hero-grad);padding:24px 16px}
 .login-card{width:min(100%,420px);padding:0;background:transparent;border:0;box-shadow:none}
-.login-hero{border-radius:28px;padding:32px 22px 28px;background:var(--hero-grad);box-shadow:0 12px 32px rgba(167,93,84,.10)}
+.login-hero{padding:32px 22px 28px;background:transparent}
 .login-hero .brand-orb{display:block;width:120px;height:auto;margin:0 auto 14px;background:none;border-radius:0;filter:drop-shadow(0 14px 22px rgba(107,91,142,.22))}
 .login-hero .brand-name{font-size:17px;color:var(--coral-strong)}
 .login-card h1{font-size:26px;letter-spacing:-.04em;margin:12px 0 10px}
