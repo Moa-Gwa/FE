@@ -43,5 +43,5 @@ export async function api<T>(path: string, { body, auth = true, headers, ...init
 }
 
 export function assetUrl(url: string): string {
-  return url.startsWith("/uploads/") ? `${API_BASE}${url}` : url;
+  return url.startsWith("/uploads/") || url.startsWith("/instagram/") ? `${API_BASE}${url}` : url;
 }
