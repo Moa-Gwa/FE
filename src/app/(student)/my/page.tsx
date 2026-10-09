@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import NoticeCard from "@/components/NoticeCard";
+import PushToggleRow from "@/components/PushToggleRow";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
 import { api } from "@/lib/api";
 import { STATUS_LABEL } from "@/lib/format";
+import { unregisterPushToken } from "@/lib/push";
 import { setSession, useSession } from "@/lib/session";
 import type { FeedItem, NotificationSettings, Profile } from "@/types";
 
@@ -118,6 +120,7 @@ export default function MyPage() {
           <h2>알림 설정</h2>
         </div>
         <div className="form-card">
+          <PushToggleRow />
           {SETTINGS.map(([key, label]) => (
             <div className="setting-row" key={key}>
               <span>{label}</span>
@@ -133,14 +136,15 @@ export default function MyPage() {
               </button>
             </div>
           ))}
-          <p className="hint">푸시(FCM) 알림은 준비 중이에요. 지금은 앱 안 알림센터로 전달돼요.</p>
+          <p className="hint">푸시 발송은 준비 중이에요. 켜 두시면 준비되는 대로 이 기기로 받아요. 앱 안 알림센터에는 항상 쌓여요.</p>
         </div>
       </section>
 
       <section className="section">
         <button
           className="logout-wide"
-          onClick={() => {
+          onClick={async () => {
+            await unregisterPushToken().catch(() => {}); // 로그아웃한 계정의 알림이 이 기기로 오지 않게 한다
             setSession(null);
             router.replace("/login");
           }}
