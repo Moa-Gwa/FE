@@ -410,7 +410,7 @@ body{color:var(--g900)}
 .nc-meta{margin:0;display:flex;align-items:center;gap:4px;min-width:0}
 .nc-sub{flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--g500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nc-meta .pill + .nc-sub{margin-left:2px}
-.notice-card .thumb{width:52px;height:52px;flex:none;object-fit:cover;border-radius:10px;margin:0}
+.notice-card .thumb{width:52px;height:65px;flex:none;object-fit:cover;object-position:top;border-radius:10px;margin:0}
 .notice-card .save,.nc-go{margin:0;width:32px;height:32px;flex:none;display:grid;place-items:center;border:0;border-radius:0;background:none;color:var(--g400);font-size:20px}
 .notice-card .save.saved{background:none;color:var(--coral)}
 .notice-card .save.saved svg{fill:var(--coral)}
