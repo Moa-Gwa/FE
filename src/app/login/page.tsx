@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
+import { isFirebaseAuthConfigured } from "@/lib/firebase";
+import { getGoogleIdToken } from "@/lib/googleLogin";
 import { setSession } from "@/lib/session";
 import type { OrgRef, OrganizationView, Category } from "@/types";
 
@@ -99,6 +101,26 @@ export default function LoginPage() {
     await admin(form);
   }
 
+  /** 구글 로그인: Firebase로 구글 인증 → ID 토큰을 서버에 보내 우리 세션으로 교환한다. */
+  async function google() {
+    setBusy(true);
+    setError("");
+    try {
+      const idToken = await getGoogleIdToken();
+      const res = await api<{ token: string; nickname: string; onboarded: boolean }>("/auth/google", {
+        method: "POST",
+        auth: false,
+        body: { idToken },
+      });
+      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: res.onboarded });
+      router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function kakao() {
     const redirect = `${window.location.origin}/login/kakao`;
     window.location.href =
@@ -165,6 +187,16 @@ export default function LoginPage() {
 
         {mode === "student" && (
           <div className="role-buttons">
+            {isFirebaseAuthConfigured && (
+              <button
+                className="primary"
+                disabled={busy}
+                style={{ background: "#fff", color: "#3c4043", border: "1px solid #dadce0", boxShadow: "none" }}
+                onClick={google}
+              >
+                Google로 시작하기
+              </button>
+            )}
             {KAKAO_CLIENT_ID && (
               <button className="primary" style={{ background: "#fee500", color: "#191919", boxShadow: "none" }} onClick={kakao}>
                 카카오로 시작하기
@@ -182,7 +214,7 @@ export default function LoginPage() {
                 </button>
               </form>
             )}
-            {!KAKAO_CLIENT_ID && !SHOW_DEV_LOGIN && <p className="error">로그인이 아직 설정되지 않았습니다.</p>}
+            {!KAKAO_CLIENT_ID && !isFirebaseAuthConfigured && !SHOW_DEV_LOGIN && <p className="error">로그인이 아직 설정되지 않았습니다.</p>}
             <button className="link-btn" onClick={() => setMode("choose")}>
               ← 돌아가기
             </button>
