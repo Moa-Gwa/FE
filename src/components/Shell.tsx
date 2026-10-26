@@ -13,6 +13,7 @@ type NavItem = [href: string, icon: IconName, label: string];
 const STUDENT_NAV: NavItem[] = [
   ["/home", "home", "홈"],
   ["/explore", "search", "탐색"],
+  ["/life", "bag", "생활"],
   ["/schedule", "calendar", "일정"],
   ["/my", "user", "MY"],
 ];

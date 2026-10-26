@@ -44,12 +44,12 @@ export default function LoginPage() {
     setError("");
     try {
       const idToken = await getGoogleIdToken();
-      const res = await api<{ token: string; nickname: string; onboarded: boolean }>("/auth/google", {
+      const res = await api<{ token: string; nickname: string; onboarded: boolean; verified: boolean }>("/auth/google", {
         method: "POST",
         auth: false,
         body: { idToken },
       });
-      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: res.onboarded });
+      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: res.onboarded, verified: res.verified });
       router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
     } catch (e) {
       setError((e as Error).message);

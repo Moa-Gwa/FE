@@ -56,7 +56,7 @@ export default function TopBar({ title, sub, actions, home = false }: { title: s
       <header className="topbar student">
         <div className="brandbar">
           <Link href="/home" aria-label="모아과 홈">
-            <Logo />
+            <Logo showName={false} />
           </Link>
           {quick}
         </div>

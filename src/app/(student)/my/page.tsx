@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Icon from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
 import PushToggleRow from "@/components/PushToggleRow";
 import { useToast } from "@/components/Providers";
@@ -86,6 +87,22 @@ export default function MyPage() {
           </div>
         </section>
       )}
+
+      <section className="section">
+        <div className="section-heading">
+          <h2>생활</h2>
+        </div>
+        <Link href="/life/my" className="setting-row">
+          <span>내 거래 (물품 · 관심 · 요청 · 같이 사기)</span>
+          <Icon name="chevron" size={18} />
+        </Link>
+        {!session?.verified && (
+          <Link href="/life/verify" className="setting-row">
+            <span>재학생 인증하기</span>
+            <Icon name="chevron" size={18} />
+          </Link>
+        )}
+      </section>
 
       <section className="section">
         <div className="section-heading">
