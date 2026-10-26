@@ -1178,4 +1178,4 @@ body{color:var(--g900)}
 .m-nav .svg-icon{width:28px;height:28px}
 
 /* hero logo: 무화과 로고(하늘색 톤) — 제목 오른쪽, 검색창 위 */
-.m-shell .home-top .hero .hero-art{z-index:0;top:16px;right:14px;width:112px;height:auto;transform:rotate(6deg);opacity:1;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 12px 18px rgba(63,120,214,.25));pointer-events:none}
+.m-shell .home-top .hero .hero-art{z-index:0;top:4px;right:6px;width:160px;height:auto;transform:rotate(6deg);opacity:1;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 12px 18px rgba(63,120,214,.25));pointer-events:none}
