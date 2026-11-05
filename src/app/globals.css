@@ -186,7 +186,7 @@ h1,h2,h3,strong,b{font-weight:400}
 .topbar h1{font-size:25px;letter-spacing:-.03em;line-height:1.35}
 .topbar p{font-size:13px}
 .topbar.student{display:block;margin:-8px -4px 18px;padding:0 0 0 4px}
-.topbar.student .brandbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px}
+.topbar.student .brandbar{display:flex;align-items:center;justify-content:flex-end;padding-bottom:12px}
 .topbar.student .title-block{padding:2px 0 14px}
 .m-shell .topbar{margin-bottom:18px}.m-shell .topbar h1{font-size:25px}
 

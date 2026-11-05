@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Icon from "@/components/Icon";
-import Logo from "@/components/Logo";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { NotificationItem } from "@/types";
@@ -54,12 +53,7 @@ export default function TopBar({ title, sub, actions, home = false }: { title: s
   if (isStudent) {
     return (
       <header className="topbar student">
-        <div className="brandbar">
-          <Link href="/home" aria-label="모아과 홈">
-            <Logo showName={false} />
-          </Link>
-          {quick}
-        </div>
+        <div className="brandbar">{quick}</div>
         <div className="title-block">
           <h1>{title}</h1>
           {sub && <p>{sub}</p>}
