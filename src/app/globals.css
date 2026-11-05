@@ -186,7 +186,7 @@ h1,h2,h3,strong,b{font-weight:400}
 .topbar h1{font-size:25px;letter-spacing:-.03em;line-height:1.35}
 .topbar p{font-size:13px}
 .topbar.student{display:block;margin:-8px -4px 18px;padding:0 0 0 4px}
-.topbar.student .brandbar{display:flex;align-items:center;justify-content:flex-end;padding-bottom:12px}
+.topbar.student .topbar-actions{display:flex;align-items:center;justify-content:flex-end;padding-bottom:12px}
 .topbar.student .title-block{padding:2px 0 14px}
 .m-shell .topbar{margin-bottom:18px}.m-shell .topbar h1{font-size:25px}
 
@@ -373,7 +373,7 @@ body{color:var(--g900)}
 
 /* top bar: plain, bare icons */
 .topbar.student{margin:0 -20px 4px;padding:0}
-.topbar.student .brandbar{padding:6px 12px 6px 20px;margin:0}
+.topbar.student .topbar-actions{padding:6px 12px 6px 20px;margin:0}
 .topbar.student .title-block{padding:14px 20px 18px}
 .topbar h1,.m-shell .topbar h1{font-size:24px;line-height:1.4;letter-spacing:-.03em;color:var(--g900)}
 .topbar p{font-size:14px;color:var(--g600);margin-top:4px}

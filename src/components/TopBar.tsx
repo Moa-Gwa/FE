@@ -53,7 +53,7 @@ export default function TopBar({ title, sub, actions, home = false }: { title: s
   if (isStudent) {
     return (
       <header className="topbar student">
-        <div className="brandbar">{quick}</div>
+        <div className="topbar-actions">{quick}</div>
         <div className="title-block">
           <h1>{title}</h1>
           {sub && <p>{sub}</p>}

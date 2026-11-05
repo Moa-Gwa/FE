@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-export default function Logo({ showName = true }: { showName?: boolean }) {
+export default function Logo() {
   return (
     <div className="logo">
       <img src="/moa-gwa-logo.png" alt="" />
-      {showName && <span>모아과</span>}
+      <span>모아과</span>
     </div>
   );
 }
