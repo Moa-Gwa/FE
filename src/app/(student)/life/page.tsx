@@ -14,20 +14,41 @@ import type { GroupBuyPage, MarketCategory, MarketItemPage } from "@/types";
 
 type Tab = "items" | "group";
 
+function MarketSearch({ label, onSearch }: { label: string; onSearch: (query: string) => void }) {
+  const [value, setValue] = useState("");
+  return (
+    <form className="life-search" role="search" aria-label={label} onSubmit={(e) => {
+      e.preventDefault();
+      onSearch(value.trim());
+    }}>
+      <Icon name="search" size={18} />
+      <input type="search" aria-label={label} placeholder={label} value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (!e.target.value) onSearch("");
+        }} />
+      {value && <button type="button" onClick={() => { setValue(""); onSearch(""); }}>초기화</button>}
+      <button type="submit">검색</button>
+    </form>
+  );
+}
+
 function Items() {
+  const [query, setQuery] = useState("");
   const [category, setCategory] = useState<MarketCategory | "">("");
   const [sort, setSort] = useState<"latest" | "price" | "popular">("latest");
   const list = useInfiniteQuery({
-    queryKey: ["market", "items", category, sort],
+    queryKey: ["market", "items", category, sort, query],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&sort=${sort}${category ? `&category=${category}` : ""}`),
+      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&sort=${sort}&q=${encodeURIComponent(query)}${category ? `&category=${category}` : ""}`),
     getNextPageParam: (last) => (last.hasNext ? last.page + 1 : undefined),
   });
   const items = list.data?.pages.flatMap((p) => p.items) ?? [];
 
   return (
     <>
+      <MarketSearch label="중고거래 제목·내용 검색" onSearch={setQuery} />
       <div className="life-card">
         <div className="life-chips" role="tablist" aria-label="카테고리">
           <button className={`life-chip ${category === "" ? "on" : ""}`} onClick={() => setCategory("")}>
@@ -50,7 +71,7 @@ function Items() {
         {list.isLoading && <p className="life-empty">불러오는 중…</p>}
         {list.isError && <p className="life-empty">{(list.error as Error).message}</p>}
         {!list.isLoading && !list.isError && items.length === 0 && (
-          <p className="life-empty">아직 올라온 물품이 없어요. 첫 물품을 올려 보세요.</p>
+          <p className="life-empty">{query ? "검색 결과가 없어요. 다른 검색어를 입력해 보세요." : "아직 올라온 물품이 없어요. 첫 물품을 올려 보세요."}</p>
         )}
         {items.map((item) => (
           <ItemRow key={item.id} item={item} />
@@ -72,17 +93,19 @@ function Items() {
 }
 
 function Groups() {
+  const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"RECRUITING" | "CLOSED">("RECRUITING");
   const list = useInfiniteQuery({
-    queryKey: ["market", "groups", status],
+    queryKey: ["market", "groups", status, query],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => api<GroupBuyPage>(`/market/group-buys?page=${pageParam}&size=20&status=${status}`),
+    queryFn: ({ pageParam }) => api<GroupBuyPage>(`/market/group-buys?page=${pageParam}&size=20&status=${status}&q=${encodeURIComponent(query)}`),
     getNextPageParam: (last) => (last.hasNext ? last.page + 1 : undefined),
   });
   const groups = list.data?.pages.flatMap((p) => p.items) ?? [];
 
   return (
     <>
+      <MarketSearch label="같이 사기 제목·내용 검색" onSearch={setQuery} />
       <div className="life-card">
         <div className="life-chips">
           <button className={`life-chip ${status === "RECRUITING" ? "on" : ""}`} onClick={() => setStatus("RECRUITING")}>
@@ -95,7 +118,7 @@ function Groups() {
         {list.isLoading && <p className="life-empty">불러오는 중…</p>}
         {list.isError && <p className="life-empty">{(list.error as Error).message}</p>}
         {!list.isLoading && !list.isError && groups.length === 0 && (
-          <p className="life-empty">{status === "RECRUITING" ? "모집 중인 같이 사기가 없어요. 직접 열어 보세요." : "마감된 모집이 없어요."}</p>
+          <p className="life-empty">{query ? "검색 결과가 없어요. 다른 검색어를 입력해 보세요." : status === "RECRUITING" ? "모집 중인 같이 사기가 없어요. 직접 열어 보세요." : "마감된 모집이 없어요."}</p>
         )}
         {groups.map((g) => (
           <GroupRow key={g.id} group={g} />

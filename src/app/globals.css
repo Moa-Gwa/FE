@@ -1179,3 +1179,8 @@ body{color:var(--g900)}
 
 /* hero logo: 무화과 로고(하늘색 톤) — 제목 오른쪽, 검색창 위 */
 .m-shell .home-top .hero .hero-art{z-index:0;top:4px;right:6px;width:160px;height:auto;transform:rotate(6deg);opacity:1;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 12px 18px rgba(63,120,214,.25));pointer-events:none}
+
+.life-search{display:flex;align-items:center;gap:10px;margin:16px 0;padding:10px 12px;background:var(--g100);border:1px solid transparent;border-radius:12px;color:var(--g600)}
+.life-search:focus-within{border-color:var(--coral)}
+.life-search input,.life-search input:focus{flex:1;min-width:0;width:0;padding:0;height:32px;border:0;outline:0;box-shadow:none;background:transparent;font:inherit;font-size:14px;color:var(--g900)}
+.life-search button{flex:none;padding:7px 9px;border-radius:8px;background:#fff;color:var(--g900);font-size:13px}
