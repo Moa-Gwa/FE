@@ -183,5 +183,85 @@ export interface Session {
   token: string;
   name: string;
   onboarded?: boolean;
+  /** 학교 메일로 재학생 인증을 마쳤는지. 생활 탭이 이 값을 확인한다. */
+  verified?: boolean;
   organization?: OrgRef;
+}
+
+/* ---- 생활거래 (중고거래 · 같이 사기) ---- */
+export type MarketCategory = "BOOK" | "ELECTRONICS" | "LIVING" | "CLOTHES" | "ETC";
+export type MarketStatus = "ON_SALE" | "RESERVED" | "SOLD";
+
+export interface MarketItemSummary {
+  id: number;
+  title: string;
+  price: number;
+  category: MarketCategory;
+  status: MarketStatus;
+  tradePlace: string | null;
+  thumbnail: string | null;
+  likeCount: number;
+  liked: boolean;
+  createdAt: string;
+}
+
+export interface MarketSeller {
+  id: number;
+  nickname: string;
+  department: string | null;
+}
+
+export interface MarketItemDetail extends Omit<MarketItemSummary, "thumbnail"> {
+  description: string;
+  imageUrls: string[];
+  viewCount: number;
+  mine: boolean;
+  seller: MarketSeller;
+}
+
+export interface MarketItemPage {
+  items: MarketItemSummary[];
+  page: number;
+  size: number;
+  hasNext: boolean;
+}
+
+export interface TradeRequestView {
+  id: number;
+  itemId: number;
+  itemTitle: string;
+  buyerId: number;
+  buyerNickname: string;
+  message: string | null;
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELED";
+  createdAt: string;
+}
+
+export interface GroupBuySummary {
+  id: number;
+  title: string;
+  unitPrice: number;
+  targetQuantity: number;
+  joinedQuantity: number;
+  deadlineAt: string;
+  pickupPlace: string | null;
+  imageUrl: string | null;
+  status: "RECRUITING" | "CLOSED" | "CANCELED";
+  hostNickname: string;
+  myQuantity: number;
+  createdAt: string;
+}
+
+export interface GroupBuyDetail {
+  summary: GroupBuySummary;
+  description: string;
+  mine: boolean;
+  participants: number;
+}
+
+export interface GroupBuyPage {
+  items: GroupBuySummary[];
+  page: number;
+  size: number;
+  hasNext: boolean;
 }

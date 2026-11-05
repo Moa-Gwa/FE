@@ -39,7 +39,7 @@ export default function StudentHome() {
         <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
 
         <section className="hero">
-          <img className="hero-art" src="/hero-calendar.webp" alt="" />
+          <img className="hero-art" src="/hero-logo.webp" alt="" />
           <h2>
             놓치기 쉬운
             <br />
