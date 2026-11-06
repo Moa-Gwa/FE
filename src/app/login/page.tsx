@@ -24,12 +24,12 @@ export default function LoginPage() {
     setBusy(true);
     setError("");
     try {
-      const res = await api<{ token: string; name: string; organization: OrgRef }>("/admin/auth/login", {
+      const res = await api<{ name: string; organization: OrgRef }>("/admin/auth/login", {
         method: "POST",
         auth: false,
         body: { loginId: formData.get("loginId"), password: formData.get("password") },
       });
-      setSession({ role: "ADMIN", token: res.token, name: res.name, organization: res.organization });
+      setSession({ role: "ADMIN", name: res.name, organization: res.organization });
       router.replace("/admin/dashboard");
     } catch (e) {
       setError((e as Error).message);
@@ -44,12 +44,12 @@ export default function LoginPage() {
     setError("");
     try {
       const idToken = await getGoogleIdToken();
-      const res = await api<{ token: string; nickname: string; onboarded: boolean; verified: boolean }>("/auth/google", {
+      const res = await api<{ nickname: string; onboarded: boolean; verified: boolean }>("/auth/google", {
         method: "POST",
         auth: false,
         body: { idToken },
       });
-      setSession({ role: "STUDENT", token: res.token, name: res.nickname, onboarded: res.onboarded, verified: res.verified });
+      setSession({ role: "STUDENT", name: res.nickname, onboarded: res.onboarded, verified: res.verified });
       router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
     } catch (e) {
       setError((e as Error).message);

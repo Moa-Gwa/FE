@@ -7,7 +7,12 @@ let cached: { raw: string | null; value: Session | null } = { raw: null, value: 
 
 function read(): Session | null {
   try {
-    const raw = window.localStorage.getItem(KEY);
+    let raw = window.localStorage.getItem(KEY);
+    if (raw?.includes('"token"')) {
+      // 쿠키 전환 이전 세션: 쿠키가 없어 어차피 재로그인이 필요하므로 저장된 토큰째 지운다.
+      window.localStorage.removeItem(KEY);
+      raw = null;
+    }
     if (raw !== cached.raw) {
       cached = { raw, value: raw ? (JSON.parse(raw) as Session) : null };
     }

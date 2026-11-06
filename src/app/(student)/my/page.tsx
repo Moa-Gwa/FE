@@ -10,10 +10,10 @@ import PushToggleRow from "@/components/PushToggleRow";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
-import { api } from "@/lib/api";
+import { api, logout } from "@/lib/api";
 import { STATUS_LABEL } from "@/lib/format";
 import { unregisterPushToken } from "@/lib/push";
-import { setSession, useSession } from "@/lib/session";
+import { useSession } from "@/lib/session";
 import type { FeedItem, NotificationSettings, Profile } from "@/types";
 
 const SETTINGS: [keyof NotificationSettings, string][] = [
@@ -162,7 +162,7 @@ export default function MyPage() {
           className="logout-wide"
           onClick={async () => {
             await unregisterPushToken().catch(() => {}); // 로그아웃한 계정의 알림이 이 기기로 오지 않게 한다
-            setSession(null);
+            await logout();
             router.replace("/login");
           }}
         >

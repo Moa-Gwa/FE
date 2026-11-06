@@ -180,7 +180,6 @@ export interface AdminScheduleItem {
 
 export interface Session {
   role: "STUDENT" | "ADMIN";
-  token: string;
   name: string;
   onboarded?: boolean;
   /** 학교 메일로 재학생 인증을 마쳤는지. 생활 탭이 이 값을 확인한다. */
