@@ -44,9 +44,9 @@ export default function VerifyPage() {
     onError: (e) => setError(e.message),
   });
   const confirm = useMutation({
-    mutationFn: () => api<{ verified: boolean; token: string }>("/me/verification/confirm", { method: "POST", body: { code } }),
-    onSuccess: (res) => {
-      if (session) setSession({ ...session, token: res.token, verified: true });
+    mutationFn: () => api<{ verified: boolean }>("/me/verification/confirm", { method: "POST", body: { code } }),
+    onSuccess: () => {
+      if (session) setSession({ ...session, verified: true });
       setError("");
       setStep(3);
     },

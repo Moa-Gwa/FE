@@ -6,7 +6,8 @@ import { useEffect } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
-import { setSession, useSession } from "@/lib/session";
+import { logout } from "@/lib/api";
+import { useSession } from "@/lib/session";
 
 type NavItem = [href: string, icon: IconName, label: string];
 
@@ -46,8 +47,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
 
   if (!session || session.role !== role) return null;
 
-  const logout = () => {
-    setSession(null);
+  const signOut = async () => {
+    await logout();
     router.replace("/login");
   };
 
@@ -92,7 +93,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
             <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
             {connected ? "실시간 연결됨" : "연결 중…"}
           </p>
-          <button className="logout" onClick={logout}>
+          <button className="logout" onClick={signOut}>
             로그아웃
           </button>
         </div>
