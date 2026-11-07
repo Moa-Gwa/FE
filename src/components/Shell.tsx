@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
+import { useChatConnection } from "@/hooks/useChat";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
 import { logout } from "@/lib/api";
 import { useSession } from "@/lib/session";
@@ -39,6 +40,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const router = useRouter();
   const pathname = usePathname();
   const connected = useNoticeStream();
+  // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
+  useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
   const nav = role === "STUDENT" ? STUDENT_NAV : ADMIN_NAV;
 
   useEffect(() => {

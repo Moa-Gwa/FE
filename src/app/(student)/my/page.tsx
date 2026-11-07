@@ -92,13 +92,26 @@ export default function MyPage() {
         <div className="section-heading">
           <h2>생활</h2>
         </div>
-        <Link href="/life/my" className="setting-row">
-          <span>내 거래 (물품 · 관심 · 요청 · 같이 사기)</span>
+        <Link href="/life/my" className="menu-row">
+          <span className="menu-row-body">
+            <strong>내 거래</strong>
+            <span>물품 · 관심 · 요청 · 같이 사기</span>
+          </span>
+          <Icon name="chevron" size={18} />
+        </Link>
+        <Link href="/life/chats" className="menu-row">
+          <span className="menu-row-body">
+            <strong>채팅</strong>
+            <span>거래·같이 사기 대화</span>
+          </span>
           <Icon name="chevron" size={18} />
         </Link>
         {!session?.verified && (
-          <Link href="/life/verify" className="setting-row">
-            <span>재학생 인증하기</span>
+          <Link href="/life/verify" className="menu-row">
+            <span className="menu-row-body">
+              <strong>재학생 인증하기</strong>
+              <span>학교 메일로 인증하면 생활 탭을 쓸 수 있어요</span>
+            </span>
             <Icon name="chevron" size={18} />
           </Link>
         )}
@@ -157,9 +170,8 @@ export default function MyPage() {
         </div>
       </section>
 
-      <section className="section">
-        <button
-          className="logout-wide"
+      <button
+          className="logout-text"
           onClick={async () => {
             await unregisterPushToken().catch(() => {}); // 로그아웃한 계정의 알림이 이 기기로 오지 않게 한다
             await logout();
@@ -168,7 +180,6 @@ export default function MyPage() {
         >
           로그아웃
         </button>
-      </section>
     </>
   );
 }

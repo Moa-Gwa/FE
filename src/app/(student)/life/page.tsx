@@ -7,6 +7,7 @@ import Icon from "@/components/Icon";
 import GroupRow from "@/components/market/GroupRow";
 import ItemRow from "@/components/market/ItemRow";
 import VerifyGate from "@/components/market/VerifyGate";
+import { useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
 import { CATEGORY_LABEL, CATEGORY_ORDER } from "@/lib/market";
 import { useSession } from "@/lib/session";
@@ -142,6 +143,7 @@ function Groups() {
 export default function LifePage() {
   const session = useSession();
   const [tab, setTab] = useState<Tab>("items");
+  const unread = useChatRooms().data?.reduce((sum, r) => sum + r.unread, 0) ?? 0;
 
   return (
     <>
@@ -159,9 +161,15 @@ export default function LifePage() {
           <p>가대생끼리 사고팔고, 같이 사요.</p>
         </div>
         {session?.verified && (
-          <Link href="/life/my" className="life-link">
-            내 거래
-          </Link>
+          <div className="life-head-links">
+            <Link href="/life/chats" className="life-link chat-link">
+              채팅
+              {unread > 0 && <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${unread}개`}>{unread > 99 ? "99+" : unread}</span>}
+            </Link>
+            <Link href="/life/my" className="life-link">
+              내 거래
+            </Link>
+          </div>
         )}
       </header>
       <VerifyGate>

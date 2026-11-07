@@ -1,12 +1,14 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
+import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
 import { GROUP_STATUS_LABEL, remaining, won } from "@/lib/market";
 import type { GroupBuyDetail } from "@/types";
@@ -16,7 +18,11 @@ function Detail({ id }: { id: string }) {
   const qc = useQueryClient();
   const [qty, setQty] = useState(1);
   const q = useQuery({ queryKey: ["market", "group", id], queryFn: () => api<GroupBuyDetail>(`/market/group-buys/${id}`) });
-  const refresh = () => qc.invalidateQueries({ queryKey: ["market"] });
+  const chatRoom = useChatRooms().data?.find((r) => r.type === "GROUP" && r.groupBuyId === Number(id));
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["market"] });
+    qc.invalidateQueries({ queryKey: CHAT_ROOMS_KEY }); // 참여·취소 시 단체방 입장 여부 변경
+  };
   const onError = (e: Error) => toast(e.message);
   const join = useMutation({
     mutationFn: () => api<GroupBuyDetail>(`/market/group-buys/${id}/join`, { method: "POST", body: { quantity: qty } }),
@@ -72,6 +78,27 @@ function Detail({ id }: { id: string }) {
         )}
         <p className="life-desc">{description || "설명이 없어요."}</p>
       </div>
+      {chatRoom && (
+        <div className="chat-rows single">
+          <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
+            <span className="chat-asset accent">
+              <Icon name="chat" size={20} />
+            </span>
+            <div className="chat-row-body">
+              <strong>단체 채팅방</strong>
+              <p className="chat-row-sub">{chatRoom.lastMessage ?? "참여자들과 수령 시간·장소를 정해 보세요."}</p>
+            </div>
+            {chatRoom.unread > 0 && (
+              <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${chatRoom.unread}개`}>
+                {chatRoom.unread > 99 ? "99+" : chatRoom.unread}
+              </span>
+            )}
+            <span className="chat-row-go">
+              <Icon name="chevron" size={18} />
+            </span>
+          </Link>
+        </div>
+      )}
 
       <div className="life-bar">
         {mine ? (
