@@ -1087,8 +1087,7 @@ body{color:var(--g900)}
 /* 폼 */
 .life-form{display:flex;flex-direction:column;gap:18px}
 .life-form label{margin:0;display:flex;flex-direction:column;gap:8px}
-.life-form input,.life-form textarea,.life-toolbar select{width:100%;box-sizing:border-box;border:1px solid transparent;border-radius:12px;background:var(--g100);font:inherit;font-size:16px;color:var(--g900);outline:0}
-.life-form input{height:52px;padding:0 16px}
+.life-form input,.life-form textarea,.life-form input{height:52px;padding:0 16px}
 .life-form textarea{padding:14px 16px;resize:none;line-height:1.5}
 .life-form input:focus,.life-form textarea:focus{border-color:var(--coral);background:#fff}
 .life-form .life-label{margin:0 0 -8px}
@@ -1107,16 +1106,14 @@ body{color:var(--g900)}
 .life-gate .life-btn{margin-top:14px}
 
 /* 칩 · 탭 · 정렬 */
-/* TDS 세그먼트 컨트롤: 회색 트랙 + 선택 항목만 흰색 */
-.life-seg{display:flex;gap:2px;margin:0 -8px;padding:3px;border-radius:12px;background:var(--g200)}
-.life-seg button{flex:1;height:40px;border:0;border-radius:10px;background:none;font:inherit;font-size:15px;color:var(--g600);cursor:pointer}
-.life-seg button.on{background:#fff;color:var(--g900);font-weight:600}
+.life-seg{display:flex;margin:0 -8px;border-bottom:1px solid var(--g200)}
+.life-seg button{flex:1;height:48px;border:0;background:none;font:inherit;font-size:16px;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.life-seg button.on{color:var(--g900);font-weight:600;border-bottom-color:var(--g900)}
 .life-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .life-chips.pad{margin:4px 0 0}
 .life-chip{flex:none;height:36px;padding:0 14px;border:0;border-radius:10px;background:var(--g100);color:var(--g700);font:inherit;font-size:14px;cursor:pointer}
 .life-chip.on{background:var(--coral-strong);color:#fff;font-weight:600}
 .life-toolbar{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px}
-.life-toolbar select{width:auto;height:32px;padding:0 8px;font-size:13px;background:none;color:var(--g600)}
 .life-more{width:100%;height:44px;margin-top:6px;border:0;border-radius:12px;background:var(--g100);color:var(--g700);font:inherit;font-size:14px;cursor:pointer}
 
 /* 목록 행 */
