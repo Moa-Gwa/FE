@@ -264,3 +264,45 @@ export interface GroupBuyPage {
   size: number;
   hasNext: boolean;
 }
+
+/* ---- 채팅 (중고거래 1:1 · 같이 사기 단체방) ---- */
+export interface ChatRoom {
+  id: number;
+  type: "TRADE" | "GROUP";
+  /** 거래 방은 물품명, 단체방은 모집명 */
+  title: string;
+  /** 거래 방의 상대 닉네임. 단체방은 null */
+  partner: string | null;
+  itemId: number | null;
+  groupBuyId: number | null;
+  lastMessage: string | null;
+  lastAt: string;
+  unread: number;
+}
+
+export interface ChatMessage {
+  id: number;
+  roomId: number;
+  senderId: number;
+  senderName: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface ChatReadState {
+  userId: number;
+  lastReadId: number;
+}
+
+export interface ChatMessagePage {
+  /** 오래된 순 */
+  messages: ChatMessage[];
+  hasMore: boolean;
+  reads: ChatReadState[];
+}
+
+export type ChatEvent =
+  | { type: "message"; roomId: number; message: ChatMessage; read: null }
+  | { type: "read"; roomId: number; message: null; read: ChatReadState }
+  /** 새 방 생성(예: 판매자가 거래 수락). 목록만 재조회 */
+  | { type: "room"; roomId: number; message: null; read: null };

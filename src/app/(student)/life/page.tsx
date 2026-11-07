@@ -7,12 +7,15 @@ import Icon from "@/components/Icon";
 import GroupRow from "@/components/market/GroupRow";
 import ItemRow from "@/components/market/ItemRow";
 import VerifyGate from "@/components/market/VerifyGate";
+import { useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
 import { CATEGORY_LABEL, CATEGORY_ORDER } from "@/lib/market";
 import { useSession } from "@/lib/session";
 import type { GroupBuyPage, MarketCategory, MarketItemPage } from "@/types";
 
 type Tab = "items" | "group";
+type Sort = "latest" | "popular" | "price";
+const SORT_LABEL: Record<Sort, string> = { latest: "최신순", popular: "관심순", price: "낮은 가격순" };
 
 function MarketSearch({ label, onSearch }: { label: string; onSearch: (query: string) => void }) {
   const [value, setValue] = useState("");
@@ -36,7 +39,8 @@ function MarketSearch({ label, onSearch }: { label: string; onSearch: (query: st
 function Items() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<MarketCategory | "">("");
-  const [sort, setSort] = useState<"latest" | "price" | "popular">("latest");
+  const [sort, setSort] = useState<Sort>("latest");
+  const [sorting, setSorting] = useState(false);
   const list = useInfiniteQuery({
     queryKey: ["market", "items", category, sort, query],
     initialPageParam: 0,
@@ -62,11 +66,10 @@ function Items() {
         </div>
         <div className="life-toolbar">
           <span className="life-sub">판매 중인 물품</span>
-          <select aria-label="정렬" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
-            <option value="latest">최신순</option>
-            <option value="popular">관심순</option>
-            <option value="price">낮은 가격순</option>
-          </select>
+          <button className="pill-link" onClick={() => setSorting(true)} aria-haspopup="dialog">
+            {SORT_LABEL[sort]}
+            <Icon name="down" size={14} />
+          </button>
         </div>
         {list.isLoading && <p className="life-empty">불러오는 중…</p>}
         {list.isError && <p className="life-empty">{(list.error as Error).message}</p>}
@@ -82,6 +85,30 @@ function Items() {
           </button>
         )}
       </div>
+      {sorting && (
+        <div className="sheet-back" onClick={() => setSorting(false)}>
+          <section className="sheet" role="dialog" aria-modal="true" aria-label="정렬" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-handle" />
+            <h2>정렬</h2>
+            <div className="radio-list">
+              {(Object.keys(SORT_LABEL) as Sort[]).map((value) => (
+                <label key={value}>
+                  {SORT_LABEL[value]}
+                  <input
+                    type="radio"
+                    name="life-sort"
+                    checked={sort === value}
+                    onChange={() => {
+                      setSort(value);
+                      setSorting(false);
+                    }}
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
       <div className="life-fab-wrap">
         <Link href="/life/new" className="life-fab">
           <Icon name="plus" size={18} />
@@ -142,6 +169,7 @@ function Groups() {
 export default function LifePage() {
   const session = useSession();
   const [tab, setTab] = useState<Tab>("items");
+  const unread = useChatRooms().data?.reduce((sum, r) => sum + r.unread, 0) ?? 0;
 
   return (
     <>
@@ -159,9 +187,15 @@ export default function LifePage() {
           <p>가대생끼리 사고팔고, 같이 사요.</p>
         </div>
         {session?.verified && (
-          <Link href="/life/my" className="life-link">
-            내 거래
-          </Link>
+          <div className="life-head-links">
+            <Link href="/life/chats" className="life-link chat-link">
+              채팅
+              {unread > 0 && <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${unread}개`}>{unread > 99 ? "99+" : unread}</span>}
+            </Link>
+            <Link href="/life/my" className="life-link">
+              내 거래
+            </Link>
+          </div>
         )}
       </header>
       <VerifyGate>

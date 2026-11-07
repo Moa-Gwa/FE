@@ -7,6 +7,7 @@ import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import ImagePicker from "@/components/market/ImagePicker";
 import VerifyGate from "@/components/market/VerifyGate";
+import { CHAT_ROOMS_KEY } from "@/hooks/useChat";
 import { api } from "@/lib/api";
 import type { GroupBuyDetail } from "@/types";
 
@@ -44,6 +45,7 @@ export default function NewGroupPage() {
       }),
     onSuccess: (g) => {
       qc.invalidateQueries({ queryKey: ["market"] });
+      qc.invalidateQueries({ queryKey: CHAT_ROOMS_KEY }); // 모집 생성 시 단체방 생성됨
       toast("모집을 열었어요.");
       router.replace(`/life/group/${g.summary.id}`);
     },

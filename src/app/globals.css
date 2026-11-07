@@ -178,7 +178,6 @@ h1,h2,h3,strong,b{font-weight:400}
 .more-button{margin-top:12px;height:52px;display:flex;align-items:center;justify-content:center;gap:4px;border-radius:18px;background:var(--coral-50);color:var(--coral-strong);font-size:14px}
 .more-button .svg-icon{width:16px;height:16px}
 .icon-button{width:44px;height:44px;border-radius:50%;background:transparent;color:var(--ink);font-size:16px}
-.logout-wide{width:100%;height:52px;border-radius:18px;background:var(--coral-50);color:var(--coral-strong);font-size:14px}
 
 /* top bar */
 .round-button{width:44px;height:44px;font-size:21px;box-shadow:0 4px 14px rgba(31,29,32,.07)}
@@ -466,7 +465,6 @@ body{color:var(--g900)}
 .ghost,.sheet-actions .ghost{border-radius:14px;background:var(--g100);color:var(--g700);box-shadow:none;font-size:15px}
 .secondary,.danger,.actions button,.upload-item .ops button{border-radius:10px;background:var(--coral-soft);color:var(--coral-strong)}
 .sheet-actions button{height:56px;border-radius:16px}
-.logout-wide{height:56px;border-radius:16px;background:var(--g100);color:var(--g700)}
 .icon-button{border-radius:0;background:none;color:var(--g700)}
 .field,.select,.form-group input,.form-group textarea,.form-group select,.block-text{border-radius:12px;border-color:var(--g200)}
 
@@ -1050,7 +1048,7 @@ body{color:var(--g900)}
 .life-head h1{display:flex;align-items:center;gap:8px;font-size:24px;line-height:1.4;letter-spacing:-.03em;color:var(--g900);margin:0}
 .life-head p{margin:4px 0 0;font-size:14px;color:var(--g600)}
 .life-link{font-size:14px;color:var(--g600);padding:6px 0;white-space:nowrap}
-.life-verified{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px;border-radius:6px;background:var(--coral-soft);color:var(--coral-strong);font-size:12px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.life-verified{display:inline-flex;align-items:center;gap:3px;height:22px;line-height:22px;vertical-align:middle;padding:0 8px;border-radius:6px;background:var(--coral-soft);color:var(--coral-strong);font-size:12px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
 .life-verified.big{height:30px;padding:0 12px;font-size:13px;margin:6px 0 18px}
 .life-back-row{display:flex;align-items:center;gap:4px;margin:0 -8px;padding:6px 0 10px}
 .life-back-row h1{margin:0;font-size:18px;letter-spacing:-.02em;color:var(--g900)}
@@ -1089,8 +1087,7 @@ body{color:var(--g900)}
 /* 폼 */
 .life-form{display:flex;flex-direction:column;gap:18px}
 .life-form label{margin:0;display:flex;flex-direction:column;gap:8px}
-.life-form input,.life-form textarea,.life-toolbar select{width:100%;box-sizing:border-box;border:1px solid transparent;border-radius:12px;background:var(--g100);font:inherit;font-size:16px;color:var(--g900);outline:0}
-.life-form input{height:52px;padding:0 16px}
+.life-form input,.life-form textarea,.life-form input{height:52px;padding:0 16px}
 .life-form textarea{padding:14px 16px;resize:none;line-height:1.5}
 .life-form input:focus,.life-form textarea:focus{border-color:var(--coral);background:#fff}
 .life-form .life-label{margin:0 0 -8px}
@@ -1115,9 +1112,8 @@ body{color:var(--g900)}
 .life-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .life-chips.pad{margin:4px 0 0}
 .life-chip{flex:none;height:36px;padding:0 14px;border:0;border-radius:10px;background:var(--g100);color:var(--g700);font:inherit;font-size:14px;cursor:pointer}
-.life-chip.on{background:var(--coral-soft);color:var(--coral-strong);box-shadow:inset 0 0 0 1px var(--coral)}
+.life-chip.on{background:var(--coral-strong);color:#fff;font-weight:600}
 .life-toolbar{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px}
-.life-toolbar select{width:auto;height:32px;padding:0 8px;font-size:13px;background:none;color:var(--g600)}
 .life-more{width:100%;height:44px;margin-top:6px;border:0;border-radius:12px;background:var(--g100);color:var(--g700);font:inherit;font-size:14px;cursor:pointer}
 
 /* 목록 행 */
@@ -1132,7 +1128,7 @@ body{color:var(--g900)}
 .life-item-foot{width:100%;display:flex;align-items:center;justify-content:space-between;margin-top:auto}
 .life-item-foot strong{font-size:16px;color:var(--g900)}
 .life-likes{display:inline-flex;align-items:center;gap:3px;font-size:13px;color:var(--g500)}
-.life-pill{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:600;background:var(--g100);color:var(--g600)}
+.life-pill{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:600;line-height:20px;vertical-align:middle;background:var(--g100);color:var(--g600)}
 .life-pill.on_sale{background:var(--coral-soft);color:var(--coral-strong)}
 .life-pill.reserved{background:#FFF4DB;color:#A8660B}
 .life-pill.sold{background:var(--g100);color:var(--g500)}
@@ -1184,3 +1180,53 @@ body{color:var(--g900)}
 .life-search:focus-within{border-color:var(--coral)}
 .life-search input,.life-search input:focus{flex:1;min-width:0;width:0;padding:0;height:32px;border:0;outline:0;box-shadow:none;background:transparent;font:inherit;font-size:14px;color:var(--g900)}
 .life-search button{flex:none;padding:7px 9px;border-radius:8px;background:#fff;color:var(--g900);font-size:13px}
+
+/* MY 맨 아래 로그아웃: 회색 바탕 위 텍스트 버튼 */
+.logout-text{display:block;margin:20px auto 0;padding:12px 16px;border:0;background:none;font:inherit;font-size:14px;color:var(--g500);cursor:pointer}
+.logout-text:hover{color:var(--g700)}
+/* 프로필 카드도 아래 섹션과 같은 폭(좌우 -8px) */
+.m-shell .profile-card{margin-left:-8px;margin-right:-8px}
+
+/* MY 메뉴 행: TDS ListRow (제목 · 설명 · 화살표) */
+.menu-row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px 14px 20px;border:0;background:none;font:inherit;text-align:left;color:var(--g400);text-decoration:none;cursor:pointer}
+.menu-row:hover{background:var(--g50)}
+.menu-row-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.menu-row-body strong{font-size:16px;font-weight:500;line-height:1.4;letter-spacing:-.02em;color:var(--g800)}
+.menu-row-body span{font-size:13px;line-height:1.4;color:var(--g500)}
+
+/* ---- 채팅: TDS 구조 (평평한 흰 블록, ListRow, 둥근 사각 에셋, 사각 배지) ---- */
+.life-head-links{display:flex;align-items:center;gap:14px}
+.chat-link{display:inline-flex;align-items:center;gap:6px}
+/* ListRow: 에셋 · 제목/설명 · 오른쪽 정보 */
+.chat-rows{margin:12px -8px 0;background:#fff;border-radius:20px;overflow:hidden}
+.chat-row{display:flex;align-items:center;gap:14px;padding:14px 16px 14px 20px;color:inherit;text-decoration:none}
+.chat-row:hover{background:var(--g50)}
+.chat-asset{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--g100);color:var(--g700);font-size:15px;font-weight:600}
+.chat-asset.accent{background:var(--coral-soft);color:var(--coral-strong)}
+.chat-row-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.chat-row-body strong{font-size:16px;font-weight:500;line-height:1.4;letter-spacing:-.02em;color:var(--g800);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-row-sub{margin:0;font-size:13px;line-height:1.4;color:var(--g500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-row-trail{flex:none;align-self:stretch;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;font-size:12px;color:var(--g500)}
+.chat-row-go{flex:none;color:var(--g400)}
+.chat-row .life-pill,.chat-link .life-pill{flex:none}
+.chat-rows.single .chat-row{padding-top:16px;padding-bottom:16px}
+/* 대화 */
+.chat-list{display:flex;flex-direction:column;gap:6px;height:calc(100dvh - 330px);min-height:240px;overflow-y:auto;margin:8px -8px 0;padding:8px 4px}
+.chat-more{align-self:stretch;height:44px;border:0;background:none;color:var(--g600);font:inherit;font-size:14px;cursor:pointer}
+.chat-day{margin:12px 0 6px;text-align:center;font-size:12px;color:var(--g500)}
+.chat-msg{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.chat-msg.mine{align-items:flex-end}
+.chat-name{margin-left:2px;font-size:13px;color:var(--g600)}
+.chat-line{display:flex;align-items:flex-end;gap:6px;max-width:78%}
+.chat-msg.mine .chat-line{flex-direction:row-reverse}
+.chat-bubble{margin:0;padding:10px 14px;border-radius:16px;background:#fff;color:var(--g900);font-size:15px;line-height:1.5;letter-spacing:-.01em;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-msg.mine .chat-bubble{background:var(--coral-strong);color:#fff}
+.chat-meta{display:flex;flex-direction:column;align-items:flex-end;flex:none;font-size:11px;line-height:1.4;color:var(--g500);white-space:nowrap}
+.chat-msg:not(.mine) .chat-meta{align-items:flex-start}
+.chat-meta em{font-style:normal}
+/* 하단 입력: TDS 텍스트 필드 + 버튼 */
+.chat-compose textarea{flex:1;min-width:0;max-height:120px;padding:12px 14px;border:0;border-radius:12px;background:var(--g100);color:var(--g900);font:inherit;font-size:15px;line-height:1.4;resize:none;outline:0}
+.chat-compose textarea::placeholder{color:var(--g400)}
+.chat-compose .life-btn.small{flex:none;height:48px}
+.chat-compose textarea{height:48px}
+.m-shell:has(.chat-compose) .main-m{padding-bottom:150px}

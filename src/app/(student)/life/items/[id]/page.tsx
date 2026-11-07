@@ -1,12 +1,14 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
+import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api, assetUrl } from "@/lib/api";
 import { CATEGORY_LABEL, REQUEST_LABEL, STATUS_LABEL, timeAgo, won } from "@/lib/market";
 import type { MarketItemDetail, MarketStatus, TradeRequestView } from "@/types";
@@ -25,7 +27,11 @@ function Detail({ id }: { id: string }) {
     queryFn: () => api<TradeRequestView[]>(`/market/items/${id}/requests`),
     enabled: !!mine,
   });
-  const refresh = () => qc.invalidateQueries({ queryKey: ["market"] });
+  const chatRoom = useChatRooms().data?.find((r) => r.type === "TRADE" && r.itemId === Number(id));
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["market"] });
+    qc.invalidateQueries({ queryKey: CHAT_ROOMS_KEY }); // 수락 시 채팅방 생성됨
+  };
   const onError = (e: Error) => toast(e.message);
 
   const like = useMutation({
@@ -78,6 +84,27 @@ function Detail({ id }: { id: string }) {
           <Thumb category={d.category} size={430} />
         )}
       </div>
+      {chatRoom && (
+        <div className="chat-rows single">
+          <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
+            <span className="chat-asset accent">
+              <Icon name="chat" size={20} />
+            </span>
+            <div className="chat-row-body">
+              <strong>{mine ? `${chatRoom.partner}님과 채팅` : "판매자와 채팅"}</strong>
+              <p className="chat-row-sub">{chatRoom.lastMessage ?? "거래가 수락됐어요. 약속을 잡아 보세요."}</p>
+            </div>
+            {chatRoom.unread > 0 && (
+              <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${chatRoom.unread}개`}>
+                {chatRoom.unread > 99 ? "99+" : chatRoom.unread}
+              </span>
+            )}
+            <span className="chat-row-go">
+              <Icon name="chevron" size={18} />
+            </span>
+          </Link>
+        </div>
+      )}
       <div className="life-card life-detail">
         <div className="life-seller">
           <span className="life-avatar">{d.seller.nickname.slice(0, 1)}</span>
