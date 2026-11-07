@@ -1230,3 +1230,4 @@ body{color:var(--g900)}
 .chat-compose .life-btn.small{flex:none;height:48px}
 .chat-compose textarea{height:48px}
 .m-shell:has(.chat-compose) .main-m{padding-bottom:150px}
+.chat-row .life-thumb{border-radius:12px}

@@ -275,6 +275,10 @@ export interface ChatRoom {
   partner: string | null;
   itemId: number | null;
   groupBuyId: number | null;
+  /** 물품 첫 사진 또는 모집 사진 */
+  thumbnail: string | null;
+  /** 사진 없을 때 대체 표시용. 단체방은 null */
+  category: MarketCategory | null;
   lastMessage: string | null;
   lastAt: string;
   unread: number;
