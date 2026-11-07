@@ -41,7 +41,7 @@ function Items() {
     queryKey: ["market", "items", category, sort, query],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&sort=${sort}&q=${encodeURIComponent(query)}${category ? `&category=${category}` : ""}`),
+      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&status=ON_SALE&sort=${sort}&q=${encodeURIComponent(query)}${category ? `&category=${category}` : ""}`),
     getNextPageParam: (last) => (last.hasNext ? last.page + 1 : undefined),
   });
   const items = list.data?.pages.flatMap((p) => p.items) ?? [];
