@@ -87,7 +87,7 @@ function Detail({ id }: { id: string }) {
       {chatRoom && (
         <div className="chat-rows single">
           <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
-            <span className="chat-asset accent">
+            <span className="chat-asset">
               <Icon name="chat" size={20} />
             </span>
             <div className="chat-row-body">
