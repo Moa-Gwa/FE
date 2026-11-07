@@ -1107,9 +1107,10 @@ body{color:var(--g900)}
 .life-gate .life-btn{margin-top:14px}
 
 /* 칩 · 탭 · 정렬 */
-.life-seg{display:flex;margin:0 -8px;border-bottom:1px solid var(--g200)}
-.life-seg button{flex:1;height:48px;border:0;background:none;font:inherit;font-size:16px;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
-.life-seg button.on{color:var(--g900);font-weight:600;border-bottom-color:var(--g900)}
+/* TDS 세그먼트 컨트롤: 회색 트랙 + 선택 항목만 흰색 */
+.life-seg{display:flex;gap:2px;margin:0 -8px;padding:3px;border-radius:12px;background:var(--g200)}
+.life-seg button{flex:1;height:40px;border:0;border-radius:10px;background:none;font:inherit;font-size:15px;color:var(--g600);cursor:pointer}
+.life-seg button.on{background:#fff;color:var(--g900);font-weight:600}
 .life-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .life-chips.pad{margin:4px 0 0}
 .life-chip{flex:none;height:36px;padding:0 14px;border:0;border-radius:10px;background:var(--g100);color:var(--g700);font:inherit;font-size:14px;cursor:pointer}
