@@ -62,7 +62,6 @@ export const ORG_INITIALS: Record<string, string> = {
   바이오메디컬화학공학과: "BMCE",
   인공지능학과: "AI",
   데이터사이언스학과: "데사",
-  의생명소프트웨어학과: "BMSW",
   바이오메디컬소프트웨어학과: "BMSW",
 
   // 예체능·교양·융합·기타
