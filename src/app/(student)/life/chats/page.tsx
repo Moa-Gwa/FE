@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
+import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
 import { useChatRooms } from "@/hooks/useChat";
-import { timeAgo } from "@/lib/market";
+import { timeAgo, unreadLabel } from "@/lib/market";
 
 function Rooms() {
   const rooms = useChatRooms();
@@ -17,9 +18,7 @@ function Rooms() {
     <div className="chat-rows">
       {rooms.data.map((r) => (
         <Link key={r.id} href={`/life/chats/${r.id}`} className="chat-row">
-          <span className={`chat-asset ${r.type === "GROUP" ? "accent" : ""}`}>
-            {r.type === "GROUP" ? <Icon name="users" size={20} /> : (r.partner ?? "?").slice(0, 1)}
-          </span>
+          <Thumb src={r.thumbnail} category={r.category ?? "LIVING"} size={40} />
           <div className="chat-row-body">
             <strong>{r.type === "GROUP" ? r.title : r.partner}</strong>
             <p className="chat-row-sub">
@@ -30,7 +29,7 @@ function Rooms() {
             <span>{timeAgo(r.lastAt)}</span>
             {r.unread > 0 && (
               <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${r.unread}개`}>
-                {r.unread > 99 ? "99+" : r.unread}
+                {unreadLabel(r.unread)}
               </span>
             )}
           </div>

@@ -10,7 +10,7 @@ import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
 import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api, assetUrl } from "@/lib/api";
-import { CATEGORY_LABEL, REQUEST_LABEL, STATUS_LABEL, timeAgo, won } from "@/lib/market";
+import { CATEGORY_LABEL, REQUEST_LABEL, STATUS_LABEL, timeAgo, unreadLabel, won } from "@/lib/market";
 import type { MarketItemDetail, MarketStatus, TradeRequestView } from "@/types";
 
 function Detail({ id }: { id: string }) {
@@ -87,7 +87,7 @@ function Detail({ id }: { id: string }) {
       {chatRoom && (
         <div className="chat-rows single">
           <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
-            <span className="chat-asset accent">
+            <span className="chat-asset">
               <Icon name="chat" size={20} />
             </span>
             <div className="chat-row-body">
@@ -96,7 +96,7 @@ function Detail({ id }: { id: string }) {
             </div>
             {chatRoom.unread > 0 && (
               <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${chatRoom.unread}개`}>
-                {chatRoom.unread > 99 ? "99+" : chatRoom.unread}
+                {unreadLabel(chatRoom.unread)}
               </span>
             )}
             <span className="chat-row-go">

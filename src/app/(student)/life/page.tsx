@@ -9,7 +9,7 @@ import ItemRow from "@/components/market/ItemRow";
 import VerifyGate from "@/components/market/VerifyGate";
 import { useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
-import { CATEGORY_LABEL, CATEGORY_ORDER } from "@/lib/market";
+import { CATEGORY_LABEL, CATEGORY_ORDER, unreadLabel } from "@/lib/market";
 import { useSession } from "@/lib/session";
 import type { GroupBuyPage, MarketCategory, MarketItemPage } from "@/types";
 
@@ -190,7 +190,7 @@ export default function LifePage() {
           <div className="life-head-links">
             <Link href="/life/chats" className="life-link chat-link">
               채팅
-              {unread > 0 && <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${unread}개`}>{unread > 99 ? "99+" : unread}</span>}
+              {unread > 0 && <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${unread}개`}>{unreadLabel(unread)}</span>}
             </Link>
             <Link href="/life/my" className="life-link">
               내 거래

@@ -10,7 +10,7 @@ import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
 import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
-import { GROUP_STATUS_LABEL, remaining, won } from "@/lib/market";
+import { GROUP_STATUS_LABEL, remaining, unreadLabel, won } from "@/lib/market";
 import type { GroupBuyDetail } from "@/types";
 
 function Detail({ id }: { id: string }) {
@@ -81,7 +81,7 @@ function Detail({ id }: { id: string }) {
       {chatRoom && (
         <div className="chat-rows single">
           <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
-            <span className="chat-asset accent">
+            <span className="chat-asset">
               <Icon name="chat" size={20} />
             </span>
             <div className="chat-row-body">
@@ -90,7 +90,7 @@ function Detail({ id }: { id: string }) {
             </div>
             {chatRoom.unread > 0 && (
               <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${chatRoom.unread}개`}>
-                {chatRoom.unread > 99 ? "99+" : chatRoom.unread}
+                {unreadLabel(chatRoom.unread)}
               </span>
             )}
             <span className="chat-row-go">

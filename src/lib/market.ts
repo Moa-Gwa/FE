@@ -29,6 +29,9 @@ export const GROUP_STATUS_LABEL: Record<GroupBuySummary["status"], string> = {
   CANCELED: "취소됨",
 };
 
+/** 안 읽은 수 표시. 9 초과는 "9+" */
+export const unreadLabel = (n: number) => (n > 9 ? "9+" : String(n));
+
 export const won = (n: number) => (n === 0 ? "나눔" : `${n.toLocaleString("ko-KR")}원`);
 
 /** "10분 전", "3시간 전", "어제", "10.05" */
