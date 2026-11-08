@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
-import StatusBadge from "@/components/StatusBadge";
 import { useCategories } from "@/hooks/useMeta";
 import { api, assetUrl } from "@/lib/api";
 import { dDay, fmtDate, orgInitials } from "@/lib/format";
@@ -37,17 +36,25 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
 
   const deadline = item.deadlineAt && item.status !== "CLOSED" && item.status !== "ENDED" ? dDay(item.deadlineAt) : null;
   const meta = [item.category ? byCode(item.category) : null, org, date].filter(Boolean).join(" · ");
+  // 상태는 배지 대신 메타 줄 글자로. 오늘 마감만 빨간 글자
+  const state = deadline
+    ? { text: deadline === "D-Day" ? "오늘 마감" : `마감 ${deadline}`, tone: deadline === "D-Day" ? "red" : "" }
+    : item.status === "UPCOMING"
+      ? { text: item.eventStartAt ? `${fmtDate(item.eventStartAt).slice(5)} 시작` : "예정", tone: "" }
+      : item.status === "CLOSED" || item.status === "ENDED"
+        ? { text: item.status === "CLOSED" ? "마감" : "종료", tone: "muted" }
+        : null;
 
   return (
-    <article className={`notice-card ${compact ? "compact" : ""}`}>
+    <article className={`notice-card ${compact ? "compact" : ""} ${item.urgent ? "urgent" : ""}`}>
       <div className={`nc-avatar ${orgInitials(org).length > 3 ? "long" : ""} ${orgInitials(org) === "가대" ? "sky" : ""}`} aria-hidden="true">
         {orgInitials(org)}
       </div>
       <Link href={href} className="nc-link nc-body">
         <h3>{item.title}</h3>
         <p className="nc-meta">
-          <StatusBadge status={item.status === "ONGOING" || (item.status === "DEADLINE_SOON" && deadline) ? null : item.status} urgent={item.urgent} />
-          {deadline && <span className="pill hot">마감 {deadline}</span>}
+          {item.urgent && <span className="nc-flag blue">중요</span>}
+          {state && <span className={`nc-flag ${state.tone}`}>{state.text}</span>}
           <span className="nc-sub">{meta}</span>
         </p>
       </Link>

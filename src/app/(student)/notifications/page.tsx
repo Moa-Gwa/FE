@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Badge from "@/components/Badge";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
@@ -50,8 +51,12 @@ export default function NotificationsPage() {
               }}
             >
               <div className="notice-card-top">
-                <span className={`pill ${n.type === "URGENT" ? "red" : ""}`}>{TYPE_LABEL[n.type] ?? n.type}</span>
-                {!n.read && <span className="pill pink">NEW</span>}
+                <Badge color={n.type === "URGENT" ? "blue" : "elephant"}>{TYPE_LABEL[n.type] ?? n.type}</Badge>
+                {!n.read && (
+                  <Badge color="blue" variant="fill" label="읽지 않은 알림">
+                    NEW
+                  </Badge>
+                )}
               </div>
               <h3>{n.title}</h3>
               <div className="notice-meta">
