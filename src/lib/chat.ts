@@ -21,7 +21,7 @@ function setConnected(value: boolean) {
 export function connectChat() {
   if (client) return;
   client = new Client({
-    brokerURL: `${API_BASE.replace(/^http/, "ws")}/ws`,
+    brokerURL: `${(API_BASE || window.location.origin).replace(/^http/, "ws")}/ws`,
     reconnectDelay: 3000,
     onConnect: () => {
       client?.subscribe("/user/queue/chat", (frame) => {
