@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import { useCategories } from "@/hooks/useMeta";
@@ -246,12 +247,16 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
         <div className="writer-inner">
           <div className="wp-label">학생에게 보이는 모습</div>
           <div className="wp-badges">
-            {urgent && <span className="pill hot">중요</span>}
-            {catNames.map((n) => (
-              <span className="pill" key={n}>
-                {n}
-              </span>
-            ))}
+            {urgent && (
+              <Badge color="blue" size="small">
+                중요
+              </Badge>
+            )}
+            <span className="tag-list">
+              {catNames.map((n) => (
+                <span key={n}>{n}</span>
+              ))}
+            </span>
           </div>
           <h1 className="wp-title">{title || <span className="wp-empty">제목</span>}</h1>
           {clean.length ? <BlocksView blocks={clean} /> : <p className="wp-empty">본문을 입력하면 여기에 보여요.</p>}

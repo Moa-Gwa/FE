@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -17,20 +18,18 @@ function Rooms() {
   return (
     <div className="chat-rows">
       {rooms.data.map((r) => (
-        <Link key={r.id} href={`/life/chats/${r.id}`} className="chat-row">
+        <Link key={r.id} href={`/life/chats/${r.id}`} className={`chat-row ${r.unread > 0 ? "has-unread" : ""}`}>
           <Thumb src={r.thumbnail} category={r.category ?? "LIVING"} size={40} />
           <div className="chat-row-body">
             <strong>{r.type === "GROUP" ? r.title : r.partner}</strong>
-            <p className="chat-row-sub">
-              {r.type === "GROUP" ? "같이 사기" : r.title} · {r.lastMessage ?? "아직 메시지가 없어요"}
-            </p>
+            <p className="chat-row-sub">{r.lastMessage ?? "아직 메시지가 없어요"}</p>
           </div>
           <div className="chat-row-trail">
             <span>{timeAgo(r.lastAt)}</span>
             {r.unread > 0 && (
-              <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${r.unread}개`}>
+              <Badge color="blue" label={`안 읽은 메시지 ${r.unread}개`}>
                 {unreadLabel(r.unread)}
-              </span>
+              </Badge>
             )}
           </div>
         </Link>

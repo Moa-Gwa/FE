@@ -12,11 +12,24 @@ const TINT: Record<MarketCategory, string> = {
   ETC: "#B3A2E8",
 };
 
-/** 사진이 없으면 카테고리 색과 아이콘으로 대신한다. */
-export default function Thumb({ src, category, size = 88, faded = false }: { src?: string | null; category: MarketCategory; size?: number; faded?: boolean }) {
+/** 사진이 없으면 카테고리 색과 아이콘으로 대신한다. veil: 예약 중·판매 완료처럼 썸네일을 어둡게 덮고 상태 글자 표시 */
+export default function Thumb({
+  src,
+  category,
+  size = 88,
+  faded = false,
+  veil,
+}: {
+  src?: string | null;
+  category: MarketCategory;
+  size?: number;
+  faded?: boolean;
+  veil?: string;
+}) {
   return (
     <span className={`life-thumb ${faded ? "faded" : ""}`} style={{ width: size, height: size, background: TINT[category] }}>
       {src ? <img src={assetUrl(src)} alt="" /> : <Icon name={ICON[category]} size={Math.round(size * 0.36)} />}
+      {veil && <span className="life-thumb-veil">{veil}</span>}
     </span>
   );
 }

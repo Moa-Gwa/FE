@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import { api } from "@/lib/api";
@@ -71,9 +72,11 @@ export default function VerifyPage() {
           </span>
           <h2>재학생 인증이 끝났어요</h2>
           <p>이제 생활 탭에서 중고거래와 같이 사기를 이용할 수 있어요.</p>
-          <span className="life-verified big">
-            <Icon name="shield" size={14} />
-            인증 완료 · {id.slice(0, 3)}***@{DOMAIN}
+          <span className="verify-done-badge">
+            <Badge color="blue" size="small">
+              <Icon name="shield" size={14} />
+              인증 완료 · {id.slice(0, 3)}***@{DOMAIN}
+            </Badge>
           </span>
           <Link href="/life" className="life-btn">
             생활 둘러보기

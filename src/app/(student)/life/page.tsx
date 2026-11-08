@@ -3,6 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
+import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import GroupRow from "@/components/market/GroupRow";
 import ItemRow from "@/components/market/ItemRow";
@@ -175,22 +176,18 @@ export default function LifePage() {
     <>
       <header className="life-head">
         <div>
-          <h1>
-            생활
-            {session?.verified && (
-              <span className="life-verified">
-                <Icon name="shield" size={12} />
-                재학생 인증
-              </span>
-            )}
-          </h1>
+          <h1>생활</h1>
           <p>가대생끼리 사고팔고, 같이 사요.</p>
         </div>
         {session?.verified && (
           <div className="life-head-links">
             <Link href="/life/chats" className="life-link chat-link">
               채팅
-              {unread > 0 && <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${unread}개`}>{unreadLabel(unread)}</span>}
+              {unread > 0 && (
+                <Badge color="blue" label={`안 읽은 메시지 ${unread}개`}>
+                  {unreadLabel(unread)}
+                </Badge>
+              )}
             </Link>
             <Link href="/life/my" className="life-link">
               내 거래

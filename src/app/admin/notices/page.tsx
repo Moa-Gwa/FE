@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useToast } from "@/components/Providers";
 import Icon from "@/components/Icon";
 import ShareModal from "@/components/ShareModal";
+import Badge from "@/components/Badge";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
@@ -104,16 +105,18 @@ function Notices() {
                     <strong>{n.title}</strong>
                   </td>
                   <td className="col-cat">
-                    {n.categoryCodes.map((c) => (
-                      <span className="tag" key={c} style={{ marginRight: 4 }}>
-                        {byCode(c)}
-                      </span>
-                    ))}
+                    <span className="tag-list">
+                      {n.categoryCodes.map((c) => (
+                        <span key={c}>{byCode(c)}</span>
+                      ))}
+                    </span>
                   </td>
                   <td className="col-date">{fmtDate(n.createdAt)}</td>
                   <td className="col-status">
-                    <span className={`status ${n.status === "DRAFT" ? "draft" : ""}`}>{STATUS_TEXT[n.status]}</span>{" "}
-                    <StatusBadge status={n.status === "PUBLISHED" ? n.displayStatus : null} urgent={n.urgent} />
+                    <span className="detail-badges">
+                      <Badge color={n.status === "PUBLISHED" ? "blue" : "elephant"}>{STATUS_TEXT[n.status]}</Badge>
+                      <StatusBadge status={n.status === "PUBLISHED" ? n.displayStatus : null} urgent={n.urgent} />
+                    </span>
                   </td>
                   <td className="col-count">
                     조회 {n.viewCount} · 저장 {n.bookmarkCount}

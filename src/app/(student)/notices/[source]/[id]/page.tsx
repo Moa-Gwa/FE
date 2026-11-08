@@ -80,13 +80,13 @@ export default function NoticePage() {
       {n && (
         <article className="detail-card">
           {!n.blocks?.length && <Carousel images={n.images} />}
-          <div className="chips">
-            {(n.categories.length ? n.categories : [null]).map((c) => (
-              <span key={c ?? "none"} className={`pill ${c === "EVENT" ? "pink" : ""}`}>
-                {byCode(c)}
-              </span>
-            ))}
-            <StatusBadge status={n.status} urgent={n.urgent} />
+          <div className="detail-badges">
+            <StatusBadge status={n.status} urgent={n.urgent} size="small" />
+            <span className="tag-list">
+              {(n.categories.length ? n.categories : [null]).map((c) => (
+                <span key={c ?? "none"}>{byCode(c)}</span>
+              ))}
+            </span>
           </div>
           <h1>{n.title}</h1>
           <div className="detail-info">

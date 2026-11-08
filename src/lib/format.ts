@@ -40,14 +40,6 @@ export const STATUS_LABEL: Record<DisplayStatus, string> = {
   ENDED: "종료",
 };
 
-export const STATUS_TONE: Record<DisplayStatus, string> = {
-  UPCOMING: "gray",
-  ONGOING: "gray",
-  DEADLINE_SOON: "hot",
-  CLOSED: "gray",
-  ENDED: "gray",
-};
-
 /** Avatar badge for an organization: the editable table in lib/orgInitials.ts first, else the first two letters. */
 export function orgInitials(name: string): string {
   const n = name.trim();

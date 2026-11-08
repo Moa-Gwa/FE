@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
+import Badge from "@/components/Badge";
 import GroupRow from "@/components/market/GroupRow";
 import ItemRow from "@/components/market/ItemRow";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -29,6 +30,32 @@ function Body({ tab }: { tab: Tab }) {
   if (q.isLoading) return <p className="life-empty">불러오는 중…</p>;
   if (q.isError) return <p className="life-empty">{(q.error as Error).message}</p>;
   if (!rows.length) return <p className="life-empty">아직 내역이 없어요.</p>;
+  // 내 물품은 거래 중 / 거래 완료로 묶어 묶음 제목이 상태를 대신함
+  if (tab === "items") {
+    const items = rows as MarketItemSummary[];
+    const groups: [string, MarketItemSummary[]][] = [
+      ["거래 중", items.filter((i) => i.status !== "SOLD")],
+      ["거래 완료", items.filter((i) => i.status === "SOLD")],
+    ];
+    return (
+      <>
+        {groups
+          .filter(([, list]) => list.length)
+          .map(([title, list]) => (
+            <section key={title} className="life-group">
+              <h2 className="life-group-title">
+                {title} <span>{list.length}</span>
+              </h2>
+              <div className="life-card">
+                {list.map((i) => (
+                  <ItemRow key={i.id} item={i} />
+                ))}
+              </div>
+            </section>
+          ))}
+      </>
+    );
+  }
   return (
     <div className="life-card">
       {rows.map((r) =>
@@ -38,7 +65,7 @@ function Body({ tab }: { tab: Tab }) {
               <strong>{(r as TradeRequestView).itemTitle}</strong>
               <p className="life-sub">{timeAgo((r as TradeRequestView).createdAt)}</p>
             </div>
-            <span className={`life-pill ${(r as TradeRequestView).status === "ACCEPTED" ? "on_sale" : "sold"}`}>{REQUEST_LABEL[(r as TradeRequestView).status]}</span>
+            <Badge color={(r as TradeRequestView).status === "ACCEPTED" ? "blue" : "elephant"}>{REQUEST_LABEL[(r as TradeRequestView).status]}</Badge>
           </Link>
         ) : tab === "groups" ? (
           <GroupRow key={r.id} group={r as GroupBuySummary} />

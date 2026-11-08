@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import Badge from "@/components/Badge";
 import Calendar from "@/components/Calendar";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
@@ -29,7 +30,7 @@ function EntryRow({ e }: { e: ScheduleEntry }) {
       <div className="nc-body">
         <h3>{e.title}</h3>
         <div className="nc-meta">
-          <span className={`pill ${deadline ? "hot" : ""}`}>{deadline ? "마감" : "행사"}</span>
+          <Badge color={deadline ? "yellow" : "elephant"}>{deadline ? "마감" : "행사"}</Badge>
           <span className="nc-sub">{[e.organizationName, e.location].filter(Boolean).join(" · ")}</span>
         </div>
       </div>

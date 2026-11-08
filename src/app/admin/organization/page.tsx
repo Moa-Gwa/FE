@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import Badge from "@/components/Badge";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
@@ -34,7 +35,7 @@ function OrgForm({ org }: { org: AdminOrg }) {
     >
       <div className="section-heading">
         <h2>단체 정보</h2>
-        <span className="pill">{ORG_TYPE_LABEL[org.type]}</span>
+        <Badge size="small">{ORG_TYPE_LABEL[org.type]}</Badge>
       </div>
       <div className="form-group">
         <label>단체명</label>
