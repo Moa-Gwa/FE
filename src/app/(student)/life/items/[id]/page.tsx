@@ -113,14 +113,12 @@ function Detail({ id }: { id: string }) {
             <strong>{d.seller.nickname}</strong>
             <p className="life-sub">{d.seller.department ?? "재학생"}</p>
           </div>
-          <Badge color="blue">
-            <Icon name="shield" size={12} />
-            재학생
-          </Badge>
         </div>
-        <Badge color={STATUS_COLOR[d.status]} size="small">
-          {STATUS_LABEL[d.status]}
-        </Badge>
+        {d.status !== "ON_SALE" && (
+          <Badge color={STATUS_COLOR[d.status]} size="small">
+            {STATUS_LABEL[d.status]}
+          </Badge>
+        )}
         <h2>{d.title}</h2>
         <p className="life-sub">
           {CATEGORY_LABEL[d.category]} · {timeAgo(d.createdAt)} · 조회 {d.viewCount}

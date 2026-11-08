@@ -176,15 +176,7 @@ export default function LifePage() {
     <>
       <header className="life-head">
         <div>
-          <h1>
-            생활
-            {session?.verified && (
-              <Badge color="blue">
-                <Icon name="shield" size={12} />
-                재학생 인증
-              </Badge>
-            )}
-          </h1>
+          <h1>생활</h1>
           <p>가대생끼리 사고팔고, 같이 사요.</p>
         </div>
         {session?.verified && (

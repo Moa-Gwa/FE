@@ -16,9 +16,8 @@ export const STATUS_LABEL: Record<MarketStatus, string> = {
   SOLD: "판매 완료",
 };
 
-/** 같은 뜻은 같은 색: 판매 중 blue, 예약 중 yellow, 판매 완료 elephant */
-export const STATUS_COLOR: Record<MarketStatus, "blue" | "yellow" | "elephant"> = {
-  ON_SALE: "blue",
+/** 판매 중은 기본 상태라 배지 없음. 예약 중 yellow, 판매 완료 elephant */
+export const STATUS_COLOR: Record<Exclude<MarketStatus, "ON_SALE">, "yellow" | "elephant"> = {
   RESERVED: "yellow",
   SOLD: "elephant",
 };
