@@ -4,13 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
 import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api, assetUrl } from "@/lib/api";
-import { CATEGORY_LABEL, REQUEST_LABEL, STATUS_LABEL, timeAgo, unreadLabel, won } from "@/lib/market";
+import { CATEGORY_LABEL, REQUEST_LABEL, STATUS_COLOR, STATUS_LABEL, timeAgo, unreadLabel, won } from "@/lib/market";
 import type { MarketItemDetail, MarketStatus, TradeRequestView } from "@/types";
 
 function Detail({ id }: { id: string }) {
@@ -95,9 +96,9 @@ function Detail({ id }: { id: string }) {
               <p className="chat-row-sub">{chatRoom.lastMessage ?? "거래가 수락됐어요. 약속을 잡아 보세요."}</p>
             </div>
             {chatRoom.unread > 0 && (
-              <span className="life-pill on_sale" aria-label={`안 읽은 메시지 ${chatRoom.unread}개`}>
+              <Badge color="blue" label={`안 읽은 메시지 ${chatRoom.unread}개`}>
                 {unreadLabel(chatRoom.unread)}
-              </span>
+              </Badge>
             )}
             <span className="chat-row-go">
               <Icon name="chevron" size={18} />
@@ -112,12 +113,14 @@ function Detail({ id }: { id: string }) {
             <strong>{d.seller.nickname}</strong>
             <p className="life-sub">{d.seller.department ?? "재학생"}</p>
           </div>
-          <span className="life-verified">
+          <Badge color="blue">
             <Icon name="shield" size={12} />
             재학생
-          </span>
+          </Badge>
         </div>
-        <span className={`life-pill ${d.status.toLowerCase()}`}>{STATUS_LABEL[d.status]}</span>
+        <Badge color={STATUS_COLOR[d.status]} size="small">
+          {STATUS_LABEL[d.status]}
+        </Badge>
         <h2>{d.title}</h2>
         <p className="life-sub">
           {CATEGORY_LABEL[d.category]} · {timeAgo(d.createdAt)} · 조회 {d.viewCount}

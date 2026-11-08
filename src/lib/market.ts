@@ -16,6 +16,13 @@ export const STATUS_LABEL: Record<MarketStatus, string> = {
   SOLD: "판매 완료",
 };
 
+/** 같은 뜻은 같은 색: 판매 중 blue, 예약 중 yellow, 판매 완료 elephant */
+export const STATUS_COLOR: Record<MarketStatus, "blue" | "yellow" | "elephant"> = {
+  ON_SALE: "blue",
+  RESERVED: "yellow",
+  SOLD: "elephant",
+};
+
 export const REQUEST_LABEL: Record<TradeRequestView["status"], string> = {
   PENDING: "답변 대기",
   ACCEPTED: "수락됨",
@@ -48,6 +55,9 @@ export function timeAgo(iso: string): string {
   const d = new Date(iso);
   return `${d.getMonth() + 1}.${String(d.getDate()).padStart(2, "0")}`;
 }
+
+/** 마감까지 하루 안 남음 */
+export const closingSoon = (iso: string) => new Date(iso).getTime() - Date.now() < 86_400_000;
 
 /** 마감까지 남은 시간: "2일 남음", "5시간 남음", "마감" */
 export function remaining(iso: string): string {
