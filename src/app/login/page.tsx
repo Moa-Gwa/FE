@@ -6,7 +6,6 @@ import { useState } from "react";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { isFirebaseAuthConfigured } from "@/lib/firebase";
-import { getGoogleIdToken } from "@/lib/googleLogin";
 import { setSession } from "@/lib/session";
 import type { OrgRef } from "@/types";
 
@@ -38,24 +37,9 @@ export default function LoginPage() {
     }
   }
 
-  /** 구글 로그인: Firebase로 구글 인증 → ID 토큰을 서버에 보내 우리 세션으로 교환한다. */
-  async function google() {
+  function google() {
     setBusy(true);
-    setError("");
-    try {
-      const idToken = await getGoogleIdToken();
-      const res = await api<{ nickname: string; onboarded: boolean; verified: boolean }>("/auth/google", {
-        method: "POST",
-        auth: false,
-        body: { idToken },
-      });
-      setSession({ role: "STUDENT", name: res.nickname, onboarded: res.onboarded, verified: res.verified });
-      router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
+    router.push("/login/google");
   }
 
   function kakao() {
@@ -80,6 +64,7 @@ export default function LoginPage() {
         </div>
 
         {error && <p className="error" style={{ marginTop: 18 }}>{error}</p>}
+        {busy && <p role="status">로그인 처리 중입니다…</p>}
 
         {mode === "choose" && (
           <div className="role-buttons">
