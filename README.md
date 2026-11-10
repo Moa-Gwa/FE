@@ -50,6 +50,8 @@
 
   NEXT_PUBLIC_KAKAO_CLIENT_ID=
 
+  NEXT_PUBLIC_TOSS_CLIENT_KEY=   # 토스페이먼츠 결제위젯 클라이언트 키(test_gck_/live_gck_)
+
   ## 로그인
 
   - Google 로그인: Firebase Authentication 사용
