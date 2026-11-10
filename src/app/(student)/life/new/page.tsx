@@ -22,6 +22,7 @@ export default function NewItemPage() {
   const [category, setCategory] = useState<MarketCategory>("BOOK");
   const [place, setPlace] = useState("");
   const [desc, setDesc] = useState("");
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const create = useMutation({
     mutationFn: () =>
@@ -49,10 +50,18 @@ export default function NewItemPage() {
           className="life-card life-form"
           onSubmit={(e) => {
             e.preventDefault();
+            if (!images.length) return setPhotoError("사진을 1장 이상 올려 주세요.");
             create.mutate();
           }}
         >
-          <ImagePicker urls={images} onChange={setImages} />
+          <ImagePicker
+            urls={images}
+            onChange={(u) => {
+              setImages(u);
+              if (u.length) setPhotoError(null);
+            }}
+          />
+          <InlineError error={photoError} />
           <label>
             제목
             <input value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} placeholder="무엇을 파시나요?" required />

@@ -258,6 +258,8 @@ export interface GroupBuyDetail {
   participants: number;
   /** 결제 후 참여(유료 모집이고 서버 결제 기능이 켜진 경우) */
   paymentRequired: boolean;
+  /** 참가비(원). 결제가 필요 없으면 0. 물품 대금은 주최자와 직접 정산 */
+  participationFee: number;
   /** 내 참여가 결제 완료 상태인지(결제 기능 도입 전 참여자는 false) */
   myPaid: boolean;
 }
