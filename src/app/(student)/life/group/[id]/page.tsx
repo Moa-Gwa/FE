@@ -125,8 +125,13 @@ function Detail({ id }: { id: string }) {
                 모집 취소
               </button>
             )}
-            <button className="life-btn" disabled={!open || close.isPending} onClick={() => confirm("지금 모집을 마감할까요?") && close.mutate()}>
-              {open ? "모집 마감하기" : GROUP_STATUS_LABEL[s.status]}
+            {/* 결제 모집은 목표 수량을 채워야 마감. 미달이면 모집 취소로 환불 */}
+            <button
+              className="life-btn"
+              disabled={!open || close.isPending || (paymentRequired && s.joinedQuantity < s.targetQuantity)}
+              onClick={() => confirm("지금 모집을 마감할까요?") && close.mutate()}
+            >
+              {!open ? GROUP_STATUS_LABEL[s.status] : paymentRequired && s.joinedQuantity < s.targetQuantity ? "목표 수량을 채우면 마감할 수 있어요" : "모집 마감하기"}
             </button>
           </>
         ) : open && paymentRequired && s.myQuantity > 0 ? (
