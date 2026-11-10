@@ -1249,3 +1249,15 @@ body{color:var(--g900)}
 .life-group{display:flex;flex-direction:column;gap:8px;margin-top:16px}
 .life-group-title{margin:0 4px;font-size:15px;font-weight:600;color:var(--g800)}
 .life-group-title span{margin-left:2px;color:var(--g500);font-weight:500}
+/* 같이 사기 결제 */
+.life-paid{flex:1;margin:0;font-size:14px;font-weight:600;color:var(--g700)}
+.pay-widget{margin:12px -8px 0;background:#fff;border-radius:20px;overflow:hidden}
+.pay-result{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:24px;padding:48px 24px 24px;border-radius:20px;background:#fff;text-align:center}
+.pay-result-icon{width:64px;height:64px;margin-bottom:8px;display:grid;place-items:center;border-radius:50%;background:var(--g100);color:var(--g600)}
+.pay-result-icon.loading{background:var(--badge-blue-soft);color:var(--badge-blue)}
+.pay-result-icon.error{background:var(--badge-red-soft);color:var(--badge-red)}
+.pay-result h2{margin:0;font-size:20px;line-height:1.4;font-weight:700;letter-spacing:-.02em;color:var(--g900);text-wrap:balance}
+.pay-result p{margin:0;max-width:300px;font-size:14px;line-height:1.55;color:var(--g600)}
+.pay-result .life-btn{align-self:stretch;margin-top:20px}
+.life-paid span{font-weight:500;color:var(--g500)}
+.pay-test-note{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--badge-yellow-soft);color:var(--badge-yellow);font-size:13px;line-height:1.5}

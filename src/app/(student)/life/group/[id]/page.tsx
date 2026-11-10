@@ -12,9 +12,10 @@ import VerifyGate from "@/components/market/VerifyGate";
 import { CHAT_ROOMS_KEY, useChatRooms } from "@/hooks/useChat";
 import { api } from "@/lib/api";
 import { GROUP_STATUS_LABEL, remaining, unreadLabel, won } from "@/lib/market";
-import type { GroupBuyDetail } from "@/types";
+import type { GroupBuyDetail, GroupParticipant } from "@/types";
 
 function Detail({ id }: { id: string }) {
+  const router = useRouter();
   const toast = useToast();
   const qc = useQueryClient();
   const [qty, setQty] = useState(1);
@@ -41,6 +42,14 @@ function Detail({ id }: { id: string }) {
     },
     onError,
   });
+  const cancel = useMutation({
+    mutationFn: () => api(`/market/group-buys/${id}/cancel`, { method: "POST" }),
+    onSuccess: () => {
+      toast("모집을 취소했어요. 결제한 참여자에게 환불돼요.");
+      refresh();
+    },
+    onError,
+  });
   const close = useMutation({
     mutationFn: () => api(`/market/group-buys/${id}/close`, { method: "POST" }),
     onSuccess: () => {
@@ -52,7 +61,7 @@ function Detail({ id }: { id: string }) {
 
   if (q.isLoading) return <p className="life-empty">불러오는 중…</p>;
   if (q.isError || !q.data) return <p className="life-empty">{(q.error as Error)?.message ?? "모집을 찾을 수 없어요."}</p>;
-  const { summary: s, description, mine, participants } = q.data;
+  const { summary: s, description, mine, participants, paymentRequired, myPaid } = q.data;
   const open = s.status === "RECRUITING";
   const pct = Math.min(100, Math.round((s.joinedQuantity / s.targetQuantity) * 100));
   const left = Math.max(1, s.targetQuantity - s.joinedQuantity);
@@ -81,6 +90,7 @@ function Detail({ id }: { id: string }) {
         )}
         <p className="life-desc">{description || "설명이 없어요."}</p>
       </div>
+      {mine && paymentRequired && <Participants id={id} />}
       {chatRoom && (
         <div className="chat-rows single">
           <Link href={`/life/chats/${chatRoom.id}`} className="chat-row">
@@ -105,9 +115,33 @@ function Detail({ id }: { id: string }) {
 
       <div className="life-bar">
         {mine ? (
-          <button className="life-btn" disabled={!open || close.isPending} onClick={() => confirm("지금 모집을 마감할까요?") && close.mutate()}>
-            {open ? "모집 마감하기" : GROUP_STATUS_LABEL[s.status]}
-          </button>
+          <>
+            {open && (
+              <button
+                className="life-btn ghost small"
+                disabled={cancel.isPending}
+                onClick={() => confirm(paymentRequired ? "모집을 취소할까요? 결제한 참여자 모두에게 환불돼요." : "모집을 취소할까요?") && cancel.mutate()}
+              >
+                모집 취소
+              </button>
+            )}
+            <button className="life-btn" disabled={!open || close.isPending} onClick={() => confirm("지금 모집을 마감할까요?") && close.mutate()}>
+              {open ? "모집 마감하기" : GROUP_STATUS_LABEL[s.status]}
+            </button>
+          </>
+        ) : open && paymentRequired && s.myQuantity > 0 ? (
+          <>
+            <p className="life-paid">
+              {myPaid ? `${won(s.unitPrice * s.myQuantity)} 결제 완료` : "참여 중"} <span>· {s.myQuantity}개</span>
+            </p>
+            <button
+              className="life-btn ghost"
+              disabled={leave.isPending}
+              onClick={() => confirm(myPaid ? `참여를 취소할까요? ${won(s.unitPrice * s.myQuantity)}이 환불돼요.` : "참여를 취소할까요?") && leave.mutate()}
+            >
+              참여 취소
+            </button>
+          </>
         ) : open ? (
           <>
             <div className="life-qty">
@@ -119,9 +153,15 @@ function Detail({ id }: { id: string }) {
                 +
               </button>
             </div>
-            <button className="life-btn" disabled={join.isPending} onClick={() => join.mutate()}>
-              {s.myQuantity ? `수량 변경 (현재 ${s.myQuantity}개)` : `${won(s.unitPrice * qty)} 참여하기`}
-            </button>
+            {paymentRequired ? (
+              <button className="life-btn" onClick={() => router.push(`/life/group/${id}/pay?quantity=${qty}`)}>
+                {won(s.unitPrice * qty)} 결제하고 참여
+              </button>
+            ) : (
+              <button className="life-btn" disabled={join.isPending} onClick={() => join.mutate()}>
+                {s.myQuantity ? `수량 변경 (현재 ${s.myQuantity}개)` : `${won(s.unitPrice * qty)} 참여하기`}
+              </button>
+            )}
             {s.myQuantity > 0 && (
               <button className="life-btn ghost small" onClick={() => leave.mutate()}>
                 취소
@@ -135,6 +175,29 @@ function Detail({ id }: { id: string }) {
         )}
       </div>
     </>
+  );
+}
+
+/** 주최자 전용: 참여자별 수량과 결제 상태 */
+function Participants({ id }: { id: string }) {
+  const q = useQuery({
+    queryKey: ["market", "group", id, "participants"],
+    queryFn: () => api<GroupParticipant[]>(`/market/group-buys/${id}/participants`),
+  });
+  if (!q.data?.length) return null;
+  return (
+    <div className="life-card">
+      <h3 className="life-h3">참여자 {q.data.length}명</h3>
+      {q.data.map((p) => (
+        <div key={p.nickname + p.joinedAt} className="life-req">
+          <div>
+            <strong>{p.nickname}</strong>
+            <p className="life-sub">{p.quantity}개</p>
+          </div>
+          <Badge color={p.paid ? "blue" : "elephant"}>{p.paid ? "결제 완료" : "미결제"}</Badge>
+        </div>
+      ))}
+    </div>
   );
 }
 
