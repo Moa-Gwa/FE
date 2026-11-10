@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
@@ -18,7 +19,6 @@ export default function DashboardPage() {
       toast("공지를 마감했어요.");
       qc.invalidateQueries({ queryKey: ["admin"] });
     },
-    onError: (e) => toast(e.message),
   });
 
   const d = query.data;
@@ -32,7 +32,7 @@ export default function DashboardPage() {
   return (
     <>
       <TopBar title="관리자 대시보드" sub={d ? `${d.organization.name} 공지 현황입니다.` : ""} />
-      {query.isError && <div className="error">{(query.error as Error).message}</div>}
+      <InlineError error={query.error} />
 
       <div className="grid stats">
         {kpis.map(([label, value, href]) => (
@@ -84,6 +84,7 @@ export default function DashboardPage() {
                   </Link>
                   <button onClick={() => close.mutate(n.id)}>마감 처리</button>
                 </div>
+                {close.variables === n.id && <InlineError error={close.error} />}
               </article>
             ))}
           </div>

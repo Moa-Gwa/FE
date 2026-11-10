@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
 import PushToggleRow from "@/components/PushToggleRow";
@@ -44,7 +45,6 @@ export default function MyPage() {
       qc.invalidateQueries({ queryKey: ["me", "settings"] });
       toast("알림 설정을 저장했어요.");
     },
-    onError: (e) => toast(e.message),
   });
 
   const p = profile.data;
@@ -166,6 +166,7 @@ export default function MyPage() {
               </button>
             </div>
           ))}
+          <InlineError error={settings.error ?? update.error} />
           <p className="hint">푸시 발송은 준비 중이에요. 켜 두시면 준비되는 대로 이 기기로 받아요. 앱 안 알림센터에는 항상 쌓여요.</p>
         </div>
       </section>

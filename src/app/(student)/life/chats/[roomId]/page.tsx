@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
-import { useToast } from "@/components/Providers";
+import InlineError from "@/components/InlineError";
 import VerifyGate from "@/components/market/VerifyGate";
 import { chatMessagesKey, useChatConnected, useChatRooms, useMyId } from "@/hooks/useChat";
 import { api } from "@/lib/api";
@@ -17,7 +17,6 @@ const day = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", d
 
 function Room({ roomId }: { roomId: number }) {
   const qc = useQueryClient();
-  const toast = useToast();
   const me = useMyId();
   const connected = useChatConnected();
   const room = useChatRooms().data?.find((r) => r.id === roomId);
@@ -35,7 +34,8 @@ function Room({ roomId }: { roomId: number }) {
   });
 
   // 새 메시지·읽음은 useChatConnection이 캐시에 반영. 여기서는 전송 실패 알림만 처리
-  useEffect(() => onChatError(toast), [toast]);
+  const [sendError, setSendError] = useState<string | null>(null);
+  useEffect(() => onChatError(setSendError), []);
 
   const pages = q.data?.pages ?? [];
   const messages = [...pages].reverse().flatMap((p) => p.messages);
@@ -73,9 +73,10 @@ function Room({ roomId }: { roomId: number }) {
     const content = text.trim();
     if (!content) return;
     if (!sendChat(roomId, content)) {
-      toast("연결 중이에요. 잠시 후 다시 보내 주세요.");
+      setSendError("연결 중이에요. 잠시 후 다시 보내 주세요.");
       return;
     }
+    setSendError(null);
     stickToBottom.current = true;
     setText("");
   };
@@ -141,6 +142,7 @@ function Room({ roomId }: { roomId: number }) {
           send();
         }}
       >
+        <InlineError error={sendError} />
         <textarea
           value={text}
           rows={1}

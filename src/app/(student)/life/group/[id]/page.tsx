@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
+import InlineError, { latestError } from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -25,14 +26,12 @@ function Detail({ id }: { id: string }) {
     qc.invalidateQueries({ queryKey: ["market"] });
     qc.invalidateQueries({ queryKey: CHAT_ROOMS_KEY }); // 참여·취소 시 단체방 입장 여부 변경
   };
-  const onError = (e: Error) => toast(e.message);
   const join = useMutation({
     mutationFn: () => api<GroupBuyDetail>(`/market/group-buys/${id}/join`, { method: "POST", body: { quantity: qty } }),
     onSuccess: () => {
       toast("참여했어요.");
       refresh();
     },
-    onError,
   });
   const leave = useMutation({
     mutationFn: () => api<void>(`/market/group-buys/${id}/join`, { method: "DELETE" }),
@@ -40,7 +39,6 @@ function Detail({ id }: { id: string }) {
       toast("참여를 취소했어요.");
       refresh();
     },
-    onError,
   });
   const cancel = useMutation({
     mutationFn: () => api(`/market/group-buys/${id}/cancel`, { method: "POST" }),
@@ -48,7 +46,6 @@ function Detail({ id }: { id: string }) {
       toast("모집을 취소했어요. 결제한 참여자에게 환불돼요.");
       refresh();
     },
-    onError,
   });
   const close = useMutation({
     mutationFn: () => api(`/market/group-buys/${id}/close`, { method: "POST" }),
@@ -56,7 +53,6 @@ function Detail({ id }: { id: string }) {
       toast("모집을 마감했어요.");
       refresh();
     },
-    onError,
   });
 
   if (q.isLoading) return <p className="life-empty">불러오는 중…</p>;
@@ -114,6 +110,7 @@ function Detail({ id }: { id: string }) {
       )}
 
       <div className="life-bar">
+        <InlineError error={latestError(join, leave, cancel, close)} />
         {mine ? (
           <>
             {open && (
@@ -189,6 +186,13 @@ function Participants({ id }: { id: string }) {
     queryKey: ["market", "group", id, "participants"],
     queryFn: () => api<GroupParticipant[]>(`/market/group-buys/${id}/participants`),
   });
+  if (q.isError)
+    return (
+      <div className="life-card">
+        <h3 className="life-h3">참여자</h3>
+        <InlineError error={q.error} />
+      </div>
+    );
   if (!q.data?.length) return null;
   return (
     <div className="life-card">

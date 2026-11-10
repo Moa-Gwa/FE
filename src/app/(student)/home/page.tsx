@@ -4,6 +4,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import InlineError from "@/components/InlineError";
 import FeedList from "@/components/FeedList";
 import Icon, { type IconName } from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
@@ -75,6 +76,8 @@ export default function StudentHome() {
         </div>
         {now.isPending ? (
           <div className="empty">불러오는 중…</div>
+        ) : now.isError ? (
+          <InlineError error={now.error} />
         ) : now.data && now.data.length > 0 ? (
           <div className="grid two">
             {now.data.slice(0, 4).map((n) => (
@@ -112,7 +115,9 @@ export default function StudentHome() {
             관심 설정
           </Link>
         </div>
-        {forMe.data && forMe.data.items.length > 0 ? (
+        {forMe.isError ? (
+          <InlineError error={forMe.error} />
+        ) : forMe.data && forMe.data.items.length > 0 ? (
           <div className="grid two">
             {forMe.data.items.map((n) => (
               <NoticeCard key={`${n.source}-${n.id}`} item={n} />

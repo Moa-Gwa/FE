@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
@@ -221,7 +222,7 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
               </button>
             </div>
 
-            {error && step === "write" && <div className="error writer-error">{error}</div>}
+            {step === "write" && <InlineError error={error} className="writer-error" />}
             <BlocksEditor blocks={blocks} onChange={setBlocks} onUpload={upload} uploading={uploading} />
           </div>
         </div>
@@ -328,7 +329,7 @@ export default function NoticeForm({ initial }: { initial: AdminNotice | null })
 
             <section className="publish-col">
               <h2>게시 설정</h2>
-              {error && <div className="error">{error}</div>}
+              <InlineError error={error} />
 
               <div className="pub-field">
                 <span className="pub-label">카테고리 (1개 이상)</span>

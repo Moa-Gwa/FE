@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import InlineError from "@/components/InlineError";
 import { runGoogleLogin, type GoogleSession } from "@/lib/googleLogin";
 import { setSession } from "@/lib/session";
 
@@ -25,7 +26,7 @@ export default function GoogleCallbackPage() {
   return (
     <main className="login-shell">
       <section className="login-card">
-        {error ? <><p className="error" role="alert">{error}</p><Link href="/login">로그인 화면으로 돌아가기</Link></>
+        {error ? <><InlineError error={error} /><Link href="/login">로그인 화면으로 돌아가기</Link></>
           : <p role="status">구글 로그인 처리 중입니다…</p>}
       </section>
     </main>

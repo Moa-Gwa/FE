@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import InlineError, { latestError } from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
@@ -34,8 +35,11 @@ export default function NotificationsPage() {
           </button>
         }
       />
+      <InlineError error={latestError(readAll, readOne)} />
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
+      ) : query.isError ? (
+        <InlineError error={query.error} />
       ) : items.length === 0 ? (
         <div className="empty">아직 알림이 없어요.<br />관심정보를 설정하면 새 공지를 알려드려요.</div>
       ) : (
