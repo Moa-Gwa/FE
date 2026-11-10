@@ -256,6 +256,25 @@ export interface GroupBuyDetail {
   description: string;
   mine: boolean;
   participants: number;
+  /** 결제 후 참여(유료 모집이고 서버 결제 기능이 켜진 경우) */
+  paymentRequired: boolean;
+  /** 내 참여가 결제 완료 상태인지(결제 기능 도입 전 참여자는 false) */
+  myPaid: boolean;
+}
+
+/** 결제위젯에 넘길 주문. 금액은 서버 계산 */
+export interface PaymentOrder {
+  orderId: string;
+  amount: number;
+  orderName: string;
+}
+
+/** 주최자 화면의 참여자별 결제 상태 */
+export interface GroupParticipant {
+  nickname: string;
+  quantity: number;
+  paid: boolean;
+  joinedAt: string;
 }
 
 export interface GroupBuyPage {
