@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import InlineError, { latestError } from "@/components/InlineError";
+import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
@@ -35,7 +35,7 @@ export default function NotificationsPage() {
           </button>
         }
       />
-      <InlineError error={latestError(readAll, readOne)} />
+      <InlineError error={readAll.error} />
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
       ) : query.isError ? (
