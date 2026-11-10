@@ -262,6 +262,8 @@ export interface GroupBuyDetail {
   participationFee: number;
   /** 내 참여가 결제 완료 상태인지(결제 기능 도입 전 참여자는 false) */
   myPaid: boolean;
+  /** 내가 실제 결제한 금액. 참여 취소 시 이 금액이 환불됨(참가비 도입 전 주문은 단가 × 수량) */
+  myPaidAmount: number;
 }
 
 /** 결제위젯에 넘길 주문. 금액은 서버 계산 */

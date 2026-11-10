@@ -57,7 +57,7 @@ function Detail({ id }: { id: string }) {
 
   if (q.isLoading) return <p className="life-empty">불러오는 중…</p>;
   if (q.isError || !q.data) return <p className="life-empty">{(q.error as Error)?.message ?? "모집을 찾을 수 없어요."}</p>;
-  const { summary: s, description, mine, participants, paymentRequired, participationFee: fee, myPaid } = q.data;
+  const { summary: s, description, mine, participants, paymentRequired, participationFee: fee, myPaid, myPaidAmount } = q.data;
   const open = s.status === "RECRUITING";
   const pct = Math.min(100, Math.round((s.joinedQuantity / s.targetQuantity) * 100));
   const left = Math.max(1, s.targetQuantity - s.joinedQuantity);
@@ -135,12 +135,12 @@ function Detail({ id }: { id: string }) {
         ) : open && paymentRequired && s.myQuantity > 0 ? (
           <>
             <p className="life-paid">
-              {myPaid ? `참가비 ${won(fee)} 결제 완료` : "참여 중"} <span>· {s.myQuantity}개</span>
+              {myPaid ? `${won(myPaidAmount)} 결제 완료` : "참여 중"} <span>· {s.myQuantity}개</span>
             </p>
             <button
               className="life-btn ghost"
               disabled={leave.isPending}
-              onClick={() => confirm(myPaid ? `참여를 취소할까요? 참가비 ${won(fee)}이 환불돼요.` : "참여를 취소할까요?") && leave.mutate()}
+              onClick={() => confirm(myPaid ? `참여를 취소할까요? ${won(myPaidAmount)}이 환불돼요.` : "참여를 취소할까요?") && leave.mutate()}
             >
               참여 취소
             </button>
