@@ -77,9 +77,10 @@ export default function SchedulePage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
   const [savedOnly, setSavedOnly] = useState(false);
-  // 저장한 공지가 일정에 포함되므로 로그인 상태가 바뀌면 다시 불러옴
-  const isStudent = useSession()?.role === "STUDENT";
-  const viewer = isStudent ? "student" : "guest";
+  // 저장한 공지가 일정에 포함되므로 계정별로 캐시를 나눔(다른 계정의 저장 표시 노출 방지)
+  const session = useSession();
+  const isStudent = session?.role === "STUDENT";
+  const viewer = isStudent ? `student:${session.name}` : "guest";
   const onlySaved = isStudent && savedOnly;
 
   const week = useQuery({
