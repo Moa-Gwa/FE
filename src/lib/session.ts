@@ -13,6 +13,11 @@ function read(): Session | null {
       window.localStorage.removeItem(KEY);
       raw = null;
     }
+    if (raw && raw.includes('"role":"ADMIN"') && !raw.includes('"operator"')) {
+      // 운영자 여부 도입 이전 관리자 세션: 서버 토큰에도 운영자 권한이 없어 재로그인이 필요하므로 지운다.
+      window.localStorage.removeItem(KEY);
+      raw = null;
+    }
     if (raw !== cached.raw) {
       cached = { raw, value: raw ? (JSON.parse(raw) as Session) : null };
     }
