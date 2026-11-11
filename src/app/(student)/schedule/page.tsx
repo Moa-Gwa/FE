@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import Calendar from "@/components/Calendar";
 import TopBar from "@/components/TopBar";
@@ -96,6 +97,8 @@ export default function SchedulePage() {
   if (mode === "week") {
     body = week.isPending ? (
       <div className="empty">불러오는 중…</div>
+    ) : week.isError ? (
+      <InlineError error={week.error} />
     ) : weekGroups.length ? (
       weekGroups.map(([day, list]) => <DayGroup key={day} day={day} list={list} today={today} />)
     ) : (
@@ -107,6 +110,8 @@ export default function SchedulePage() {
     const list = (source.data ?? []).filter((e) => kstDay(e.at) === day);
     body = source.isPending ? (
       <div className="empty">불러오는 중…</div>
+    ) : source.isError ? (
+      <InlineError error={source.error} />
     ) : list.length ? (
       <DayGroup day={day} list={list} today={today} />
     ) : (

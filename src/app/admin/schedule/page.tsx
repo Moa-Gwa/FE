@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
+import InlineError from "@/components/InlineError";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
@@ -32,6 +33,8 @@ export default function AdminSchedulePage() {
       </div>
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
+      ) : query.isError ? (
+        <InlineError error={query.error} />
       ) : items.length === 0 ? (
         <div className="empty">표시할 일정이 없어요.</div>
       ) : (

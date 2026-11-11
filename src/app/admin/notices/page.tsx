@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import InlineError, { latestError } from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import Icon from "@/components/Icon";
 import ShareModal from "@/components/ShareModal";
@@ -58,9 +59,12 @@ function Notices() {
     toast(message);
     qc.invalidateQueries({ queryKey: ["admin"] });
   };
-  const close = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/close`, { method: "POST" }), onSuccess: done("공지를 마감했어요."), onError: (e) => toast(e.message) });
-  const duplicate = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/duplicate`, { method: "POST" }), onSuccess: done("공지를 복제했어요. 임시저장 상태예요."), onError: (e) => toast(e.message) });
-  const remove = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}`, { method: "DELETE" }), onSuccess: done("공지를 삭제했어요."), onError: (e) => toast(e.message) });
+  const close = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/close`, { method: "POST" }), onSuccess: done("공지를 마감했어요.") });
+  const duplicate = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/duplicate`, { method: "POST" }), onSuccess: done("공지를 복제했어요. 임시저장 상태예요.") });
+  const remove = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}`, { method: "DELETE" }), onSuccess: done("공지를 삭제했어요.") });
+  // 행 작업 실패는 해당 공지 제목 아래에 표시
+  const rowError = latestError(close, duplicate, remove);
+  const rowErrorId = [close, duplicate, remove].find((m) => m.error && m.error === rowError)?.variables;
 
   return (
     <>
@@ -82,7 +86,7 @@ function Notices() {
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
       ) : query.isError ? (
-        <div className="error">{(query.error as Error).message}</div>
+        <InlineError error={query.error} />
       ) : query.data.length === 0 ? (
         <div className="empty">해당하는 공지가 없어요.</div>
       ) : (
@@ -103,6 +107,7 @@ function Notices() {
                 <tr key={n.id}>
                   <td className="col-title">
                     <strong>{n.title}</strong>
+                    {rowErrorId === n.id && <InlineError error={rowError} />}
                   </td>
                   <td className="col-cat">
                     <span className="tag-list">

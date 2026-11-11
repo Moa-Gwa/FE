@@ -3,6 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
 import { api } from "@/lib/api";
@@ -53,7 +54,7 @@ export default function FeedList({
     if (onTotal && !hasNextPage) onTotal(items.length);
   });
 
-  if (query.isError) return <div className="error">{(query.error as Error).message}</div>;
+  if (query.isError) return <InlineError error={query.error} />;
   if (query.isPending) return <div className="empty">불러오는 중…</div>;
   if (items.length === 0) return <div className="empty">{emptyText}</div>;
 

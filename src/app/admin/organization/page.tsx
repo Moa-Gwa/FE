@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
@@ -22,7 +23,6 @@ function OrgForm({ org }: { org: AdminOrg }) {
       toast("단체 정보를 저장했어요.");
       qc.invalidateQueries({ queryKey: ["admin"] });
     },
-    onError: (e) => toast(e.message),
   });
 
   return (
@@ -50,6 +50,7 @@ function OrgForm({ org }: { org: AdminOrg }) {
         <label htmlFor="url">공식 홈페이지 / SNS</label>
         <input id="url" type="url" value={externalUrl} onChange={(e) => setExternalUrl(e.target.value)} placeholder="https://" />
       </div>
+      <InlineError error={save.error} />
       <div className="form-actions">
         <button className="primary" disabled={save.isPending}>
           저장

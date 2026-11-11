@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { isFirebaseAuthConfigured } from "@/lib/firebase";
@@ -63,7 +64,7 @@ export default function LoginPage() {
           <p className="muted">흩어진 공지를 모아, 더 쉽고 빠르게.</p>
         </div>
 
-        {error && <p className="error" style={{ marginTop: 18 }}>{error}</p>}
+        <InlineError error={error} className="login-error" />
         {busy && <p role="status">로그인 처리 중입니다…</p>}
 
         {mode === "choose" && (
@@ -120,7 +121,7 @@ export default function LoginPage() {
                 <img src="/auth/kakao-login-complete-ko.svg" alt="" aria-hidden="true" />
               </button>
             )}
-            {!KAKAO_CLIENT_ID && !isFirebaseAuthConfigured && <p className="error">로그인이 아직 설정되지 않았습니다.</p>}
+            {!KAKAO_CLIENT_ID && !isFirebaseAuthConfigured && <InlineError error="로그인이 아직 설정되지 않았습니다." />}
             <button className="link-btn" onClick={() => setMode("choose")}>
               ← 돌아가기
             </button>

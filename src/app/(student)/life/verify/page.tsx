@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
@@ -122,7 +123,7 @@ export default function VerifyPage() {
                 <p className="life-note">
                   <Icon name="clock" size={14} /> 인증 코드는 받은 뒤 10분 동안 유효해요.
                 </p>
-                {error && <p className="error">{error}</p>}
+                <InlineError error={error} />
                 <button className="life-btn" disabled={!id.trim() || send.isPending}>
                   {send.isPending ? "보내는 중…" : "인증 코드 받기"}
                 </button>
@@ -150,7 +151,7 @@ export default function VerifyPage() {
                   <Icon name="clock" size={14} /> {left > 0 ? `${mmss} 남음` : "코드가 만료됐어요"}
                 </p>
                 {devCode && <p className="life-note dev">시연용 코드: {devCode}</p>}
-                {error && <p className="error">{error}</p>}
+                <InlineError error={error} />
                 <button className="life-btn" disabled={code.length !== 6 || confirm.isPending}>
                   {confirm.isPending ? "확인 중…" : "인증하기"}
                 </button>
