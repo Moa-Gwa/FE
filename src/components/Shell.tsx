@@ -28,6 +28,9 @@ const ADMIN_NAV: NavItem[] = [
   ["/admin/organization", "settings", "조직 관리"],
 ];
 
+/** 서비스 운영자에게만 보이는 메뉴 */
+const OPERATOR_NAV: NavItem[] = [["/admin/corrections", "check", "날짜 교정"]];
+
 function isActive(pathname: string, href: string, all: NavItem[]) {
   if (pathname === href) return true;
   // a longer, more specific nav entry wins (e.g. /admin/notices/new vs /admin/notices)
@@ -42,7 +45,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const connected = useNoticeStream();
   // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
   useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
-  const nav = role === "STUDENT" ? STUDENT_NAV : ADMIN_NAV;
+  const nav = role === "STUDENT" ? STUDENT_NAV : session?.operator ? [...ADMIN_NAV, ...OPERATOR_NAV] : ADMIN_NAV;
 
   useEffect(() => {
     if (session === null || (session && session.role !== role)) router.replace("/login");

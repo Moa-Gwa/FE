@@ -1270,3 +1270,25 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 .life-bar > .inline-error{flex-basis:100%;margin:0 0 2px}
 .inline-error.card-error{margin:0;padding:0 16px 12px}
 .inline-error.login-error{margin-top:18px}
+/* 크롤링 공지 추출 정보: 원문 근거·키워드·날짜 교정 요청 */
+.extracted-info{display:flex;flex-direction:column;gap:10px;margin:-4px 0 18px}
+.evidence{margin:0;padding:12px 14px;border-radius:12px;background:var(--g50);color:var(--g700);font-size:13px;line-height:1.55}
+.evidence span{display:block;margin-bottom:2px;color:var(--g500);font-size:12px;font-weight:700}
+.keyword-list{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.keyword-list a{display:inline-block;padding:4px 10px;border-radius:8px;background:var(--g100);color:var(--g700);font-size:13px}
+.correction-toggle{align-self:flex-start;font-size:13px}
+.correction-box{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:14px;border:1px solid var(--g200)}
+.correction-box .tabs{margin:0}
+.correction-box .form-group{margin:0}
+.correction-hint{margin:0;color:var(--g600);font-size:13px}
+/* 운영자 날짜 교정 검토 */
+.correction-list{display:flex;flex-direction:column;gap:14px}
+.correction-card{padding:20px 22px}
+.correction-card header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.correction-card h3{margin:10px 0 0;font-size:16px;line-height:1.45}
+.correction-card h3 a{color:var(--g900)}
+.correction-date{color:var(--g500);font-size:12px}
+.correction-source summary{cursor:pointer;color:var(--g600);font-size:13px}
+.correction-source p{max-height:260px;overflow:auto;margin:8px 0 0;white-space:pre-wrap;color:var(--g700);font-size:13px;line-height:1.6}
+.correction-apply{display:flex;flex-direction:column;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--g100)}
+.correction-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}

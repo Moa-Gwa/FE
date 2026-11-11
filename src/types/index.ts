@@ -63,6 +63,10 @@ export interface NoticeDetail {
   viewCount: number;
   bookmarkCount: number;
   bookmarked: boolean;
+  /** 크롤링 공지: 자동 추출한 마감·행사일의 근거 원문 문장 */
+  dateEvidence?: string | null;
+  /** 크롤링 공지: 본문에서 추출한 검색 키워드 */
+  keywords?: string[];
 }
 
 export interface Category {
@@ -185,6 +189,8 @@ export interface Session {
   /** 학교 메일로 재학생 인증을 마쳤는지. 생활 탭이 이 값을 확인한다. */
   verified?: boolean;
   organization?: OrgRef;
+  /** 서비스 운영자 관리자. 날짜 교정 검토 화면이 이 값을 확인한다. */
+  operator?: boolean;
 }
 
 /* ---- 생활거래 (중고거래 · 같이 사기) ---- */
@@ -333,3 +339,29 @@ export type ChatEvent =
   | { type: "read"; roomId: number; message: null; read: ChatReadState }
   /** 새 방 생성(예: 판매자가 거래 수락). 목록만 재조회 */
   | { type: "room"; roomId: number; message: null; read: null };
+
+export type CorrectionField = "DEADLINE" | "EVENT";
+export type CorrectionStatus = "PENDING" | "APPLIED" | "REJECTED";
+
+/** 크롤링 공지 날짜 교정 요청(운영자 검토 화면) */
+export interface DateCorrection {
+  id: number;
+  field: CorrectionField;
+  /** YYYY-MM-DD. 둘 다 null이면 "날짜 없음" 제안 */
+  suggestedStart: string | null;
+  suggestedEnd: string | null;
+  memo: string | null;
+  status: CorrectionStatus;
+  createdAt: string;
+  notice: {
+    id: number;
+    title: string;
+    url: string;
+    publishedAt: string;
+    deadlineAt: string | null;
+    eventStartAt: string | null;
+    eventEndAt: string | null;
+    dateEvidence: string | null;
+    contentText: string | null;
+  };
+}
