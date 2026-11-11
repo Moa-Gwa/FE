@@ -29,7 +29,9 @@ export default function NewGroupPage() {
   const [deadline, setDeadline] = useState(defaultDeadline);
   const [place, setPlace] = useState("");
   const [desc, setDesc] = useState("");
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
+  const priceError = price !== "" && Number(price) < 1 ? "1개당 가격은 1원 이상이어야 해요." : null;
   const targetError = target !== "" && Number(target) < 2 ? "목표 수량은 2개 이상이어야 해요." : null;
   const [deadlineError, setDeadlineError] = useState<string | null>(null);
   const changeDeadline = (v: string) => {
@@ -72,17 +74,27 @@ export default function NewGroupPage() {
           className="life-card life-form"
           onSubmit={(e) => {
             e.preventDefault();
+            if (!images.length) return setPhotoError("대표 사진을 올려 주세요.");
             create.mutate();
           }}
         >
-          <ImagePicker urls={images} onChange={(u) => setImages(u.slice(0, 1))} max={1} />
+          <ImagePicker
+            urls={images}
+            onChange={(u) => {
+              setImages(u.slice(0, 1));
+              if (u.length) setPhotoError(null);
+            }}
+            max={1}
+          />
+          <InlineError error={photoError} />
           <label>
             무엇을 같이 살까요?
             <input value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} placeholder="예) 블루북 시험지 10권 묶음" required />
           </label>
           <label>
-            개당 가격
-            <input value={price} inputMode="numeric" onChange={(e) => setPrice(e.target.value.replace(/\D/g, "").slice(0, 9))} required />
+            1개당 가격
+            <input value={price} inputMode="numeric" aria-invalid={!!priceError} onChange={(e) => setPrice(e.target.value.replace(/\D/g, "").slice(0, 9))} required />
+            <InlineError error={priceError} />
           </label>
           <label>
             목표 수량 (2개 이상)
@@ -103,7 +115,7 @@ export default function NewGroupPage() {
             <textarea value={desc} maxLength={2000} rows={4} onChange={(e) => setDesc(e.target.value)} />
           </label>
           <InlineError error={create.error} />
-          <button className="life-btn" disabled={!title.trim() || !price || Number(target) < 2 || !!deadlineError || create.isPending}>
+          <button className="life-btn" disabled={!title.trim() || !price || !!priceError || Number(target) < 2 || !!deadlineError || create.isPending}>
             {create.isPending ? "여는 중…" : "모집 열기"}
           </button>
         </form>

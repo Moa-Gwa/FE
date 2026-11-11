@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import VerifyGate from "@/components/market/VerifyGate";
 import { api } from "@/lib/api";
@@ -57,7 +58,7 @@ function Pay({ id }: { id: string }) {
   if (error)
     return (
       <div className="life-card">
-        <p className="life-empty small">{error}</p>
+        <InlineError error={error} />
         <Link href={`/life/group/${id}`} className="life-btn ghost">
           모집으로 돌아가기
         </Link>
@@ -68,9 +69,10 @@ function Pay({ id }: { id: string }) {
     <>
       {order && (
         <div className="life-card">
-          <p className="life-sub">결제할 금액</p>
+          <p className="life-sub">같이 사기 참가비</p>
           <strong className="life-price">{won(order.amount)}</strong>
           <p className="life-sub">{order.orderName}</p>
+          <p className="life-sub">물품 대금은 모집이 끝난 뒤 주최자와 직접 정산해요. 참여를 취소하거나 모집이 취소·미달되면 참가비는 환불돼요.</p>
         </div>
       )}
       {TOSS_TEST_MODE && (
