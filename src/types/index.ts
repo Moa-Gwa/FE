@@ -90,6 +90,8 @@ export interface ScheduleEntry {
   title: string;
   organizationName: string;
   location: string | null;
+  /** 로그인한 학생이 저장한 공지 */
+  bookmarked: boolean;
 }
 
 export interface Profile {

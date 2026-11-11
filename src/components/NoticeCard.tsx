@@ -26,6 +26,7 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
       toast(item.bookmarked ? "저장을 취소했어요." : "내 공지에 저장했어요.");
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
+      qc.invalidateQueries({ queryKey: ["schedule"] });
       qc.invalidateQueries({ queryKey: ["notice"] });
     },
   });

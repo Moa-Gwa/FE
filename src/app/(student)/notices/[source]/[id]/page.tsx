@@ -44,6 +44,7 @@ export default function NoticePage() {
       qc.invalidateQueries({ queryKey: ["notice"] });
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
+      qc.invalidateQueries({ queryKey: ["schedule"] });
     },
   });
 
