@@ -39,8 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-!.env.example
 
 # AI agent guide files that `next dev` may recreate when run from an agent environment
 AGENTS.md
 CLAUDE.md
+
+# 로컬 HTTPS 실행(npm run dev:https)에서 생성되는 인증서
+certificates

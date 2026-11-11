@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useToast } from "@/components/Providers";
+import InlineError from "@/components/InlineError";
 import { type FcmStatus, useFcmToken } from "@/hooks/useFcmToken";
 import { getStoredPushToken, registerPushToken, subscribePushToken, unregisterPushToken } from "@/lib/push";
 
@@ -17,6 +18,7 @@ export default function PushToggleRow() {
   const fcm = useFcmToken();
   const stored = useSyncExternalStore(subscribePushToken, getStoredPushToken, () => null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // FCM이 토큰을 갱신했다면 서버에도 반영한다.
   useEffect(() => {
@@ -29,6 +31,7 @@ export default function PushToggleRow() {
 
   async function toggle() {
     setBusy(true);
+    setError(null);
     try {
       if (on) {
         await unregisterPushToken();
@@ -40,7 +43,7 @@ export default function PushToggleRow() {
       await registerPushToken(token);
       toast("이 기기에서 푸시 알림을 받아요.");
     } catch (e) {
-      toast(e instanceof Error ? e.message : "푸시 알림 설정에 실패했어요.");
+      setError(e instanceof Error ? e.message : "푸시 알림 설정에 실패했어요.");
     } finally {
       setBusy(false);
     }
@@ -62,6 +65,7 @@ export default function PushToggleRow() {
         </button>
       </div>
       {blocked && HINT[fcm.status] && <p className="hint">{HINT[fcm.status]}</p>}
+      <InlineError error={error} />
     </>
   );
 }

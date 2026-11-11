@@ -37,18 +37,42 @@
 
   주소: http://localhost:3000
 
+  ### 구글 로그인 로컬 실행(HTTPS)
+
+  구글 로그인은 리디렉션 방식이라 `authDomain`을 앱 주소로 두고 HTTPS로 실행해야 함.
+  Firebase가 인증 화면을 항상 `https://{authDomain}/__/auth/...`로 불러오고, 이 경로는 `next.config.ts`에서 Firebase 인증 서버로 프록시됨.
+
+  1. `.env.local` 설정
+     - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=localhost:3000`
+     - `NEXT_PUBLIC_API_BASE_URL=` (빈 값. HTTPS 화면에서 http 백엔드를 직접 호출하면 브라우저가 차단하므로 `/api` 프록시 사용)
+  2. `npm run dev:https` 실행 후 https://localhost:3000 접속
+     - 처음 실행 시 로컬 인증서를 `certificates/`에 생성하고 키체인 신뢰 등록을 요청함(Mac 비밀번호 입력). 인증서는 git 제외 대상
+     - Safari는 신뢰 등록 후 재실행 필요
+  3. 백엔드는 `local` 프로필에서 `https://localhost:3000` 출처를 허용함
+
+  콘솔 설정(최초 1회)
+  - Firebase 콘솔 > Authentication > 설정 > 승인된 도메인에 `localhost` 포함 확인(없으면 `auth/unauthorized-domain` 오류)
+  - Google Cloud 콘솔 OAuth 클라이언트의 승인된 리디렉션 URI에 `https://localhost:3000/__/auth/handler` 등록
+  - 운영 도메인도 같은 방식으로 승인된 도메인, `authDomain`, 리디렉션 URI 등록
+
+  `authDomain`을 `*.firebaseapp.com`으로 두면 Safari 등 다른 도메인 저장소를 차단하는 브라우저에서 인증 결과를 받지 못해 로그인이 실패함.
+
   ## 환경변수
 
-  NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+  `.env.local`에 작성(git 제외 대상). 값은 팀 내부 공유
+
+  NEXT_PUBLIC_API_BASE_URL=http://localhost:8080   # HTTPS 실행 시 빈 값
 
   NEXT_PUBLIC_FIREBASE_API_KEY=
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=   # 구글 로그인: 로컬은 localhost:3000(HTTPS 실행 필요)
   NEXT_PUBLIC_FIREBASE_PROJECT_ID=
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
   NEXT_PUBLIC_FIREBASE_APP_ID=
   NEXT_PUBLIC_FIREBASE_VAPID_KEY=
 
   NEXT_PUBLIC_KAKAO_CLIENT_ID=
+
+  NEXT_PUBLIC_TOSS_CLIENT_KEY=   # 토스페이먼츠 결제위젯 클라이언트 키(test_gck_/live_gck_)
 
   ## 로그인
 

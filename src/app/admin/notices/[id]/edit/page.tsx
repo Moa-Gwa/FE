@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import InlineError from "@/components/InlineError";
 import NoticeForm from "@/components/NoticeForm";
 import { api } from "@/lib/api";
 import type { AdminNotice } from "@/types";
@@ -17,7 +18,7 @@ export default function EditNoticePage() {
   return (
     <>
       {query.isPending && <div className="empty">불러오는 중…</div>}
-      {query.isError && <div className="error">{(query.error as Error).message}</div>}
+      <InlineError error={query.error} />
       {query.data && <NoticeForm key={query.data.id} initial={query.data} />}
     </>
   );

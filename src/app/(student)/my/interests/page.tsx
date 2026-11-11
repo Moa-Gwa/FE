@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
@@ -142,7 +143,6 @@ function InterestsForm({ profile }: { profile: Profile }) {
       toast("관심정보를 저장했어요.");
       router.replace("/home");
     },
-    onError: (e) => toast(e.message),
   });
 
   return (
@@ -209,6 +209,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
           </div>
         </section>
 
+        <InlineError error={save.error} />
         <div className="cta-bar">
           <button type="button" className="ghost" onClick={() => router.back()}>
             취소

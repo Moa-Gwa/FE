@@ -3,6 +3,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import { useCategories } from "@/hooks/useMeta";
@@ -27,7 +28,6 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
       qc.invalidateQueries({ queryKey: ["notice"] });
     },
-    onError: (e) => toast(e.message),
   });
 
   const href = `/notices/${item.source.toLowerCase()}/${item.id}`;
@@ -46,6 +46,7 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
         : null;
 
   return (
+    <>
     <article className={`notice-card ${compact ? "compact" : ""} ${item.urgent ? "urgent" : ""}`}>
       <div className={`nc-avatar ${orgInitials(org).length > 3 ? "long" : ""} ${orgInitials(org) === "가대" ? "sky" : ""}`} aria-hidden="true">
         {orgInitials(org)}
@@ -75,5 +76,7 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
         </span>
       )}
     </article>
+    <InlineError error={toggle.error} className="card-error" />
+    </>
   );
 }

@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
+import InlineError, { latestError } from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import Thumb from "@/components/market/Thumb";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -33,12 +34,9 @@ function Detail({ id }: { id: string }) {
     qc.invalidateQueries({ queryKey: ["market"] });
     qc.invalidateQueries({ queryKey: CHAT_ROOMS_KEY }); // 수락 시 채팅방 생성됨
   };
-  const onError = (e: Error) => toast(e.message);
-
   const like = useMutation({
     mutationFn: (liked: boolean) => api<void>(`/market/items/${id}/likes`, { method: liked ? "DELETE" : "PUT" }),
     onSuccess: refresh,
-    onError,
   });
   const ask = useMutation({
     mutationFn: () => api(`/market/items/${id}/requests`, { method: "POST", body: { message: message.trim() || null } }),
@@ -48,12 +46,10 @@ function Detail({ id }: { id: string }) {
       setMessage("");
       refresh();
     },
-    onError,
   });
   const status = useMutation({
     mutationFn: (s: MarketStatus) => api(`/market/items/${id}/status`, { method: "POST", body: { status: s } }),
     onSuccess: refresh,
-    onError,
   });
   const accept = useMutation({
     mutationFn: (rid: number) => api<void>(`/market/requests/${rid}/accept`, { method: "POST" }),
@@ -61,7 +57,6 @@ function Detail({ id }: { id: string }) {
       toast("거래를 수락했어요.");
       refresh();
     },
-    onError,
   });
   const remove = useMutation({
     mutationFn: () => api<void>(`/market/items/${id}`, { method: "DELETE" }),
@@ -69,7 +64,6 @@ function Detail({ id }: { id: string }) {
       refresh();
       router.replace("/life");
     },
-    onError,
   });
 
   if (item.isLoading) return <p className="life-empty">불러오는 중…</p>;
@@ -160,8 +154,9 @@ function Detail({ id }: { id: string }) {
               </div>
             ))
           ) : (
-            <p className="life-empty small">아직 받은 요청이 없어요.</p>
+            <p className="life-empty small">{requests.isError ? "거래 요청을 불러오지 못했어요." : "아직 받은 요청이 없어요."}</p>
           )}
+          <InlineError error={latestError(status, accept, remove)} />
           <button className="life-btn ghost danger" onClick={() => confirm("이 물품을 삭제할까요?") && remove.mutate()}>
             물품 삭제
           </button>
@@ -170,6 +165,7 @@ function Detail({ id }: { id: string }) {
 
       {!mine && (
         <div className="life-bar">
+          <InlineError error={latestError(like, ask)} />
           <button className={`life-heart ${d.liked ? "on" : ""}`} aria-label="관심" onClick={() => like.mutate(d.liked)}>
             <Icon name="heart" size={22} />
             <span>{d.likeCount}</span>

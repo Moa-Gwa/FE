@@ -2,14 +2,14 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRef, useState } from "react";
 import Icon from "@/components/Icon";
-import { useToast } from "@/components/Providers";
+import InlineError from "@/components/InlineError";
 import { api, assetUrl } from "@/lib/api";
 
 /** 사진을 올리고 저장된 경로 목록을 부모에 돌려 준다. */
 export default function ImagePicker({ urls, onChange, max = 5 }: { urls: string[]; onChange: (u: string[]) => void; max?: number }) {
-  const toast = useToast();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function pick(files: FileList | null) {
     if (!files?.length) return;
@@ -18,11 +18,12 @@ export default function ImagePicker({ urls, onChange, max = 5 }: { urls: string[
       .slice(0, max - urls.length)
       .forEach((f) => form.append("files", f));
     setBusy(true);
+    setError(null);
     try {
       const res = await api<{ urls: string[] }>("/market/uploads/images", { method: "POST", body: form });
       onChange([...urls, ...res.urls].slice(0, max));
     } catch (e) {
-      toast((e as Error).message);
+      setError((e as Error).message);
     } finally {
       setBusy(false);
       if (input.current) input.current.value = "";
@@ -30,6 +31,7 @@ export default function ImagePicker({ urls, onChange, max = 5 }: { urls: string[
   }
 
   return (
+    <>
     <div className="life-photos">
       {urls.length < max && (
         <button type="button" className="life-photo add" onClick={() => input.current?.click()} disabled={busy}>
@@ -49,5 +51,7 @@ export default function ImagePicker({ urls, onChange, max = 5 }: { urls: string[
       ))}
       <input ref={input} type="file" accept="image/*" multiple hidden onChange={(e) => pick(e.target.files)} />
     </div>
+    <InlineError error={error} />
+    </>
   );
 }

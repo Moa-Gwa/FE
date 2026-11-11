@@ -3,10 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
 import Icon from "@/components/Icon";
+import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
@@ -33,27 +34,31 @@ export default function NoticePage() {
     api<void>(`/${path}/${id}/view`, { method: "POST", auth: false }).catch(() => {});
   }, [src, id, path]);
 
+  const [shareError, setShareError] = useState<string | null>(null);
   const toggle = useMutation({
     mutationFn: (saved: boolean) => api<void>(`/me/bookmarks/${src}/${id}`, { method: saved ? "DELETE" : "PUT" }),
+    onMutate: () => setShareError(null),
     onSuccess: (_d, saved) => {
       toast(saved ? "저장을 취소했어요." : "내 공지에 저장했어요.");
       qc.invalidateQueries({ queryKey: ["notice"] });
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
     },
-    onError: (e) => toast(e.message),
   });
 
   async function share() {
     const url = window.location.href;
+    setShareError(null);
+    toggle.reset();
     try {
       if (navigator.share) await navigator.share({ title: query.data?.title, url });
       else {
         await navigator.clipboard.writeText(url);
         toast("공지 링크를 복사했어요.");
       }
-    } catch {
-      /* user dismissed the share sheet */
+    } catch (e) {
+      // 공유 창을 닫은 경우(AbortError)는 오류가 아님
+      if ((e as Error).name !== "AbortError") setShareError("공유하지 못했어요. 주소창의 링크를 직접 복사해 주세요.");
     }
   }
 
@@ -150,6 +155,7 @@ export default function NoticePage() {
               </a>
             )}
           </div>
+          <InlineError error={shareError ?? toggle.error} />
         </article>
       )}
     </>

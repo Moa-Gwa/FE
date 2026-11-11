@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import InlineError from "@/components/InlineError";
 import { api } from "@/lib/api";
 import { setSession } from "@/lib/session";
 
@@ -33,7 +34,7 @@ function KakaoCallback() {
 
   return (
     <main className="login-shell">
-      <section className="login-card">{error ? <p className="error">{error}</p> : <p>로그인 중입니다…</p>}</section>
+      <section className="login-card">{error ? <InlineError error={error} /> : <p>로그인 중입니다…</p>}</section>
     </main>
   );
 }

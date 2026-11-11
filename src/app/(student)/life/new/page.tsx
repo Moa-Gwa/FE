@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
+import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import ImagePicker from "@/components/market/ImagePicker";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -21,6 +22,7 @@ export default function NewItemPage() {
   const [category, setCategory] = useState<MarketCategory>("BOOK");
   const [place, setPlace] = useState("");
   const [desc, setDesc] = useState("");
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const create = useMutation({
     mutationFn: () =>
@@ -33,7 +35,6 @@ export default function NewItemPage() {
       toast("물품을 올렸어요.");
       router.replace(`/life/items/${item.id}`);
     },
-    onError: (e) => toast(e.message),
   });
 
   return (
@@ -49,10 +50,18 @@ export default function NewItemPage() {
           className="life-card life-form"
           onSubmit={(e) => {
             e.preventDefault();
+            if (!images.length) return setPhotoError("사진을 1장 이상 올려 주세요.");
             create.mutate();
           }}
         >
-          <ImagePicker urls={images} onChange={setImages} />
+          <ImagePicker
+            urls={images}
+            onChange={(u) => {
+              setImages(u);
+              if (u.length) setPhotoError(null);
+            }}
+          />
+          <InlineError error={photoError} />
           <label>
             제목
             <input value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} placeholder="무엇을 파시나요?" required />
@@ -77,6 +86,7 @@ export default function NewItemPage() {
             설명
             <textarea value={desc} maxLength={2000} rows={5} onChange={(e) => setDesc(e.target.value)} placeholder="상태, 사용 기간, 구매 시기를 적어 주세요." />
           </label>
+          <InlineError error={create.error} />
           <button className="life-btn" disabled={!title.trim() || price === "" || create.isPending}>
             {create.isPending ? "올리는 중…" : "올리기"}
           </button>
