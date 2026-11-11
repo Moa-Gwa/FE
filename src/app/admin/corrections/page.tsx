@@ -79,7 +79,8 @@ function initialValues(c: DateCorrection) {
   }
   return {
     start: c.suggestedStart ? `${c.suggestedStart}T00:00` : toLocalInput(c.notice.eventStartAt),
-    end: c.suggestedEnd ? `${c.suggestedEnd}T23:50` : toLocalInput(c.notice.eventEndAt),
+    // 시작일만 제안하면 하루짜리 행사라 기존 종료일은 쓰지 않음
+    end: c.suggestedEnd ? `${c.suggestedEnd}T23:50` : c.suggestedStart ? "" : toLocalInput(c.notice.eventEndAt),
   };
 }
 
