@@ -6,9 +6,11 @@ import { useMemo, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
 import Calendar from "@/components/Calendar";
+import Icon from "@/components/Icon";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
 import { fmtTime, kstDay } from "@/lib/format";
+import { useSession } from "@/lib/session";
 import type { ScheduleEntry } from "@/types";
 
 /** "today" / "week" are the filters; "day" means a date was picked on the calendar. */
@@ -21,6 +23,8 @@ const dayLabel = (day: string) => {
   const [y, m, d] = day.split("-").map(Number);
   return `${m}월 ${d}일 (${WEEKDAY[new Date(y, m - 1, d).getDay()]})`;
 };
+const onlyBookmarked = (list: ScheduleEntry[] | undefined, on: boolean) =>
+  (list ?? []).filter((e) => !on || e.bookmarked);
 const entryKey = (e: ScheduleEntry) => `${e.type}-${e.source}-${e.noticeId}-${e.at}`;
 
 function EntryRow({ e }: { e: ScheduleEntry }) {
@@ -29,7 +33,15 @@ function EntryRow({ e }: { e: ScheduleEntry }) {
     <Link href={`/notices/${e.source.toLowerCase()}/${e.noticeId}`} className="notice-card sched-row">
       <span className="sched-time">{fmtTime(e.at)}</span>
       <div className="nc-body">
-        <h3>{e.title}</h3>
+        <h3>
+          {e.bookmarked && (
+            <span className="sched-saved" title="저장한 공지">
+              <Icon name="bookmark" />
+              <span className="sr-only">저장한 공지</span>
+            </span>
+          )}
+          {e.title}
+        </h3>
         <div className="nc-meta">
           <Badge color={deadline ? "yellow" : "elephant"}>{deadline ? "마감" : "행사"}</Badge>
           <span className="nc-sub">{[e.organizationName, e.location].filter(Boolean).join(" · ")}</span>
@@ -64,28 +76,36 @@ export default function SchedulePage() {
   const [mode, setMode] = useState<Mode>("week");
   const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const [savedOnly, setSavedOnly] = useState(false);
+  // 저장한 공지가 일정에 포함되므로 로그인 상태가 바뀌면 다시 불러옴
+  const isStudent = useSession()?.role === "STUDENT";
+  const viewer = isStudent ? "student" : "guest";
+  const onlySaved = isStudent && savedOnly;
 
   const week = useQuery({
-    queryKey: ["schedule", "week", weekFrom],
+    queryKey: ["schedule", "week", weekFrom, viewer],
     queryFn: () => api<ScheduleEntry[]>(`/schedule?from=${weekFrom}&to=${weekTo}`, { auth: false }),
   });
   const monthFrom = `${cursor.year}-${pad(cursor.month + 1)}-01`;
   const monthTo = ymd(new Date(cursor.year, cursor.month + 1, 0));
   const month = useQuery({
-    queryKey: ["schedule", "month", monthFrom],
+    queryKey: ["schedule", "month", monthFrom, viewer],
     queryFn: () => api<ScheduleEntry[]>(`/schedule?from=${monthFrom}&to=${monthTo}`, { auth: false }),
   });
 
-  const marked = useMemo(() => new Set((month.data ?? []).map((e) => kstDay(e.at))), [month.data]);
+  const monthEntries = useMemo(() => onlyBookmarked(month.data, onlySaved), [month.data, onlySaved]);
+  const weekEntries = useMemo(() => onlyBookmarked(week.data, onlySaved), [week.data, onlySaved]);
+
+  const marked = useMemo(() => new Set(monthEntries.map((e) => kstDay(e.at))), [monthEntries]);
   const weekGroups = useMemo(() => {
     const groups = new Map<string, ScheduleEntry[]>();
-    for (const e of week.data ?? []) {
+    for (const e of weekEntries) {
       const d = kstDay(e.at);
       groups.set(d, [...(groups.get(d) ?? []), e]);
     }
     // today first, then the rest of the week in date order
     return [...groups.entries()].sort(([a], [b]) => (a === today ? -1 : b === today ? 1 : a.localeCompare(b)));
-  }, [week.data, today]);
+  }, [weekEntries, today]);
 
   const pick = (m: Mode) => {
     setMode(m);
@@ -102,12 +122,12 @@ export default function SchedulePage() {
     ) : weekGroups.length ? (
       weekGroups.map(([day, list]) => <DayGroup key={day} day={day} list={list} today={today} />)
     ) : (
-      <div className="empty">이번 주 일정이 없어요.</div>
+      <div className="empty">{onlySaved ? "이번 주에 저장한 공지 일정이 없어요." : "이번 주 일정이 없어요."}</div>
     );
   } else {
     const day = mode === "today" ? today : selected!;
     const source = mode === "today" ? week : month;
-    const list = (source.data ?? []).filter((e) => kstDay(e.at) === day);
+    const list = (mode === "today" ? weekEntries : monthEntries).filter((e) => kstDay(e.at) === day);
     body = source.isPending ? (
       <div className="empty">불러오는 중…</div>
     ) : source.isError ? (
@@ -121,7 +141,7 @@ export default function SchedulePage() {
 
   return (
     <>
-      <TopBar title="일정" sub="행사·신청·마감 일정을 한눈에 확인하세요." />
+      <TopBar title="일정" sub="행사·신청·마감 일정과 저장한 공지의 날짜를 한눈에 확인하세요." />
 
       <section className="section sched-cal">
         <Calendar
@@ -152,6 +172,15 @@ export default function SchedulePage() {
           {mode === "day" && selected && (
             <button className="on" aria-pressed="true">
               {dayLabel(selected)}
+            </button>
+          )}
+          {isStudent && (
+            <button
+              className={`sched-filter ${savedOnly ? "on" : ""}`}
+              aria-pressed={savedOnly}
+              onClick={() => setSavedOnly((v) => !v)}
+            >
+              저장한 공지만
             </button>
           )}
         </nav>

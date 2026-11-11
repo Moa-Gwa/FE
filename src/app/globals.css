@@ -525,6 +525,10 @@ body{color:var(--g900)}
 .sched-list .segmented{margin:0 0 6px;padding:0 8px}
 .sched-list .segmented button{flex:none;padding:0 14px}
 .sched-list .segmented button.on::after{left:10px;right:10px}
+.sched-list .segmented .sched-filter{margin-left:auto;font-size:13px;color:var(--g500)}
+.sched-list .segmented .sched-filter.on{color:var(--coral-strong)}
+.sched-list .segmented .sched-filter.on::after{display:none}
+.sched-saved{display:inline-flex;vertical-align:-2px;margin-right:4px;color:var(--coral-strong)}
 .sched-group + .sched-group{border-top:8px solid var(--g100)}
 .sched-day{margin:0;padding:16px 20px 2px;font-size:14px;color:var(--g600)}
 .sched-day em{font-style:normal;color:var(--coral-strong);margin-right:6px}
