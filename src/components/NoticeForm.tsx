@@ -33,7 +33,11 @@ function initialBlocks(n: AdminNotice | null): EditorBlock[] {
 /** What gets saved/previewed: empty text and empty image groups dropped. */
 const cleanBlocks = (blocks: EditorBlock[]): Block[] =>
   blocks
-    .map((b): Block => (b.type === "TEXT" ? { type: "TEXT", text: b.text } : { type: "IMAGES", images: b.images, layout: b.layout, captions: b.images.map((_, i) => b.captions?.[i] ?? "") }))
+    .map((b): Block =>
+      b.type === "TEXT"
+        ? { type: "TEXT", text: b.text }
+        : { type: "IMAGES", images: b.images, layout: b.layout, captions: b.images.map((_, i) => b.captions?.[i] ?? "") },
+    )
     .filter((b) => (b.type === "TEXT" ? b.text.trim() !== "" : b.images.length > 0));
 
 export default function NoticeForm({ initial }: { initial: AdminNotice | null }) {

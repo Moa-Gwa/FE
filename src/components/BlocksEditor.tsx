@@ -23,6 +23,8 @@ function move<T>(list: T[], from: number, to: number): T[] {
   return next;
 }
 
+const without = <T,>(list: T[], index: number): T[] => list.filter((_, j) => j !== index);
+
 /**
  * Blog-style body editor: an ordered list of text and image blocks. Image blocks choose between a
  * slideshow and a vertical stack, and show a live preview of exactly how students will see them.
@@ -160,22 +162,43 @@ function ImageBlockEditor({
       {images.length > 0 && (
         <div className="upload-grid">
           {images.map((url, i) => (
-            <div className="upload-item" key={`${url}-${i}`}>
+            // 순서를 바꿔도 같은 사진은 같은 key를 유지함. 같은 사진이 여러 장이면 몇 번째인지로 구분함
+            <div className="upload-item" key={`${url}#${images.slice(0, i).filter((u) => u === url).length}`}>
               <img src={assetUrl(url)} alt={`이미지 ${i + 1}`} />
               <div className="ops">
-                <button type="button" aria-label="앞으로" disabled={i === 0} onClick={() => onImages(move(images, i, i - 1), move(captions, i, i - 1))}>
+                <button
+                  type="button"
+                  aria-label="앞으로"
+                  disabled={i === 0}
+                  onClick={() => onImages(move(images, i, i - 1), move(captions, i, i - 1))}
+                >
                   ←
                 </button>
-                <button type="button" aria-label="이미지 삭제" onClick={() => onImages(images.filter((_, j) => j !== i), captions.filter((_, j) => j !== i))}>
+                <button
+                  type="button"
+                  aria-label="이미지 삭제"
+                  onClick={() => onImages(without(images, i), without(captions, i))}
+                >
                   삭제
                 </button>
-                <button type="button" aria-label="뒤로" disabled={i === images.length - 1} onClick={() => onImages(move(images, i, i + 1), move(captions, i, i + 1))}>
+                <button
+                  type="button"
+                  aria-label="뒤로"
+                  disabled={i === images.length - 1}
+                  onClick={() => onImages(move(images, i, i + 1), move(captions, i, i + 1))}
+                >
                   →
                 </button>
               </div>
-              <label className="image-caption-label">사진 {i + 1} 설명 (선택)
-                <input className="image-caption-input" value={captions[i]} maxLength={300} placeholder="사진 설명을 입력하세요"
-                  onChange={e => onImages(images, captions.map((caption, j) => j === i ? e.target.value : caption))} />
+              <label className="image-caption-label">
+                사진 {i + 1} 설명 (선택)
+                <input
+                  className="image-caption-input"
+                  value={captions[i]}
+                  maxLength={300}
+                  placeholder="사진 설명을 입력하세요"
+                  onChange={(e) => onImages(images, captions.map((c, j) => (j === i ? e.target.value : c)))}
+                />
               </label>
             </div>
           ))}

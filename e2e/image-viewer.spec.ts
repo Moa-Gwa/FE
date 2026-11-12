@@ -8,7 +8,7 @@ async function setup(page: Page, layout = 'CAROUSEL', legacy = false, admin = fa
   const selectedUrls = single ? urls.slice(0, 1) : urls;
   const blocks = [{ type: 'TEXT', text: '본문' }, { type: 'IMAGES', layout, images: selectedUrls, captions: single ? ['첫 사진 설명'] : ['첫 사진 설명', '둘째 사진 설명'] }];
   const notice = { id: 1, source: 'MANUAL', organization: { id: 1, name: '학생회', type: 'STUDENT_GOVERNMENT' },
-    title: '사진 확대 공지', description: '본문', contentHtml: layout === 'HTML' ? '<p>학교 공지 본문</p><a href="https://school.example/original"><img src="/uploads/viewer-a.png" alt="학교 사진 하나"></a><img src="/uploads/viewer-b.png" alt="학교 사진 둘"><a href="https://school.example/file.pdf">첨부파일</a>' : null, blocks: legacy || layout === 'HTML' ? null : blocks,
+    title: '사진 확대 공지', description: '본문', contentHtml: layout === 'HTML' ? '<p>학교 공지 본문</p><a href="https://school.example/original"><img src="/uploads/viewer-a.png" alt="학교 사진 하나"></a><img src="/uploads/viewer-b.png" alt="학교 사진 둘"><a href="https://school.example/file.pdf"><img src="/images/icon_pdf.gif" width="16" alt="pdf">첨부파일</a><img src="/uploads/viewer-b.png" style="width:1px;height:1px" alt="">' : null, blocks: legacy || layout === 'HTML' ? null : blocks,
     categories: [], categoryIds: [1], categoryCodes: ['EVENT'], imageUrls: selectedUrls, images: layout === 'HTML' ? [] : selectedUrls, status: 'DRAFT', urgent: false,
     publishedAt: '2026-11-01T00:00:00Z', updatedAt: '2026-11-01T00:00:00Z', createdAt: '2026-11-01T00:00:00Z',
     eventStartAt: null, eventEndAt: null, deadlineAt: null, publishAt: null, location: null, externalLink: null, bookmarked: false, viewCount: 1, bookmarkCount: 0 };
@@ -140,5 +140,7 @@ test('desktop school HTML photos open on click and keyboard, while attachment li
   await page.keyboard.press('Enter');
   await expect(viewer.getByRole('img', { name: '학교 사진 둘' })).toBeVisible();
   await viewer.getByRole('button', { name: '사진 뷰어 닫기' }).click();
-  await expect(page.getByRole('link', { name: '첨부파일', exact: true })).toHaveAttribute('href', 'https://school.example/file.pdf');
+  await expect(page.getByRole('link', { name: /첨부파일/ })).toHaveAttribute('href', 'https://school.example/file.pdf');
+  // 파일 아이콘과 1px 이미지는 확대 대상이 아님
+  await expect(page.getByRole('button', { name: /크게 보기$/ })).toHaveCount(2);
 });
