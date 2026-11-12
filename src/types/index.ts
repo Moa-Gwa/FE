@@ -107,7 +107,8 @@ export interface Profile {
 export interface NotificationItem {
   id: number;
   type: string;
-  source: Source;
+  /** MARKET이면 noticeId는 물품 id */
+  source: Source | "MARKET";
   noticeId: number;
   title: string;
   body: string | null;
