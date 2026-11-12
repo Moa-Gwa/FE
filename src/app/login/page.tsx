@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
@@ -16,7 +17,7 @@ type Mode = "choose" | "student" | "admin";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("choose");
+  const [mode, setMode] = useState<Mode>(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("admin") === "1" ? "admin" : "choose");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -141,6 +142,7 @@ export default function LoginPage() {
             <button className="primary" disabled={busy}>
               로그인
             </button>
+            <Link className="link-btn" href="/admin-apply">단체 관리자 신청</Link>
             <button type="button" className="link-btn" onClick={() => setMode("choose")}>
               ← 돌아가기
             </button>

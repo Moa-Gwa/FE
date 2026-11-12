@@ -29,7 +29,7 @@ const ADMIN_NAV: NavItem[] = [
 ];
 
 /** 서비스 운영자에게만 보이는 메뉴 */
-const OPERATOR_NAV: NavItem[] = [["/admin/corrections", "check", "날짜 교정"]];
+const OPERATOR_NAV: NavItem[] = [["/admin/corrections", "check", "날짜 교정"], ["/admin/applications", "check", "관리자 신청"]];
 
 function isActive(pathname: string, href: string, all: NavItem[]) {
   if (pathname === href) return true;
