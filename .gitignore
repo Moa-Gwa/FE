@@ -46,3 +46,7 @@ CLAUDE.md
 
 # 로컬 HTTPS 실행(npm run dev:https)에서 생성되는 인증서
 certificates
+
+/.next-e2e/
+/playwright-report/
+/test-results/

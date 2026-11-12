@@ -11,7 +11,7 @@ export default function BlocksView({ blocks }: { blocks: Block[] }) {
             {b.text}
           </p>
         ) : (
-          <ImageGroup key={i} images={b.images} layout={b.layout} />
+          <ImageGroup key={i} images={b.images} layout={b.layout} captions={b.captions} />
         ),
       )}
     </div>
