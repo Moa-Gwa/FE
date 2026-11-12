@@ -12,7 +12,7 @@ export interface OrgRef {
 export type BlockLayout = "CAROUSEL" | "STACK";
 export type Block =
   | { type: "TEXT"; text: string }
-  | { type: "IMAGES"; images: string[]; layout: BlockLayout };
+  | { type: "IMAGES"; images: string[]; layout: BlockLayout; captions?: string[] };
 
 export interface FeedItem {
   source: Source;

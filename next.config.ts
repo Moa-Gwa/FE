@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Docker 이미지용: 실행에 필요한 파일만 .next/standalone에 모은다.
   output: "standalone",
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   async rewrites() {
     return [
       { source: "/__/auth/:path*", destination: "https://moa-gwa.firebaseapp.com/__/auth/:path*" },

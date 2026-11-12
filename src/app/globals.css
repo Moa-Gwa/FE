@@ -1377,3 +1377,32 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 .attachment-name{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere}
 .attachment-download{display:flex;flex:none;color:var(--g500)}
 .notice-attachments > p{margin:10px 0 0;font-size:12px;color:var(--g500)}
+
+.image-open{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}
+.image-open:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+.image-stack figure{margin:0}
+.image-caption{margin:8px 0 16px;text-align:center;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.6;color:var(--g600)}
+.block-card .upload-item{width:min(100%,180px)}
+.block-card .upload-item img{width:100%;height:140px}
+.image-caption-label{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:12px;color:var(--g600)}
+.image-caption-input{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--g200);border-radius:8px;font:inherit;background:#fff;color:var(--g900);box-sizing:border-box}
+.image-lightbox{position:fixed;inset:0;margin:0;padding:0;border:0;width:100vw;max-width:none;height:100dvh;max-height:none;background:#111;color:#fff;overflow:hidden;box-sizing:border-box}
+.image-lightbox[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.image-lightbox::backdrop{background:#111}
+.image-lightbox-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;z-index:2;background:#111}
+.image-lightbox-toolbar > div{display:flex;gap:6px}
+.image-lightbox button{min-width:44px;min-height:44px;padding:8px;border:1px solid #555;border-radius:8px;background:#222;color:#fff;font-size:20px}
+.image-lightbox button:disabled{opacity:.4}
+.image-lightbox button:focus-visible,.image-lightbox-stage:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+.image-lightbox-stage{position:relative;overflow:auto;touch-action:none;overscroll-behavior:contain;min-height:0}
+.image-lightbox-canvas{display:flex;align-items:center;justify-content:center;min-width:100%;min-height:100%}
+.image-lightbox-canvas img{display:block;width:100%;height:100%;object-fit:contain;max-width:none;max-height:none;user-select:none}
+.image-lightbox-navigation{position:absolute;top:50%;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}
+.image-lightbox-navigation button{pointer-events:auto;background:#111c;font-size:30px}
+.image-lightbox-caption{padding:12px 20px calc(16px + env(safe-area-inset-bottom));max-height:20dvh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;text-align:center;font-size:14px;line-height:1.6;background:#111}
+.image-lightbox-error{padding:24px;text-align:center;color:#ddd}
+
+fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
+
+.html-body img[data-notice-image],.html-body a[data-notice-image]{cursor:zoom-in}
+.html-body [data-notice-image]:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
