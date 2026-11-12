@@ -1361,3 +1361,19 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 .personal-schedule-vertical .wheel-list{padding-block:40px}
 .personal-schedule-vertical .wheel-selection{inset:40px 0}
 .wheel-time-only .wheel-columns{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+
+/* 공지 이미지가 없거나 로드되지 않으면 썸네일 공간을 차지하지 않는다. */
+.nc-thumbnail{display:block;flex:none}
+.nc-thumbnail .thumb{display:block}
+.notice-attachments{margin:24px 0;padding:18px 0;border-top:1px solid var(--g200);border-bottom:1px solid var(--g200)}
+.notice-attachments h2{margin:0 0 12px;font-size:16px;font-weight:600}
+.notice-attachments h2 span{margin-left:4px;font-size:14px;color:var(--g500)}
+.notice-attachments ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.notice-attachments li a{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:var(--g100);color:var(--g900)}
+.notice-attachments li a:hover{background:var(--g200)}
+.notice-attachments li a:focus-visible{outline:2px solid var(--coral);outline-offset:2px}
+.attachment-file-icon{display:grid;justify-items:center;gap:3px;flex:none;min-width:42px;color:var(--g600)}
+.attachment-file-icon span{font-size:10px;font-weight:600;line-height:1}
+.attachment-name{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere}
+.attachment-download{display:flex;flex:none;color:var(--g500)}
+.notice-attachments > p{margin:10px 0 0;font-size:12px;color:var(--g500)}

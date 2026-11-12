@@ -41,6 +41,12 @@ export interface FeedPage {
   hasNext: boolean;
 }
 
+/** BE #68: 원문 사이트의 첨부파일. URL은 서버가 절대 경로로 정규화한다. */
+export interface NoticeAttachment {
+  fileName: string;
+  url: string;
+}
+
 export interface NoticeDetail {
   source: Source;
   id: number;
@@ -63,6 +69,8 @@ export interface NoticeDetail {
   viewCount: number;
   bookmarkCount: number;
   bookmarked: boolean;
+  /** 미수집 또는 이전 서버 응답에서는 생략될 수 있다. */
+  attachments?: NoticeAttachment[] | null;
   /** 크롤링 공지: 자동 추출한 마감·행사일의 근거 원문 문장 */
   dateEvidence?: string | null;
   /** 크롤링 공지: 본문에서 추출한 검색 키워드 */
