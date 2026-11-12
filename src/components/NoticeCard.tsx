@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import InlineError from "@/components/InlineError";
@@ -18,6 +19,8 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
   const qc = useQueryClient();
   const toast = useToast();
   const isStudent = session?.role === "STUDENT";
+  const [failedThumbnail, setFailedThumbnail] = useState<string | null>(null);
+  const thumbnail = item.thumbnail?.trim();
 
   const toggle = useMutation({
     mutationFn: () =>
@@ -60,7 +63,11 @@ export default function NoticeCard({ item, compact = false }: { item: FeedItem; 
           <span className="nc-sub">{meta}</span>
         </p>
       </Link>
-      {!compact && item.thumbnail && <img className="thumb" src={assetUrl(item.thumbnail)} alt="" />}
+      {thumbnail && failedThumbnail !== thumbnail && (
+        <Link href={href} className="nc-thumbnail" tabIndex={-1} aria-hidden="true">
+          <img className="thumb" src={assetUrl(thumbnail)} alt="" loading="lazy" decoding="async" onError={() => setFailedThumbnail(thumbnail)} />
+        </Link>
+      )}
       {isStudent ? (
         <button
           className={`save ${item.bookmarked ? "saved" : ""}`}

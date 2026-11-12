@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import AttachmentList from "@/components/AttachmentList";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
 import DateCorrectionForm from "@/components/DateCorrectionForm";
@@ -172,6 +173,8 @@ export default function NoticePage() {
           ) : (
             <div className="detail-body">{n.description}</div>
           )}
+
+          <AttachmentList attachments={n.attachments} />
 
           <div className="btn-row">
             <button className="primary with-icon" aria-pressed={n.bookmarked} disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
