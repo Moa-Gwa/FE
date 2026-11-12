@@ -1,0 +1,11 @@
+.git
+.github
+.claude
+.next
+node_modules
+certificates
+org-github
+.env*
+*.pem
+*.tsbuildinfo
+.DS_Store
