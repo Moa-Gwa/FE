@@ -11,6 +11,7 @@ export default function Calendar({
   markedDays,
   selected,
   onSelect,
+  onAdd,
   onMove,
   range,
   minDay,
@@ -20,6 +21,8 @@ export default function Calendar({
   markedDays: Set<string>;
   selected: string | null;
   onSelect: (day: string) => void;
+  /** Double-click (or Shift+Enter) a date to add an entry. */
+  onAdd?: (day: string) => void;
   onMove: (delta: number) => void;
   /** inclusive "YYYY-MM-DD" bounds to tint (e.g. this week) */
   range?: { from: string; to: string } | null;
@@ -67,7 +70,13 @@ export default function Calendar({
               className={`day ${markedDays.has(key) ? "event" : ""} ${key === today ? "today" : ""} ${key === selected ? "selected" : ""} ${inRange ? "in-range" : ""} ${edge} ${disabled ? "disabled" : ""}`}
               aria-disabled={disabled || undefined}
               onClick={() => !disabled && onSelect(key)}
-              onKeyDown={(e) => !disabled && (e.key === "Enter" || e.key === " ") && onSelect(key)}
+              onDoubleClick={() => !disabled && onAdd?.(key)}
+              onKeyDown={(e) => {
+                if (disabled || (e.key !== "Enter" && e.key !== " ")) return;
+                e.preventDefault();
+                if (e.key === "Enter" && e.shiftKey && onAdd) onAdd(key);
+                else onSelect(key);
+              }}
             >
               <span className="day-num">{i + 1}</span>
               {markedDays.has(key) && <i className="day-dot" aria-hidden="true" />}

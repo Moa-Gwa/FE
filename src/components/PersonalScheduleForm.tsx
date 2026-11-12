@@ -1,0 +1,98 @@
+"use client";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import WheelDateTimePicker from "@/components/WheelDateTimePicker";
+import InlineError from "@/components/InlineError";
+import { useToast } from "@/components/Providers";
+import { api } from "@/lib/api";
+import type { ScheduleEntry } from "@/types";
+
+const localTime = (at: string) => new Date(new Date(at).getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 16);
+
+export default function PersonalScheduleForm({ entry, day, fixedDate = false, onClose, onSaved }: {
+  entry: ScheduleEntry | null;
+  day: string;
+  fixedDate?: boolean;
+  onClose: () => void;
+  onSaved: (day: string) => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const element = dialog.current;
+    const previousOverflow = document.body.style.overflow;
+    element?.showModal();
+    document.body.style.overflow = "hidden";
+    return () => {
+      element?.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+  const client = useQueryClient();
+  const toast = useToast();
+  const [title, setTitle] = useState(entry?.title ?? "");
+  const [at, setAt] = useState(() => {
+    if (!entry) return `${day}T09:00`;
+    const existing = localTime(entry.at);
+    const minute = Math.floor(Number(existing.slice(14, 16)) / 5) * 5;
+    return `${existing.slice(0, 14)}${String(minute).padStart(2, "0")}`;
+  });
+  const [location, setLocation] = useState(entry?.location ?? "");
+  const [memo, setMemo] = useState(entry?.memo ?? "");
+  const [invalid, setInvalid] = useState("");
+  const save = useMutation({
+    mutationFn: (remove: boolean) => api(entry ? `/me/schedules/${entry.noticeId}` : "/me/schedules", {
+      method: remove ? "DELETE" : entry ? "PUT" : "POST",
+      ...(remove ? {} : { body: { title: title.trim(), at: new Date(`${at}:00+09:00`).toISOString(), location: location.trim() || null, memo: memo.trim() || null } }),
+    }),
+    onSuccess: async (_, remove) => {
+      await client.invalidateQueries({ queryKey: ["schedule"] });
+      toast(remove ? "일정을 삭제했어요." : entry ? "일정을 수정했어요." : "일정을 추가했어요.");
+      if (!remove) onSaved(at.slice(0, 10));
+      onClose();
+    },
+  });
+
+  return (
+    <dialog ref={dialog} className="modal personal-schedule-dialog personal-schedule-vertical" aria-labelledby="personal-schedule-title"
+      onCancel={(e) => { e.preventDefault(); if (!save.isPending) onClose(); }}
+      onClick={(e) => {
+        if (e.target !== e.currentTarget || save.isPending) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) onClose();
+      }}>
+    <button type="button" className="link-btn personal-schedule-close" aria-label="일정 창 닫기" disabled={save.isPending} onClick={onClose}>×</button>
+    <form className="personal-schedule-form correction-box" onSubmit={(e) => {
+      e.preventDefault();
+      if (!title.trim() || !at) { setInvalid("제목과 날짜·시간을 입력해 주세요."); return; }
+      setInvalid("");
+      save.mutate(false);
+    }}>
+      <div className="personal-schedule-heading"><h2 id="personal-schedule-title">{entry ? "내 일정 수정" : "내 일정 추가"}</h2><span>나에게만 보여요</span></div>
+      <div className="form-group personal-field-date">
+        <span className="wheel-field-label">{fixedDate ? "시간 (한국 시간)" : "날짜·시간 (한국 시간)"}</span>
+        <WheelDateTimePicker timeOnly={fixedDate} value={at} onChange={setAt} disabled={save.isPending} />
+      </div>
+      <div className="form-group personal-field-title">
+        <label htmlFor="personal-title">제목</label>
+        <input id="personal-title" value={title} maxLength={100} required placeholder="예: 팀 프로젝트 회의" onChange={(e) => setTitle(e.target.value)} autoFocus />
+      </div>
+      <div className="form-group personal-field-location">
+        <label htmlFor="personal-location">장소 (선택)</label>
+        <input id="personal-location" value={location} maxLength={200} placeholder="예: 중앙도서관 스터디룸" onChange={(e) => setLocation(e.target.value)} />
+      </div>
+      <div className="form-group personal-field-memo">
+        <label htmlFor="personal-memo">메모 (선택)</label>
+        <textarea id="personal-memo" rows={2} value={memo} maxLength={1000} placeholder="기억할 내용을 남겨 보세요" onChange={(e) => setMemo(e.target.value)} />
+      </div>
+      <InlineError error={invalid || save.error} />
+      <div className="btn-row">
+        <button className="primary" type="submit" disabled={save.isPending}>{save.isPending ? "처리 중…" : entry ? "수정하기" : "추가하기"}</button>
+        <button className="secondary" type="button" disabled={save.isPending} onClick={onClose}>취소</button>
+        {entry && <button className="link-btn personal-delete" type="button" disabled={save.isPending} onClick={() => save.mutate(true)}>삭제하기</button>}
+      </div>
+
+    </form>
+    </dialog>
+  );
+}

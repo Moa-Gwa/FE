@@ -83,15 +83,16 @@ export interface OrganizationView {
 }
 
 export interface ScheduleEntry {
-  type: "EVENT" | "DEADLINE";
+  type: "EVENT" | "DEADLINE" | "PERSONAL";
   at: string;
-  source: Source;
+  source: Source | "PERSONAL";
   noticeId: number;
   title: string;
   organizationName: string;
   location: string | null;
   /** 로그인한 학생이 저장한 공지 */
   bookmarked: boolean;
+  memo?: string | null;
 }
 
 export interface Profile {
