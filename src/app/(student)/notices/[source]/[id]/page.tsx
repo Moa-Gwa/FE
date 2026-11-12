@@ -8,6 +8,7 @@ import AttachmentList from "@/components/AttachmentList";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
 import DateCorrectionForm from "@/components/DateCorrectionForm";
+import HtmlNoticeBody from "@/components/HtmlNoticeBody";
 import Icon from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
@@ -169,7 +170,7 @@ export default function NoticePage() {
             </div>
           ) : n.contentHtml ? (
             // crawled HTML is sanitized by the backend (no scripts, styles or event handlers)
-            <div className="html-body" dangerouslySetInnerHTML={{ __html: n.contentHtml }} />
+            <HtmlNoticeBody html={n.contentHtml} />
           ) : (
             <div className="detail-body">{n.description}</div>
           )}

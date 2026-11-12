@@ -57,7 +57,7 @@ export default function BlocksEditor({
   );
 
   return (
-    <div className="blocks-editor">
+    <fieldset className="blocks-editor" disabled={uploading}>
       {blocks.length === 0 && <div className="empty">위 도구 막대에서 글이나 이미지를 추가해 보세요.</div>}
       {blocks.map((b, i) => (
         <div key={b.key}>
@@ -86,7 +86,7 @@ export default function BlocksEditor({
                 remaining={remaining}
                 uploading={uploading}
                 onLayout={(layout) => update(i, { layout })}
-                onImages={(images) => update(i, { images })}
+                onImages={(images, captions) => update(i, { images, captions })}
                 onUpload={onUpload}
               />
             )}
@@ -98,7 +98,7 @@ export default function BlocksEditor({
       <p className="hint">
         이미지는 공지당 최대 {MAX_IMAGES}장 (JPG·PNG·WEBP, 장당 5MB). 현재 {total}장.
       </p>
-    </div>
+    </fieldset>
   );
 }
 
@@ -135,11 +135,12 @@ function ImageBlockEditor({
   remaining: number;
   uploading: boolean;
   onLayout: (l: BlockLayout) => void;
-  onImages: (images: string[]) => void;
+  onImages: (images: string[], captions: string[]) => void;
   onUpload: (files: FileList) => Promise<string[]>;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const images = block.images;
+  const captions = images.map((_, i) => block.captions?.[i] ?? "");
 
   return (
     <div className="stack">
@@ -162,16 +163,20 @@ function ImageBlockEditor({
             <div className="upload-item" key={`${url}-${i}`}>
               <img src={assetUrl(url)} alt={`이미지 ${i + 1}`} />
               <div className="ops">
-                <button type="button" aria-label="앞으로" disabled={i === 0} onClick={() => onImages(move(images, i, i - 1))}>
+                <button type="button" aria-label="앞으로" disabled={i === 0} onClick={() => onImages(move(images, i, i - 1), move(captions, i, i - 1))}>
                   ←
                 </button>
-                <button type="button" aria-label="이미지 삭제" onClick={() => onImages(images.filter((_, j) => j !== i))}>
+                <button type="button" aria-label="이미지 삭제" onClick={() => onImages(images.filter((_, j) => j !== i), captions.filter((_, j) => j !== i))}>
                   삭제
                 </button>
-                <button type="button" aria-label="뒤로" disabled={i === images.length - 1} onClick={() => onImages(move(images, i, i + 1))}>
+                <button type="button" aria-label="뒤로" disabled={i === images.length - 1} onClick={() => onImages(move(images, i, i + 1), move(captions, i, i + 1))}>
                   →
                 </button>
               </div>
+              <label className="image-caption-label">사진 {i + 1} 설명 (선택)
+                <input className="image-caption-input" value={captions[i]} maxLength={300} placeholder="사진 설명을 입력하세요"
+                  onChange={e => onImages(images, captions.map((caption, j) => j === i ? e.target.value : caption))} />
+              </label>
             </div>
           ))}
         </div>
@@ -192,7 +197,7 @@ function ImageBlockEditor({
             const files = e.target.files;
             if (!files?.length) return;
             const urls = await onUpload(files);
-            if (urls.length) onImages([...images, ...urls]);
+            if (urls.length) onImages([...images, ...urls], [...captions, ...urls.map(() => "")]);
             e.target.value = "";
           }}
         />
@@ -201,7 +206,7 @@ function ImageBlockEditor({
       {images.length > 0 && (
         <div className="block-preview">
           <span className="hint">학생에게 이렇게 보여요</span>
-          <ImageGroup images={images} layout={block.layout} />
+          <ImageGroup images={images} layout={block.layout} captions={captions} />
         </div>
       )}
     </div>
