@@ -24,12 +24,12 @@ export default function LoginPage() {
     setBusy(true);
     setError("");
     try {
-      const res = await api<{ name: string; organization: OrgRef }>("/admin/auth/login", {
+      const res = await api<{ name: string; organization: OrgRef; operator: boolean }>("/admin/auth/login", {
         method: "POST",
         auth: false,
         body: { loginId: formData.get("loginId"), password: formData.get("password") },
       });
-      setSession({ role: "ADMIN", name: res.name, organization: res.organization });
+      setSession({ role: "ADMIN", name: res.name, organization: res.organization, operator: res.operator });
       router.replace("/admin/dashboard");
     } catch (e) {
       setError((e as Error).message);

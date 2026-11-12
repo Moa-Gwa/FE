@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
+import DateCorrectionForm from "@/components/DateCorrectionForm";
 import Icon from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
@@ -43,6 +44,7 @@ export default function NoticePage() {
       qc.invalidateQueries({ queryKey: ["notice"] });
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
+      qc.invalidateQueries({ queryKey: ["schedule"] });
     },
   });
 
@@ -129,6 +131,26 @@ export default function NoticePage() {
                 </>
               )}
             </dl>
+          )}
+          {n.source === "CRAWLED" && (
+            <div className="extracted-info">
+              {n.dateEvidence && (
+                <p className="evidence">
+                  <span>원문 근거</span>
+                  {n.dateEvidence}
+                </p>
+              )}
+              {!!n.keywords?.length && (
+                <ul className="keyword-list" aria-label="키워드">
+                  {n.keywords.map((k) => (
+                    <li key={k}>
+                      <Link href={`/explore?q=${encodeURIComponent(k)}`}>#{k}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <DateCorrectionForm noticeId={n.id} />
+            </div>
           )}
 
           {n.blocks && n.blocks.length > 0 ? (
