@@ -1,10 +1,10 @@
-# 1단계: 의존성 설치. package*.json이 그대로면 캐시를 재사용한다.
+# 1단계: 의존성 설치. package*.json이 그대로면 캐시 재사용
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# 2단계: 빌드. NEXT_PUBLIC_* 값은 이때 번들에 박히므로 빌드 인자로 받는다.
+# 2단계: 빌드. NEXT_PUBLIC_* 값은 이때 번들에 박히므로 빌드 인자로 받음
 FROM node:22-alpine AS build
 WORKDIR /app
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -21,7 +21,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# 3단계: 실행. standalone 결과물과 정적 파일만 담는다(node_modules 전체 불필요).
+# 3단계: 실행. standalone 결과물과 정적 파일만 담음(node_modules 전체 불필요).
 FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
