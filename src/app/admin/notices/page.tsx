@@ -3,9 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import InlineError, { latestError } from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
+import Icon from "@/components/Icon";
 import ShareModal from "@/components/ShareModal";
+import Badge from "@/components/Badge";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
@@ -31,6 +34,22 @@ function Notices() {
   const tab = params.get("tab") ?? "all";
   const [q, setQ] = useState("");
   const [sharing, setSharing] = useState<AdminNotice | null>(null);
+  const [menu, setMenu] = useState<number | null>(null);
+  // close the row menu on any outside click / Escape
+  useEffect(() => {
+    if (menu === null) return;
+    const off = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as Element).closest(".more-wrap")) return;
+      setMenu(null);
+    };
+    document.addEventListener("click", off);
+    document.addEventListener("keydown", off);
+    return () => {
+      document.removeEventListener("click", off);
+      document.removeEventListener("keydown", off);
+    };
+  }, [menu]);
 
   const query = useQuery({
     queryKey: ["admin", "notices", tab, q],
@@ -40,9 +59,12 @@ function Notices() {
     toast(message);
     qc.invalidateQueries({ queryKey: ["admin"] });
   };
-  const close = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/close`, { method: "POST" }), onSuccess: done("공지를 마감했어요."), onError: (e) => toast(e.message) });
-  const duplicate = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/duplicate`, { method: "POST" }), onSuccess: done("공지를 복제했어요. 임시저장 상태예요."), onError: (e) => toast(e.message) });
-  const remove = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}`, { method: "DELETE" }), onSuccess: done("공지를 삭제했어요."), onError: (e) => toast(e.message) });
+  const close = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/close`, { method: "POST" }), onSuccess: done("공지를 마감했어요.") });
+  const duplicate = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/duplicate`, { method: "POST" }), onSuccess: done("공지를 복제했어요. 임시저장 상태예요.") });
+  const remove = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}`, { method: "DELETE" }), onSuccess: done("공지를 삭제했어요.") });
+  // 행 작업 실패는 해당 공지 제목 아래에 표시
+  const rowError = latestError(close, duplicate, remove);
+  const rowErrorId = [close, duplicate, remove].find((m) => m.error && m.error === rowError)?.variables;
 
   return (
     <>
@@ -64,7 +86,7 @@ function Notices() {
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
       ) : query.isError ? (
-        <div className="error">{(query.error as Error).message}</div>
+        <InlineError error={query.error} />
       ) : query.data.length === 0 ? (
         <div className="empty">해당하는 공지가 없어요.</div>
       ) : (
@@ -76,42 +98,70 @@ function Notices() {
                 <th>카테고리</th>
                 <th>작성일</th>
                 <th>상태</th>
-                <th>조회 · 저장</th>
-                <th />
+                <th>반응</th>
+                <th aria-label="관리" />
               </tr>
             </thead>
             <tbody>
               {query.data.map((n) => (
                 <tr key={n.id}>
-                  <td>
+                  <td className="col-title">
                     <strong>{n.title}</strong>
+                    {rowErrorId === n.id && <InlineError error={rowError} />}
                   </td>
-                  <td>
-                    {n.categoryCodes.map((c) => (
-                      <span className="tag" key={c} style={{ marginRight: 4 }}>
-                        {byCode(c)}
-                      </span>
-                    ))}
+                  <td className="col-cat">
+                    <span className="tag-list">
+                      {n.categoryCodes.map((c) => (
+                        <span key={c}>{byCode(c)}</span>
+                      ))}
+                    </span>
                   </td>
-                  <td>{fmtDate(n.createdAt)}</td>
-                  <td>
-                    <span className={`status ${n.status === "DRAFT" ? "draft" : ""}`}>{STATUS_TEXT[n.status]}</span>{" "}
-                    <StatusBadge status={n.status === "PUBLISHED" ? n.displayStatus : null} urgent={n.urgent} />
+                  <td className="col-date">{fmtDate(n.createdAt)}</td>
+                  <td className="col-status">
+                    <span className="detail-badges">
+                      <Badge color={n.status === "PUBLISHED" ? "blue" : "elephant"}>{STATUS_TEXT[n.status]}</Badge>
+                      <StatusBadge status={n.status === "PUBLISHED" ? n.displayStatus : null} urgent={n.urgent} />
+                    </span>
                   </td>
-                  <td>
-                    {n.viewCount} · {n.bookmarkCount}
+                  <td className="col-count">
+                    조회 {n.viewCount} · 저장 {n.bookmarkCount}
                   </td>
-                  <td>
-                    <div className="actions">
-                      <Link href={`/admin/notices/${n.id}/edit`}>
-                        <button>수정</button>
+                  <td className="col-actions">
+                    <div className="row-actions">
+                      <Link href={`/admin/notices/${n.id}/edit`} className="row-edit">
+                        수정
                       </Link>
-                      {n.status === "PUBLISHED" && <button onClick={() => close.mutate(n.id)}>마감</button>}
-                      {(n.status === "PUBLISHED" || n.status === "CLOSED") && <button onClick={() => setSharing(n)}>공유</button>}
-                      <button onClick={() => duplicate.mutate(n.id)}>복제</button>
-                      <button className="delete" onClick={() => confirm("이 공지를 삭제할까요?") && remove.mutate(n.id)}>
-                        삭제
-                      </button>
+                      <div className="more-wrap">
+                        <button
+                          className="row-more"
+                          aria-label="더보기"
+                          aria-haspopup="menu"
+                          aria-expanded={menu === n.id}
+                          onClick={() => setMenu(menu === n.id ? null : n.id)}
+                        >
+                          <Icon name="dots" />
+                        </button>
+                        {menu === n.id && (
+                          <div className="row-menu" role="menu" onClick={() => setMenu(null)}>
+                            {n.status === "PUBLISHED" && (
+                              <button role="menuitem" onClick={() => close.mutate(n.id)}>
+                                마감 처리
+                              </button>
+                            )}
+                            {(n.status === "PUBLISHED" || n.status === "CLOSED") && (
+                              <button role="menuitem" onClick={() => setSharing(n)}>
+                                공유
+                              </button>
+                            )}
+                            <button role="menuitem" onClick={() => duplicate.mutate(n.id)}>
+                              복제
+                            </button>
+                            <button role="menuitem" className="danger-text" onClick={() => confirm("이 공지를 삭제할까요?") && remove.mutate(n.id)}>
+                              삭제
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                 </tr>

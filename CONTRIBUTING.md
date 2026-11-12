@@ -29,7 +29,7 @@ git switch develop && git pull && git switch -c release/v0.1.0
 
 ## 커밋 컨벤션 (Conventional Commits)
 
-`<type>(<scope>): <설명>` — 설명은 한 줄, 명령형/현재형.
+`<type>(<scope>): <설명>` — **type은 영어(Conventional Commits), 설명과 본문은 한국어**로 한 줄 요약 + 필요 시 본문에 변경 이유를 쓴다.
 
 | type | 용도 |
 | --- | --- |
@@ -40,7 +40,9 @@ git switch develop && git pull && git switch -c release/v0.1.0
 | `test` | 테스트 추가/수정 |
 | `chore` | 빌드·설정·의존성 등 |
 
-예: `feat(crawler): 상세 페이지 본문 수집 추가`, `fix(feed): 커서 페이징 중복 항목 수정`
+예: `feat(crawler): 상세 페이지 본문 수집 추가`, `fix(feed): 페이징 중복 항목 수정`
+
+병합 커밋은 `병합: feature/12-crawler-port → develop` 형식을 쓴다. PR 제목·설명과 이슈도 한국어로 작성한다.
 
 ## Pull Request
 
@@ -55,6 +57,13 @@ git switch develop && git pull && git switch -c release/v0.1.0
 npm run lint
 npm run build
 ```
+
+## CI
+
+PR과 `develop` 푸시마다 GitHub Actions가 다음을 검사한다.
+
+- `Lint와 빌드`: `npm ci`, `npm run lint`, `npm run build`
+- `PR 제목 검사`: PR에서만 실행. Squash merge 시 PR 제목이 커밋 메시지가 되므로 위 커밋 컨벤션을 따라야 한다.
 
 ## 브랜치 보호 설정 (저장소 관리자)
 
