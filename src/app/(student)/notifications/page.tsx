@@ -9,7 +9,17 @@ import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
 import type { NotificationItem } from "@/types";
 
-const TYPE_LABEL: Record<string, string> = { NEW_NOTICE: "새 공지", URGENT: "중요 공지" };
+const TYPE_LABEL: Record<string, string> = {
+  NEW_NOTICE: "새 공지",
+  URGENT: "중요 공지",
+  TRADE_REQUESTED: "거래 요청",
+  TRADE_ACCEPTED: "거래 수락",
+};
+
+/** 거래 알림의 noticeId는 물품 id */
+function hrefOf(n: NotificationItem) {
+  return n.source === "MARKET" ? `/life/items/${n.noticeId}` : `/notices/${n.source.toLowerCase()}/${n.noticeId}`;
+}
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -28,7 +38,7 @@ export default function NotificationsPage() {
     <>
       <TopBar
         title="알림"
-        sub="관심 학과·단체의 새 공지를 알려드려요."
+        sub="관심 학과·단체의 새 공지와 거래 소식을 알려드려요."
         actions={
           <button className="secondary" disabled={!query.data?.unreadCount} onClick={() => readAll.mutate()}>
             모두 읽음
@@ -51,7 +61,7 @@ export default function NotificationsPage() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 if (!n.read) readOne.mutate(n.id);
-                router.push(`/notices/${n.source.toLowerCase()}/${n.noticeId}`);
+                router.push(hrefOf(n));
               }}
             >
               <div className="notice-card-top">
