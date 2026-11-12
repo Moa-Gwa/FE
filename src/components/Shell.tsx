@@ -5,17 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
-import { useChatConnection } from "@/hooks/useChat";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
-import { logout } from "@/lib/api";
-import { useSession } from "@/lib/session";
+import { setSession, useSession } from "@/lib/session";
 
 type NavItem = [href: string, icon: IconName, label: string];
 
 const STUDENT_NAV: NavItem[] = [
   ["/home", "home", "홈"],
   ["/explore", "search", "탐색"],
-  ["/life", "bag", "생활"],
   ["/schedule", "calendar", "일정"],
   ["/my", "user", "MY"],
 ];
@@ -27,9 +24,6 @@ const ADMIN_NAV: NavItem[] = [
   ["/admin/schedule", "calendar", "일정"],
   ["/admin/organization", "settings", "조직 관리"],
 ];
-
-/** 서비스 운영자에게만 보이는 메뉴 */
-const OPERATOR_NAV: NavItem[] = [["/admin/corrections", "check", "날짜 교정"], ["/admin/applications", "check", "관리자 신청"]];
 
 function isActive(pathname: string, href: string, all: NavItem[]) {
   if (pathname === href) return true;
@@ -43,9 +37,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const router = useRouter();
   const pathname = usePathname();
   const connected = useNoticeStream();
-  // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
-  useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
-  const nav = role === "STUDENT" ? STUDENT_NAV : session?.operator ? [...ADMIN_NAV, ...OPERATOR_NAV] : ADMIN_NAV;
+  const nav = role === "STUDENT" ? STUDENT_NAV : ADMIN_NAV;
 
   useEffect(() => {
     if (session === null || (session && session.role !== role)) router.replace("/login");
@@ -53,8 +45,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
 
   if (!session || session.role !== role) return null;
 
-  const signOut = async () => {
-    await logout();
+  const logout = () => {
+    setSession(null);
     router.replace("/login");
   };
 
@@ -99,7 +91,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
             <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
             {connected ? "실시간 연결됨" : "연결 중…"}
           </p>
-          <button className="logout" onClick={signOut}>
+          <button className="logout" onClick={logout}>
             로그아웃
           </button>
         </div>

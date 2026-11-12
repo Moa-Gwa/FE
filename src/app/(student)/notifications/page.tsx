@@ -2,24 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import InlineError from "@/components/InlineError";
-import Badge from "@/components/Badge";
 import TopBar from "@/components/TopBar";
 import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
 import type { NotificationItem } from "@/types";
 
-const TYPE_LABEL: Record<string, string> = {
-  NEW_NOTICE: "새 공지",
-  URGENT: "중요 공지",
-  TRADE_REQUESTED: "거래 요청",
-  TRADE_ACCEPTED: "거래 수락",
-};
-
-/** 거래 알림의 noticeId는 물품 id */
-function hrefOf(n: NotificationItem) {
-  return n.source === "MARKET" ? `/life/items/${n.noticeId}` : `/notices/${n.source.toLowerCase()}/${n.noticeId}`;
-}
+const TYPE_LABEL: Record<string, string> = { NEW_NOTICE: "새 공지", URGENT: "중요 공지" };
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -38,18 +26,15 @@ export default function NotificationsPage() {
     <>
       <TopBar
         title="알림"
-        sub="관심 학과·단체의 새 공지와 거래 소식을 알려드려요."
+        sub="관심 학과·단체의 새 공지를 알려드려요."
         actions={
           <button className="secondary" disabled={!query.data?.unreadCount} onClick={() => readAll.mutate()}>
             모두 읽음
           </button>
         }
       />
-      <InlineError error={readAll.error} />
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
-      ) : query.isError ? (
-        <InlineError error={query.error} />
       ) : items.length === 0 ? (
         <div className="empty">아직 알림이 없어요.<br />관심정보를 설정하면 새 공지를 알려드려요.</div>
       ) : (
@@ -61,16 +46,12 @@ export default function NotificationsPage() {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 if (!n.read) readOne.mutate(n.id);
-                router.push(hrefOf(n));
+                router.push(`/notices/${n.source.toLowerCase()}/${n.noticeId}`);
               }}
             >
               <div className="notice-card-top">
-                <Badge color={n.type === "URGENT" ? "blue" : "elephant"}>{TYPE_LABEL[n.type] ?? n.type}</Badge>
-                {!n.read && (
-                  <Badge color="blue" variant="fill" label="읽지 않은 알림">
-                    NEW
-                  </Badge>
-                )}
+                <span className={`pill ${n.type === "URGENT" ? "red" : ""}`}>{TYPE_LABEL[n.type] ?? n.type}</span>
+                {!n.read && <span className="pill pink">NEW</span>}
               </div>
               <h3>{n.title}</h3>
               <div className="notice-meta">

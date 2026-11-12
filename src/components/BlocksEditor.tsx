@@ -23,8 +23,6 @@ function move<T>(list: T[], from: number, to: number): T[] {
   return next;
 }
 
-const without = <T,>(list: T[], index: number): T[] => list.filter((_, j) => j !== index);
-
 /**
  * Blog-style body editor: an ordered list of text and image blocks. Image blocks choose between a
  * slideshow and a vertical stack, and show a live preview of exactly how students will see them.
@@ -59,14 +57,14 @@ export default function BlocksEditor({
   );
 
   return (
-    <fieldset className="blocks-editor" disabled={uploading}>
-      {blocks.length === 0 && <div className="empty">위 도구 막대에서 글이나 이미지를 추가해 보세요.</div>}
+    <div className="blocks-editor">
+      {blocks.length === 0 && <div className="empty">아래 버튼으로 글이나 이미지를 추가해 보세요.</div>}
       {blocks.map((b, i) => (
         <div key={b.key}>
           {i === 0 && insertBar(0)}
-          <div className={`block-card ${b.type === "TEXT" ? "is-text" : "is-images"}`}>
+          <div className="block-card">
             <div className="block-head">
-              <b>{b.type === "TEXT" ? "" : `이미지 ${b.images.length}장`}</b>
+              <b>{b.type === "TEXT" ? "글" : `이미지 (${b.images.length}장)`}</b>
               <div className="actions">
                 <button type="button" aria-label="위로" disabled={i === 0} onClick={() => onChange(move(blocks, i, i - 1))}>
                   ↑
@@ -88,7 +86,7 @@ export default function BlocksEditor({
                 remaining={remaining}
                 uploading={uploading}
                 onLayout={(layout) => update(i, { layout })}
-                onImages={(images, captions) => update(i, { images, captions })}
+                onImages={(images) => update(i, { images })}
                 onUpload={onUpload}
               />
             )}
@@ -100,7 +98,7 @@ export default function BlocksEditor({
       <p className="hint">
         이미지는 공지당 최대 {MAX_IMAGES}장 (JPG·PNG·WEBP, 장당 5MB). 현재 {total}장.
       </p>
-    </fieldset>
+    </div>
   );
 }
 
@@ -116,7 +114,7 @@ function AutoTextarea({ value, onChange }: { value: string; onChange: (v: string
       }}
       className="block-text"
       value={value}
-      placeholder="공지 내용을 적어 보세요…"
+      placeholder="내용을 입력하세요"
       onChange={(e) => {
         onChange(e.target.value);
         fit(e.target);
@@ -137,12 +135,11 @@ function ImageBlockEditor({
   remaining: number;
   uploading: boolean;
   onLayout: (l: BlockLayout) => void;
-  onImages: (images: string[], captions: string[]) => void;
+  onImages: (images: string[]) => void;
   onUpload: (files: FileList) => Promise<string[]>;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const images = block.images;
-  const captions = images.map((_, i) => block.captions?.[i] ?? "");
 
   return (
     <div className="stack">
@@ -162,44 +159,19 @@ function ImageBlockEditor({
       {images.length > 0 && (
         <div className="upload-grid">
           {images.map((url, i) => (
-            // 순서를 바꿔도 같은 사진은 같은 key를 유지함. 같은 사진이 여러 장이면 몇 번째인지로 구분함
-            <div className="upload-item" key={`${url}#${images.slice(0, i).filter((u) => u === url).length}`}>
+            <div className="upload-item" key={`${url}-${i}`}>
               <img src={assetUrl(url)} alt={`이미지 ${i + 1}`} />
               <div className="ops">
-                <button
-                  type="button"
-                  aria-label="앞으로"
-                  disabled={i === 0}
-                  onClick={() => onImages(move(images, i, i - 1), move(captions, i, i - 1))}
-                >
+                <button type="button" aria-label="앞으로" disabled={i === 0} onClick={() => onImages(move(images, i, i - 1))}>
                   ←
                 </button>
-                <button
-                  type="button"
-                  aria-label="이미지 삭제"
-                  onClick={() => onImages(without(images, i), without(captions, i))}
-                >
+                <button type="button" aria-label="이미지 삭제" onClick={() => onImages(images.filter((_, j) => j !== i))}>
                   삭제
                 </button>
-                <button
-                  type="button"
-                  aria-label="뒤로"
-                  disabled={i === images.length - 1}
-                  onClick={() => onImages(move(images, i, i + 1), move(captions, i, i + 1))}
-                >
+                <button type="button" aria-label="뒤로" disabled={i === images.length - 1} onClick={() => onImages(move(images, i, i + 1))}>
                   →
                 </button>
               </div>
-              <label className="image-caption-label">
-                사진 {i + 1} 설명 (선택)
-                <input
-                  className="image-caption-input"
-                  value={captions[i]}
-                  maxLength={300}
-                  placeholder="사진 설명을 입력하세요"
-                  onChange={(e) => onImages(images, captions.map((c, j) => (j === i ? e.target.value : c)))}
-                />
-              </label>
             </div>
           ))}
         </div>
@@ -220,7 +192,7 @@ function ImageBlockEditor({
             const files = e.target.files;
             if (!files?.length) return;
             const urls = await onUpload(files);
-            if (urls.length) onImages([...images, ...urls], [...captions, ...urls.map(() => "")]);
+            if (urls.length) onImages([...images, ...urls]);
             e.target.value = "";
           }}
         />
@@ -229,7 +201,7 @@ function ImageBlockEditor({
       {images.length > 0 && (
         <div className="block-preview">
           <span className="hint">학생에게 이렇게 보여요</span>
-          <ImageGroup images={images} layout={block.layout} captions={captions} />
+          <ImageGroup images={images} layout={block.layout} />
         </div>
       )}
     </div>

@@ -1,29 +1,11 @@
-import Badge, { type BadgeColor } from "@/components/Badge";
-import { STATUS_LABEL } from "@/lib/format";
+import { STATUS_LABEL, STATUS_TONE } from "@/lib/format";
 import type { DisplayStatus } from "@/types";
 
-/** 같은 뜻은 어느 화면에서나 같은 색: 중요 blue, 마감 임박 yellow, 그 외 elephant */
-const STATUS_COLOR: Record<DisplayStatus, BadgeColor> = {
-  UPCOMING: "elephant",
-  ONGOING: "elephant",
-  DEADLINE_SOON: "yellow",
-  CLOSED: "elephant",
-  ENDED: "elephant",
-};
-
-export default function StatusBadge({ status, urgent, size }: { status: DisplayStatus | null; urgent?: boolean; size?: "xsmall" | "small" }) {
+export default function StatusBadge({ status, urgent }: { status: DisplayStatus | null; urgent?: boolean }) {
   return (
     <>
-      {urgent && (
-        <Badge color="blue" size={size}>
-          중요
-        </Badge>
-      )}
-      {status && (
-        <Badge color={STATUS_COLOR[status]} size={size}>
-          {STATUS_LABEL[status]}
-        </Badge>
-      )}
+      {urgent && <span className="pill red">중요</span>}
+      {status && <span className={`pill ${STATUS_TONE[status]}`}>{STATUS_LABEL[status]}</span>}
     </>
   );
 }

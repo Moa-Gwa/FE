@@ -1,25 +1,21 @@
 "use client";
 
 import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
-import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import type { AdminNotice } from "@/types";
 
 /** Share link, ready-to-paste text for KakaoTalk / Everytime, and a QR code. */
 export default function ShareModal({ notice, onClose }: { notice: AdminNotice; onClose: () => void }) {
   const toast = useToast();
-  const [error, setError] = useState<string | null>(null);
   const url = `${window.location.origin}/notices/manual/${notice.id}`;
   const text = `[모아과 공지] ${notice.title}\n${notice.description.slice(0, 80)}${notice.description.length > 80 ? "…" : ""}\n👉 ${url}`;
 
   async function copy(value: string, message: string) {
-    setError(null);
     try {
       await navigator.clipboard.writeText(value);
       toast(message);
     } catch {
-      setError("복사하지 못했어요. 직접 선택해서 복사해 주세요.");
+      toast("복사하지 못했어요. 직접 선택해서 복사해 주세요.");
     }
   }
 
@@ -48,7 +44,6 @@ export default function ShareModal({ notice, onClose }: { notice: AdminNotice; o
             <QRCodeSVG value={url} size={150} />
           </div>
         </div>
-        <InlineError error={error} />
         <div className="form-actions">
           <button className="secondary" onClick={onClose}>
             닫기

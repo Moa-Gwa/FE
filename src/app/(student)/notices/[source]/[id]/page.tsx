@@ -3,20 +3,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import AttachmentList from "@/components/AttachmentList";
+import { useEffect, useRef } from "react";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
-import DateCorrectionForm from "@/components/DateCorrectionForm";
-import HtmlNoticeBody from "@/components/HtmlNoticeBody";
-import Icon from "@/components/Icon";
-import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
 import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
 import { api } from "@/lib/api";
-import { onSessionChange, useSession } from "@/lib/session";
 import { dDay, fmtDate, fmtDateTime, ORG_TYPE_LABEL } from "@/lib/format";
 import type { NoticeDetail } from "@/types";
 
@@ -31,47 +25,34 @@ export default function NoticePage() {
 
   const query = useQuery({ queryKey: ["notice", src, id], queryFn: () => api<NoticeDetail>(`/${path}/${id}`) });
 
-  const session = useSession();
   const counted = useRef<string | null>(null);
-  useEffect(() => onSessionChange(() => { counted.current = null; }), []);
   useEffect(() => {
-    if (!query.isSuccess || session?.role !== "STUDENT") return;
-    const key = `${session.name}-${src}-${id}`;
-    if (counted.current === key) return;
-    counted.current = key;
-    api<void>(`/${path}/${id}/view`, { method: "POST" }).then(() => {
-      qc.invalidateQueries({ queryKey: ["notice", src, id] });
-    }).catch(() => {
-      if (counted.current === key) counted.current = null;
-    });
-  }, [src, id, path, query.isSuccess, session?.role, session?.name, qc]);
+    if (counted.current === `${src}-${id}`) return;
+    counted.current = `${src}-${id}`;
+    api<void>(`/${path}/${id}/view`, { method: "POST", auth: false }).catch(() => {});
+  }, [src, id, path]);
 
-  const [shareError, setShareError] = useState<string | null>(null);
   const toggle = useMutation({
     mutationFn: (saved: boolean) => api<void>(`/me/bookmarks/${src}/${id}`, { method: saved ? "DELETE" : "PUT" }),
-    onMutate: () => setShareError(null),
     onSuccess: (_d, saved) => {
       toast(saved ? "저장을 취소했어요." : "내 공지에 저장했어요.");
       qc.invalidateQueries({ queryKey: ["notice"] });
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["bookmarks"] });
-      qc.invalidateQueries({ queryKey: ["schedule"] });
     },
+    onError: (e) => toast(e.message),
   });
 
   async function share() {
     const url = window.location.href;
-    setShareError(null);
-    toggle.reset();
     try {
       if (navigator.share) await navigator.share({ title: query.data?.title, url });
       else {
         await navigator.clipboard.writeText(url);
         toast("공지 링크를 복사했어요.");
       }
-    } catch (e) {
-      // 공유 창을 닫은 경우(AbortError)는 오류가 아님
-      if ((e as Error).name !== "AbortError") setShareError("공유하지 못했어요. 주소창의 링크를 직접 복사해 주세요.");
+    } catch {
+      /* user dismissed the share sheet */
     }
   }
 
@@ -98,13 +79,13 @@ export default function NoticePage() {
       {n && (
         <article className="detail-card">
           {!n.blocks?.length && <Carousel images={n.images} />}
-          <div className="detail-badges">
-            <StatusBadge status={n.status} urgent={n.urgent} size="small" />
-            <span className="tag-list">
-              {(n.categories.length ? n.categories : [null]).map((c) => (
-                <span key={c ?? "none"}>{byCode(c)}</span>
-              ))}
-            </span>
+          <div className="chips">
+            {(n.categories.length ? n.categories : [null]).map((c) => (
+              <span key={c ?? "none"} className={`pill ${c === "EVENT" ? "pink" : ""}`}>
+                {byCode(c)}
+              </span>
+            ))}
+            <StatusBadge status={n.status} urgent={n.urgent} />
           </div>
           <h1>{n.title}</h1>
           <div className="detail-info">
@@ -143,26 +124,6 @@ export default function NoticePage() {
               )}
             </dl>
           )}
-          {n.source === "CRAWLED" && (
-            <div className="extracted-info">
-              {n.dateEvidence && (
-                <p className="evidence">
-                  <span>원문 근거</span>
-                  {n.dateEvidence}
-                </p>
-              )}
-              {!!n.keywords?.length && (
-                <ul className="keyword-list" aria-label="키워드">
-                  {n.keywords.map((k) => (
-                    <li key={k}>
-                      <Link href={`/explore?q=${encodeURIComponent(k)}`}>#{k}</Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <DateCorrectionForm noticeId={n.id} />
-            </div>
-          )}
 
           {n.blocks && n.blocks.length > 0 ? (
             <div style={{ margin: "22px 0" }}>
@@ -170,16 +131,14 @@ export default function NoticePage() {
             </div>
           ) : n.contentHtml ? (
             // crawled HTML is sanitized by the backend (no scripts, styles or event handlers)
-            <HtmlNoticeBody html={n.contentHtml} />
+            <div className="html-body" dangerouslySetInnerHTML={{ __html: n.contentHtml }} />
           ) : (
             <div className="detail-body">{n.description}</div>
           )}
 
-          <AttachmentList attachments={n.attachments} />
-
           <div className="btn-row">
-            <button className="primary with-icon" aria-pressed={n.bookmarked} disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
-              <Icon name="bookmark" /> {n.bookmarked ? "저장됨" : "내 공지에 저장"}
+            <button className="primary" disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
+              {n.bookmarked ? "★ 저장됨" : "☆ 내 공지에 저장"}
             </button>
             <button className="secondary" onClick={share}>
               공유
@@ -190,7 +149,6 @@ export default function NoticePage() {
               </a>
             )}
           </div>
-          <InlineError error={shareError ?? toggle.error} />
         </article>
       )}
     </>

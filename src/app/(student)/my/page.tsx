@@ -4,17 +4,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import InlineError from "@/components/InlineError";
-import Icon from "@/components/Icon";
 import NoticeCard from "@/components/NoticeCard";
-import PushToggleRow from "@/components/PushToggleRow";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
-import { api, logout } from "@/lib/api";
+import { api } from "@/lib/api";
 import { STATUS_LABEL } from "@/lib/format";
-import { unregisterPushToken } from "@/lib/push";
-import { useSession } from "@/lib/session";
+import { setSession, useSession } from "@/lib/session";
 import type { FeedItem, NotificationSettings, Profile } from "@/types";
 
 const SETTINGS: [keyof NotificationSettings, string][] = [
@@ -45,6 +41,7 @@ export default function MyPage() {
       qc.invalidateQueries({ queryKey: ["me", "settings"] });
       toast("알림 설정을 저장했어요.");
     },
+    onError: (e) => toast(e.message),
   });
 
   const p = profile.data;
@@ -90,35 +87,6 @@ export default function MyPage() {
 
       <section className="section">
         <div className="section-heading">
-          <h2>생활</h2>
-        </div>
-        <Link href="/life/my" className="menu-row">
-          <span className="menu-row-body">
-            <strong>내 거래</strong>
-            <span>물품 · 관심 · 요청 · 같이 사기</span>
-          </span>
-          <Icon name="chevron" size={18} />
-        </Link>
-        <Link href="/life/chats" className="menu-row">
-          <span className="menu-row-body">
-            <strong>채팅</strong>
-            <span>거래·같이 사기 대화</span>
-          </span>
-          <Icon name="chevron" size={18} />
-        </Link>
-        {!session?.verified && (
-          <Link href="/life/verify" className="menu-row">
-            <span className="menu-row-body">
-              <strong>재학생 인증하기</strong>
-              <span>학교 메일로 인증하면 생활 탭을 쓸 수 있어요</span>
-            </span>
-            <Icon name="chevron" size={18} />
-          </Link>
-        )}
-      </section>
-
-      <section className="section">
-        <div className="section-heading">
           <h2>저장한 공지 {saved.data?.length ?? 0}</h2>
         </div>
         <div className="chips" style={{ marginBottom: 12 }}>
@@ -140,7 +108,7 @@ export default function MyPage() {
           <div className="empty">
             아직 저장한 공지가 없어요.
             <br />
-            관심 있는 공지의 북마크를 눌러 모아보세요.
+            관심 있는 공지의 ☆를 눌러보세요.
           </div>
         )}
       </section>
@@ -150,7 +118,6 @@ export default function MyPage() {
           <h2>알림 설정</h2>
         </div>
         <div className="form-card">
-          <PushToggleRow />
           {SETTINGS.map(([key, label]) => (
             <div className="setting-row" key={key}>
               <span>{label}</span>
@@ -166,21 +133,21 @@ export default function MyPage() {
               </button>
             </div>
           ))}
-          <InlineError error={settings.error ?? update.error} />
-          <p className="hint">푸시 발송은 준비 중이에요. 켜 두시면 준비되는 대로 이 기기로 받아요. 앱 안 알림센터에는 항상 쌓여요.</p>
+          <p className="hint">푸시(FCM) 알림은 준비 중이에요. 지금은 앱 안 알림센터로 전달돼요.</p>
         </div>
       </section>
 
-      <button
-          className="logout-text"
-          onClick={async () => {
-            await unregisterPushToken().catch(() => {}); // 로그아웃한 계정의 알림이 이 기기로 오지 않게 한다
-            await logout();
+      <section className="section">
+        <button
+          className="secondary danger"
+          onClick={() => {
+            setSession(null);
             router.replace("/login");
           }}
         >
           로그아웃
         </button>
+      </section>
     </>
   );
 }
