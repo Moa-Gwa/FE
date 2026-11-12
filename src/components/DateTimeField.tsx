@@ -72,7 +72,10 @@ export default function DateTimeField({
   // keep the selected hour / minute in view when the picker opens
   useEffect(() => {
     if (!open) return;
-    box.current?.querySelectorAll<HTMLElement>(".dt-col .on").forEach((el) => el.scrollIntoView({ block: "center" }));
+    box.current?.querySelectorAll<HTMLElement>(".dt-col .on").forEach((el) => {
+      const column = el.parentElement;
+      if (column) column.scrollTop = el.offsetTop - column.offsetTop - (column.clientHeight - el.clientHeight) / 2;
+    });
   }, [open]);
 
   const confirm = () => {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
+import PersonalScheduleForm from "@/components/PersonalScheduleForm";
 import Calendar from "@/components/Calendar";
 import Icon from "@/components/Icon";
 import TopBar from "@/components/TopBar";
@@ -27,10 +28,10 @@ const onlyBookmarked = (list: ScheduleEntry[] | undefined, on: boolean) =>
   (list ?? []).filter((e) => !on || e.bookmarked);
 const entryKey = (e: ScheduleEntry) => `${e.type}-${e.source}-${e.noticeId}-${e.at}`;
 
-function EntryRow({ e }: { e: ScheduleEntry }) {
+function EntryRow({ e, onEdit }: { e: ScheduleEntry; onEdit: (e: ScheduleEntry) => void }) {
   const deadline = e.type === "DEADLINE";
-  return (
-    <Link href={`/notices/${e.source.toLowerCase()}/${e.noticeId}`} className="notice-card sched-row">
+  const personal = e.source === "PERSONAL";
+  const content = <>
       <span className="sched-time">{fmtTime(e.at)}</span>
       <div className="nc-body">
         <h3>
@@ -43,15 +44,20 @@ function EntryRow({ e }: { e: ScheduleEntry }) {
           {e.title}
         </h3>
         <div className="nc-meta">
-          <Badge color={deadline ? "yellow" : "elephant"}>{deadline ? "마감" : "행사"}</Badge>
+          <Badge color={deadline ? "yellow" : "elephant"}>{personal ? "내 일정" : deadline ? "마감" : "행사"}</Badge>
           <span className="nc-sub">{[e.organizationName, e.location].filter(Boolean).join(" · ")}</span>
         </div>
+        {personal && e.memo && <p className="personal-schedule-memo">{e.memo}</p>}
       </div>
-    </Link>
+    </>;
+  return personal ? (
+    <button type="button" className="notice-card sched-row personal-schedule-row" onClick={() => onEdit(e)} aria-label={`${e.title} 일정 수정`}>{content}</button>
+  ) : (
+    <Link href={`/notices/${e.source.toLowerCase()}/${e.noticeId}`} className="notice-card sched-row">{content}</Link>
   );
 }
 
-function DayGroup({ day, list, today }: { day: string; list: ScheduleEntry[]; today: string }) {
+function DayGroup({ day, list, today, onEdit }: { day: string; list: ScheduleEntry[]; today: string; onEdit: (e: ScheduleEntry) => void }) {
   return (
     <div className="sched-group">
       <h3 className="sched-day">
@@ -60,7 +66,7 @@ function DayGroup({ day, list, today }: { day: string; list: ScheduleEntry[]; to
       </h3>
       <div className="notice-list">
         {list.map((e) => (
-          <EntryRow key={entryKey(e)} e={e} />
+          <EntryRow key={entryKey(e)} e={e} onEdit={onEdit} />
         ))}
       </div>
     </div>
@@ -77,6 +83,8 @@ export default function SchedulePage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
   const [savedOnly, setSavedOnly] = useState(false);
+  const [editor, setEditor] = useState<{ entry: ScheduleEntry | null; day: string; fixedDate?: boolean } | null>(null);
+  const editEntry = (entry: ScheduleEntry) => setEditor({ entry, day: kstDay(entry.at) });
   // 저장한 공지가 일정에 포함되므로 계정별로 캐시를 나눔(다른 계정의 저장 표시 노출 방지)
   const session = useSession();
   const isStudent = session?.role === "STUDENT";
@@ -121,7 +129,7 @@ export default function SchedulePage() {
     ) : week.isError ? (
       <InlineError error={week.error} />
     ) : weekGroups.length ? (
-      weekGroups.map(([day, list]) => <DayGroup key={day} day={day} list={list} today={today} />)
+      weekGroups.map(([day, list]) => <DayGroup key={day} day={day} list={list} today={today} onEdit={editEntry} />)
     ) : (
       <div className="empty">{onlySaved ? "이번 주에 저장한 공지 일정이 없어요." : "이번 주 일정이 없어요."}</div>
     );
@@ -134,7 +142,7 @@ export default function SchedulePage() {
     ) : source.isError ? (
       <InlineError error={source.error} />
     ) : list.length ? (
-      <DayGroup day={day} list={list} today={today} />
+      <DayGroup day={day} list={list} today={today} onEdit={editEntry} />
     ) : (
       <div className="empty">{mode === "today" ? "오늘 예정된 일정이 없어요." : "선택한 날짜에 일정이 없어요."}</div>
     );
@@ -142,7 +150,21 @@ export default function SchedulePage() {
 
   return (
     <>
-      <TopBar title="일정" sub="행사·신청·마감 일정과 저장한 공지의 날짜를 한눈에 확인하세요." />
+      <TopBar title="일정" sub="행사·마감부터 나만의 일정까지 한눈에 확인하세요." />
+      <section className="section personal-schedule-section">
+        {isStudent ? <>
+          <button type="button" className="secondary personal-schedule-add" onClick={() => setEditor({ entry: null, day: selected ?? today })}>+ 일정 추가</button>
+          <p className="personal-schedule-hint">날짜를 더블클릭하면 바로 추가할 수 있어요.</p>
+        </> : <Link href="/login" className="secondary personal-schedule-add">로그인하고 내 일정 추가</Link>}
+      </section>
+      {isStudent && editor && <PersonalScheduleForm key={editor.entry?.noticeId ?? editor.day} entry={editor.entry} day={editor.day} fixedDate={editor.fixedDate}
+        onClose={() => setEditor(null)} onSaved={(day) => {
+          setSavedOnly(false);
+          setSelected(day);
+          setMode(day === today ? "today" : "day");
+          const [year, month] = day.split("-").map(Number);
+          setCursor({ year, month: month - 1 });
+        }} />}
 
       <section className="section sched-cal">
         <Calendar
@@ -155,6 +177,7 @@ export default function SchedulePage() {
             setMode(d === today ? "today" : "day");
             setSelected(d);
           }}
+          onAdd={isStudent ? (day) => setEditor({ entry: null, day, fixedDate: true }) : undefined}
           onMove={(d) => {
             const next = new Date(cursor.year, cursor.month + d, 1);
             setCursor({ year: next.getFullYear(), month: next.getMonth() });

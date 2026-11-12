@@ -1296,3 +1296,68 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 .correction-source p{max-height:260px;overflow:auto;margin:8px 0 0;white-space:pre-wrap;color:var(--g700);font-size:13px;line-height:1.6}
 .correction-apply{display:flex;flex-direction:column;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--g100)}
 .correction-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+
+/* 개인 일정: 기존 캘린더·입력 폼과 같은 색상과 간격 */
+.shell .personal-schedule-section{padding:0 20px 16px}
+.personal-schedule-add{width:calc(100% - 24px);margin-inline:12px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;min-height:48px}
+.personal-schedule-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.personal-schedule-heading h2{margin:0;font-size:17px}
+.personal-schedule-heading span{font-size:12px;color:var(--g500)}
+.personal-schedule-row{width:100%;text-align:left;background:transparent;font:inherit;color:inherit;cursor:pointer;border-radius:0}
+.personal-schedule-memo{margin:8px 0 0;font-size:13px;color:var(--g600);white-space:pre-wrap;overflow-wrap:anywhere}
+.personal-schedule-form .personal-delete{color:var(--coral-strong)}
+
+.personal-schedule-hint{margin:10px 0 0;text-align:center;font-size:12px;color:var(--g500)}
+.personal-schedule-dialog{position:fixed;inset:0;margin:auto;border:0;width:calc(100% - 32px);max-width:960px;height:min(720px,calc(100dvh - 32px));max-height:calc(100dvh - 32px);padding:32px;box-sizing:border-box;color:var(--g900);overscroll-behavior:contain}
+.personal-schedule-dialog::backdrop{background:rgba(0,0,0,.4)}
+.personal-schedule-dialog .personal-schedule-form{padding:0;border:0}
+.personal-schedule-dialog .personal-schedule-heading{padding-right:20px;flex-wrap:wrap}
+.personal-schedule-close{position:absolute;right:16px;top:12px;font-size:26px;line-height:1;width:36px;height:36px}
+
+/* 일정 입력과 날짜 선택을 나란히 배치 */
+@media(min-width:800px){
+  .personal-schedule-dialog .personal-schedule-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px 28px;align-items:start}
+  .personal-schedule-dialog .personal-schedule-heading{grid-column:1 / -1;margin-bottom:6px}
+  .personal-schedule-dialog .personal-schedule-heading h2{font-size:21px}
+  .personal-field-title{grid-column:1;grid-row:2}
+  .personal-field-location{grid-column:1;grid-row:3}
+  .personal-field-memo{grid-column:1;grid-row:4}
+  .personal-schedule-dialog .personal-field-date{grid-column:2;grid-row:2 / 5;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;align-self:stretch;gap:7px;margin:0;min-width:0;width:100%}
+  .personal-schedule-dialog .personal-field-memo textarea{min-height:180px;resize:vertical}
+  .personal-schedule-form > .btn-row,.personal-schedule-form > .inline-error{grid-column:1 / -1}
+  .personal-schedule-form > .btn-row{justify-content:flex-end}
+}
+@media(max-width:799px){
+  .personal-schedule-dialog{width:calc(100% - 24px);height:calc(100dvh - 24px);padding:24px;max-height:calc(100dvh - 24px)}
+}
+.personal-schedule-dialog #personal-at{width:100%;min-width:0;box-sizing:border-box;color-scheme:light}
+
+.wheel-field-label{font-size:13px;color:var(--g600)}
+.wheel-picker{width:100%;box-sizing:border-box;padding:20px 12px;border:1px solid var(--g200);border-radius:16px;background:#fff}
+.wheel-preview{margin:0 0 20px;text-align:center;font-size:16px;font-weight:600;color:var(--g900);font-variant-numeric:tabular-nums}
+.wheel-columns{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:4px}
+.wheel-column{min-width:0;text-align:center}
+.wheel-label{display:block;margin-bottom:8px;font-size:12px;color:var(--g500)}
+.wheel-window{height:200px;position:relative}
+.wheel-selection{position:absolute;inset:80px 0;border-radius:10px;background:var(--g100);border-block:1px solid var(--g200);pointer-events:none}
+.wheel-list{position:relative;height:200px;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;scrollbar-width:none;padding-block:80px;box-sizing:border-box;mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent);font-variant-numeric:tabular-nums}
+.wheel-list::-webkit-scrollbar{display:none}
+.wheel-list button{display:block;width:100%;height:40px;min-height:40px;padding:0;border:0;border-radius:0;background:transparent;color:var(--g500);font:inherit;font-size:17px;scroll-snap-align:center;cursor:pointer}
+.wheel-list button.selected{color:var(--coral-strong);font-weight:700}
+.wheel-list:focus-visible{outline:2px solid var(--coral);outline-offset:2px;border-radius:10px}
+.wheel-list[aria-disabled=true]{pointer-events:none;opacity:.5}
+.wheel-hint{margin:16px 0 0;text-align:center;font-size:12px;color:var(--g500)}
+
+/* 세로로 이어지는 개인 일정 입력 창 */
+.personal-schedule-dialog.personal-schedule-vertical{max-width:560px}
+.personal-schedule-vertical .personal-schedule-form{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.personal-schedule-vertical .personal-field-date{width:100%;display:flex;flex-direction:column;gap:7px;align-self:auto}
+.personal-schedule-vertical .personal-field-memo textarea{min-height:76px;resize:vertical}
+.personal-schedule-vertical .personal-schedule-heading{margin-bottom:4px}
+.personal-schedule-vertical .wheel-picker{padding:12px}
+.personal-schedule-vertical .wheel-preview{margin-bottom:10px}
+.personal-schedule-vertical .wheel-hint{margin-top:10px}
+.personal-schedule-vertical .wheel-window,.personal-schedule-vertical .wheel-list{height:120px}
+.personal-schedule-vertical .wheel-list{padding-block:40px}
+.personal-schedule-vertical .wheel-selection{inset:40px 0}
+.wheel-time-only .wheel-columns{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
