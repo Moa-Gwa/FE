@@ -14,6 +14,7 @@ import StatusBadge from "@/components/StatusBadge";
 import TopBar from "@/components/TopBar";
 import { useCategories } from "@/hooks/useMeta";
 import { api } from "@/lib/api";
+import { onSessionChange, useSession } from "@/lib/session";
 import { dDay, fmtDate, fmtDateTime, ORG_TYPE_LABEL } from "@/lib/format";
 import type { NoticeDetail } from "@/types";
 
@@ -28,12 +29,20 @@ export default function NoticePage() {
 
   const query = useQuery({ queryKey: ["notice", src, id], queryFn: () => api<NoticeDetail>(`/${path}/${id}`) });
 
+  const session = useSession();
   const counted = useRef<string | null>(null);
+  useEffect(() => onSessionChange(() => { counted.current = null; }), []);
   useEffect(() => {
-    if (counted.current === `${src}-${id}`) return;
-    counted.current = `${src}-${id}`;
-    api<void>(`/${path}/${id}/view`, { method: "POST", auth: false }).catch(() => {});
-  }, [src, id, path]);
+    if (!query.isSuccess || session?.role !== "STUDENT") return;
+    const key = `${session.name}-${src}-${id}`;
+    if (counted.current === key) return;
+    counted.current = key;
+    api<void>(`/${path}/${id}/view`, { method: "POST" }).then(() => {
+      qc.invalidateQueries({ queryKey: ["notice", src, id] });
+    }).catch(() => {
+      if (counted.current === key) counted.current = null;
+    });
+  }, [src, id, path, query.isSuccess, session?.role, session?.name, qc]);
 
   const [shareError, setShareError] = useState<string | null>(null);
   const toggle = useMutation({

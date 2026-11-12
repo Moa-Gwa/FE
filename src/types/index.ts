@@ -369,3 +369,26 @@ export interface DateCorrection {
     contentText: string | null;
   };
 }
+
+export type AdminApplicationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface AdminApplication {
+  id: number;
+  organizationName: string;
+  university: string;
+  department: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  channelUrl: string;
+  reason: string;
+  status: AdminApplicationStatus;
+  rejectionReason: string | null;
+  createdAt: string;
+}
+
+/** 메일을 보냈으면 setupLink는 null. 메일 설정이 없는 환경에서만 링크를 직접 받음 */
+export interface SetupLinkIssued {
+  mailSent: boolean;
+  setupLink: string | null;
+}
