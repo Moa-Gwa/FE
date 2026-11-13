@@ -28,7 +28,7 @@ export async function api<T>(path: string, { body, auth = true, headers, ...init
     ...init,
     credentials: "include",
     headers: {
-      "X-Requested-With": "fetch",
+      "X-Requested-With": "fetch", // 쿠키 인증 쓰기 요청의 CSRF 방어용 헤더
       ...(body !== undefined && !isForm ? { "Content-Type": "application/json" } : {}),
       ...headers,
     },

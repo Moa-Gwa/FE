@@ -1,5 +1,5 @@
 import { Client } from "@stomp/stompjs";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, api } from "@/lib/api";
 import type { ChatEvent } from "@/types";
 
 /**
@@ -23,6 +23,10 @@ export function connectChat() {
   client = new Client({
     brokerURL: `${(API_BASE || window.location.origin).replace(/^http/, "ws")}/ws`,
     reconnectDelay: 3000,
+    // 핸드셰이크는 세션 쿠키로 인증되므로, 15분 만료 뒤 재연결 전에 API 호출로 토큰 갱신을 거침
+    beforeConnect: async () => {
+      await api("/me/profile").catch(() => {});
+    },
     onConnect: () => {
       client?.subscribe("/user/queue/chat", (frame) => {
         const event = JSON.parse(frame.body) as ChatEvent;

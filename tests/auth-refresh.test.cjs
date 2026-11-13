@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const ts = require('typescript');
 const { readFileSync } = require('node:fs');
-function setup(fetcher) {
+function setup(fetcher, nav) {
   let cleared = false;
   const source = ts.transpileModule(readFileSync('src/lib/api.ts', 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS },
@@ -11,7 +11,7 @@ function setup(fetcher) {
   const result = { exports: {} };
   new Function('require', 'module', 'exports', 'fetch', 'navigator', source)(() => ({
     getSession: () => ({}), setSession: () => { cleared = true; },
-  }), result, result.exports, fetcher, undefined);
+  }), result, result.exports, fetcher, nav);
   return { ...result.exports, cleared: () => cleared };
 }
 const response = status => ({ status, ok: status < 400, json: async () => ({ value: 'ok' }) });
@@ -46,5 +46,17 @@ test('login failures do not attempt refresh or clear an existing session', async
   const client = setup(async () => { calls++; return response(401); });
   await assert.rejects(client.api('/admin/auth/login', { method: 'POST' }));
   assert.equal(calls, 1);
+  assert.equal(client.cleared(), false);
+});
+test('with Web Locks, requests waiting on another refresh only retry without refreshing again', async () => {
+  let chain = Promise.resolve();
+  const locks = { request: (_name, fn) => (chain = chain.then(fn)) };
+  let valid = false, refreshes = 0;
+  const client = setup(async url => {
+    if (url.endsWith('/auth/refresh')) { refreshes++; valid = true; return response(204); }
+    return response(valid ? 200 : 401);
+  }, { locks });
+  await Promise.all([1, 2, 3].map(() => client.api('/me/profile')));
+  assert.equal(refreshes, 1);
   assert.equal(client.cleared(), false);
 });
