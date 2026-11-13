@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import ReminderToggle from "@/components/ReminderToggle";
 import WheelDateTimePicker from "@/components/WheelDateTimePicker";
 import InlineError from "@/components/InlineError";
 import { useToast } from "@/components/Providers";
@@ -39,14 +40,17 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
   });
   const [location, setLocation] = useState(entry?.location ?? "");
   const [memo, setMemo] = useState(entry?.memo ?? "");
+  const [openedAt] = useState(() => Date.now());
+  const [reminderEnabled, setReminderEnabled] = useState(false);
   const [invalid, setInvalid] = useState("");
   const save = useMutation({
     mutationFn: (remove: boolean) => api(entry ? `/me/schedules/${entry.noticeId}` : "/me/schedules", {
       method: remove ? "DELETE" : entry ? "PUT" : "POST",
-      ...(remove ? {} : { body: { title: title.trim(), at: new Date(`${at}:00+09:00`).toISOString(), location: location.trim() || null, memo: memo.trim() || null } }),
+      ...(remove ? {} : { body: { ...(!entry ? { reminderEnabled } : {}), title: title.trim(), at: new Date(`${at}:00+09:00`).toISOString(), location: location.trim() || null, memo: memo.trim() || null } }),
     }),
     onSuccess: async (_, remove) => {
       await client.invalidateQueries({ queryKey: ["schedule"] });
+      await client.invalidateQueries({ queryKey: ["reminder"] });
       toast(remove ? "일정을 삭제했어요." : entry ? "일정을 수정했어요." : "일정을 추가했어요.");
       if (!remove) onSaved(at.slice(0, 10));
       onClose();
@@ -85,6 +89,10 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
         <label htmlFor="personal-memo">메모 (선택)</label>
         <textarea id="personal-memo" rows={2} value={memo} maxLength={1000} placeholder="기억할 내용을 남겨 보세요" onChange={(e) => setMemo(e.target.value)} />
       </div>
+      {entry ? <ReminderToggle source="PERSONAL" id={entry.noticeId} /> : <div className="form-group">
+        <label><input type="checkbox" checked={reminderEnabled} onChange={e => setReminderEnabled(e.target.checked)} /> 시작 24시간 전 리마인더</label>
+        <p className="hint">{new Date(`${at}:00+09:00`).getTime() - openedAt <= 86400000 ? "24시간 전 알림 시점이 지났어요. 현재 날짜로는 알림을 보내지 않아요." : "앱 안 알림으로 알려드려요. 기기 푸시는 MY에서 켜 주세요."}</p>
+      </div>}
       <InlineError error={invalid || save.error} />
       <div className="btn-row">
         <button className="primary" type="submit" disabled={save.isPending}>{save.isPending ? "처리 중…" : entry ? "수정하기" : "추가하기"}</button>

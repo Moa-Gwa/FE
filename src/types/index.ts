@@ -117,7 +117,7 @@ export interface NotificationItem {
   id: number;
   type: string;
   /** MARKET이면 noticeId는 물품 id */
-  source: Source | "MARKET";
+  source: Source | "MARKET" | "PERSONAL";
   noticeId: number;
   title: string;
   body: string | null;
