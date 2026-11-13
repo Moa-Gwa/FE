@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "dev:https": "next dev --experimental-https --experimental-https-key certificates/localhost-key.pem --experimental-https-cert certificates/localhost.pem",
+    "test": "node --test tests/*.test.cjs tests/*.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

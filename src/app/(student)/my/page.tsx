@@ -31,6 +31,7 @@ export default function MyPage() {
   const toast = useToast();
   const { categories } = useCategories();
   const departments = useOrganizations("DEPARTMENT");
+  const [logoutError, setLogoutError] = useState<unknown>(null);
   const [filter, setFilter] = useState("");
 
   const profile = useQuery({ queryKey: ["me", "profile"], queryFn: () => api<Profile>("/me/profile") });
@@ -167,20 +168,26 @@ export default function MyPage() {
             </div>
           ))}
           <InlineError error={settings.error ?? update.error} />
-          <p className="hint">푸시 발송은 준비 중이에요. 켜 두시면 준비되는 대로 이 기기로 받아요. 앱 안 알림센터에는 항상 쌓여요.</p>
+          <p className="hint">푸시를 꺼도 앱 안 알림센터에는 항상 쌓여요.</p>
         </div>
       </section>
 
       <button
           className="logout-text"
           onClick={async () => {
+            setLogoutError(null);
             await unregisterPushToken().catch(() => {}); // 로그아웃한 계정의 알림이 이 기기로 오지 않게 한다
-            await logout();
-            router.replace("/login");
+            try {
+              await logout();
+              router.replace("/login");
+            } catch (e) {
+              setLogoutError(e);
+            }
           }}
         >
           로그아웃
         </button>
+        <InlineError error={logoutError} />
     </>
   );
 }

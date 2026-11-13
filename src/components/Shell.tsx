@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
+import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
 import { useChatConnection } from "@/hooks/useChat";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
@@ -43,6 +44,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const router = useRouter();
   const pathname = usePathname();
   const connected = useNoticeStream();
+  const [logoutError, setLogoutError] = useState<unknown>(null);
   // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
   useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
   const nav = role === "STUDENT" ? STUDENT_NAV : session?.operator ? [...ADMIN_NAV, ...OPERATOR_NAV] : ADMIN_NAV;
@@ -54,8 +56,13 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   if (!session || session.role !== role) return null;
 
   const signOut = async () => {
-    await logout();
-    router.replace("/login");
+    setLogoutError(null);
+    try {
+      await logout();
+      router.replace("/login");
+    } catch (e) {
+      setLogoutError(e);
+    }
   };
 
   const link = (n: NavItem) => (
@@ -102,6 +109,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
           <button className="logout" onClick={signOut}>
             로그아웃
           </button>
+          <InlineError error={logoutError} />
         </div>
       </aside>
       <main className="main">{children}</main>

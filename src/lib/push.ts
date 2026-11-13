@@ -24,6 +24,17 @@ export function subscribePushToken(onChange: () => void) {
   };
 }
 
+/** 서버 미등록 토큰은 다음 활성화 때 다시 등록할 수 있게 함 */
+export function forgetPushToken() {
+  storePushToken(null);
+}
+
+/** FCM에서 만료된 토큰은 SDK 캐시까지 폐기해야 다음 활성화 때 새로 발급됨. */
+export async function discardExpiredPushToken() {
+  await deleteToken(getMessaging(getFirebaseApp()));
+  forgetPushToken();
+}
+
 function storePushToken(token: string | null) {
   try {
     if (token) localStorage.setItem(STORAGE_KEY, token);
@@ -38,6 +49,11 @@ function storePushToken(token: string | null) {
 export async function registerPushToken(token: string) {
   await api<void>("/me/push-tokens", { method: "PUT", body: { token } });
   storePushToken(token);
+}
+
+/** 이 기기로 테스트 알림을 보냄 */
+export async function sendTestPush(token: string) {
+  await api<void>("/me/push-tokens/test", { method: "POST", body: { token } });
 }
 
 /** 서버 등록 해제 + FCM 토큰 폐기. 로그아웃 때도 호출해 다음 사용자에게 알림이 가지 않게 한다. */
