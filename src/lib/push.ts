@@ -24,9 +24,15 @@ export function subscribePushToken(onChange: () => void) {
   };
 }
 
-/** 서버에서 이미 지워진 토큰(만료·미등록)을 이 기기에서도 잊음 */
+/** 서버 미등록 토큰은 다음 활성화 때 다시 등록할 수 있게 함 */
 export function forgetPushToken() {
   storePushToken(null);
+}
+
+/** FCM에서 만료된 토큰은 SDK 캐시까지 폐기해야 다음 활성화 때 새로 발급됨. */
+export async function discardExpiredPushToken() {
+  await deleteToken(getMessaging(getFirebaseApp()));
+  forgetPushToken();
 }
 
 function storePushToken(token: string | null) {

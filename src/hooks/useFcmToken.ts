@@ -1,10 +1,11 @@
 "use client";
 
 import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getFirebaseApp, isFirebaseConfigured, VAPID_KEY } from "@/lib/firebase";
 
 export type FcmStatus =
+  | "checking"
   | "idle"
   | "unsupported"
   | "ios-install"
@@ -39,28 +40,27 @@ function initialStatus(): FcmStatus {
  * 이미 권한이 허용된 브라우저에서는 마운트 시 토큰을 자동으로 가져옴.
  */
 export function useFcmToken() {
-  const [status, setStatus] = useState<FcmStatus>("idle");
+  const [status, setStatus] = useState<FcmStatus>("checking");
+  const supported = useRef(false);
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /** 권한을 요청하고 토큰을 발급받음. 실패하면 null (이유는 status) */
   const enable = useCallback(async (): Promise<string | null> => {
+    if (!supported.current) return null;
     const before = initialStatus();
     if (before !== "idle" && before !== "denied") {
       setStatus(before);
       return null;
     }
     try {
+      setError(null);
       setStatus("loading");
-      // Safari는 클릭 직후 다른 await 없이 바로 요청해야 권한 창이 뜸. 그래서 지원 여부 확인보다 먼저 요청함
+      // 지원 여부는 마운트 시 확인하고, Safari 권한 요청은 클릭 직후 await 없이 실행함
       const permission =
         Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission;
       if (permission !== "granted") {
         setStatus("denied");
-        return null;
-      }
-      if (!(await isSupported())) {
-        setStatus("unsupported");
         return null;
       }
 
@@ -80,13 +80,29 @@ export function useFcmToken() {
     }
   }, []);
 
-  // 이미 허용된 경우 팝업 없이 바로 토큰을 가져오고, 아니면 미리 알 수 있는 상태(차단·iOS 설치 필요 등)를 표시함
   useEffect(() => {
-    queueMicrotask(() => {
+    let cancelled = false;
+    async function checkSupport() {
       const before = initialStatus();
-      if (before === "idle" && Notification.permission === "granted") void enable();
-      else setStatus(before);
-    });
+      if (before !== "idle" && before !== "denied") {
+        if (!cancelled) setStatus(before);
+        return;
+      }
+      try {
+        const available = await isSupported();
+        if (cancelled) return;
+        supported.current = available;
+        if (!available) setStatus("unsupported");
+        else if (Notification.permission === "granted") void enable();
+        else setStatus(initialStatus());
+      } catch (e) {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : String(e));
+        setStatus("unsupported");
+      }
+    }
+    void checkSupport();
+    return () => { cancelled = true; };
   }, [enable]);
 
   // 화면을 보고 있을 때 도착한 메시지도 알림으로 표시함.

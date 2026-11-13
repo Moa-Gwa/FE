@@ -6,6 +6,7 @@ import { useToast } from "@/components/Providers";
 import { type FcmStatus, useFcmToken } from "@/hooks/useFcmToken";
 import { ApiError } from "@/lib/api";
 import {
+  discardExpiredPushToken,
   forgetPushToken,
   getStoredPushToken,
   registerPushToken,
@@ -18,6 +19,8 @@ const isSafari = () => /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(nav
 
 function hint(status: FcmStatus): string | null {
   switch (status) {
+    case "checking":
+      return "푸시 알림 지원 여부를 확인하고 있어요.";
     case "unsupported":
       return "이 브라우저는 푸시 알림을 지원하지 않아요.";
     case "ios-install":
@@ -49,7 +52,8 @@ export default function PushToggleRow() {
   }, [stored, fcm.token]);
 
   const unavailable = fcm.status === "unsupported" || fcm.status === "ios-install" || fcm.status === "no-config";
-  const on = !!stored && fcm.status !== "denied";
+  const pending = busy || testing || fcm.status === "checking" || fcm.status === "loading";
+  const on = !!stored && !unavailable && fcm.status !== "checking" && fcm.status !== "denied";
   const message = hint(fcm.status);
 
   async function toggle() {
@@ -80,8 +84,15 @@ export default function PushToggleRow() {
       await sendTestPush(stored);
       toast("테스트 알림을 보냈어요. 잠시 후 이 기기에 도착해요.");
     } catch (e) {
-      // 서버에 없는 토큰이면 스위치를 꺼진 상태로 돌려 다시 켜게 함
-      if (e instanceof ApiError && (e.status === 404 || e.status === 410)) forgetPushToken();
+      if (e instanceof ApiError && e.status === 404) forgetPushToken();
+      if (e instanceof ApiError && e.status === 410) {
+        try {
+          await discardExpiredPushToken();
+        } catch {
+          setError("만료된 알림 등록을 초기화하지 못했어요. 테스트를 다시 눌러 주세요.");
+          return;
+        }
+      }
       setError(e instanceof Error ? e.message : "테스트 알림을 보내지 못했어요.");
     } finally {
       setTesting(false);
@@ -97,7 +108,7 @@ export default function PushToggleRow() {
           role="switch"
           aria-checked={on}
           aria-label="이 기기에서 푸시 알림 받기"
-          disabled={busy || unavailable}
+          disabled={pending || unavailable}
           onClick={toggle}
         >
           <i />
@@ -108,12 +119,12 @@ export default function PushToggleRow() {
       {on && (
         <div className="setting-row">
           <span>테스트 알림</span>
-          <button type="button" className="secondary" disabled={testing} onClick={test}>
+          <button type="button" className="secondary" disabled={pending || unavailable} onClick={test}>
             {testing ? "보내는 중…" : "보내기"}
           </button>
         </div>
       )}
-      <InlineError error={error} />
+      <InlineError error={error ?? fcm.error} />
     </>
   );
 }
