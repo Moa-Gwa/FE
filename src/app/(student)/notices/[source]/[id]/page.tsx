@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import ReminderToggle from "@/components/ReminderToggle";
 import AttachmentList from "@/components/AttachmentList";
 import BlocksView from "@/components/BlocksView";
 import Carousel from "@/components/Carousel";
@@ -190,6 +191,7 @@ export default function NoticePage() {
               </a>
             )}
           </div>
+          {session?.role === "STUDENT" && n.bookmarked && n.deadlineAt && <ReminderToggle source={src} id={id} />}
           <InlineError error={shareError ?? toggle.error} />
         </article>
       )}

@@ -21,7 +21,7 @@ const SETTINGS: [keyof NotificationSettings, string][] = [
   ["newNotice", "관심 학과·단체·카테고리 새 공지"],
   ["urgent", "중요 공지"],
   ["eventStart", "행사 시작 알림"],
-  ["deadlineSoon", "마감 임박 알림"],
+  ["deadlineSoon", "공지·내 일정 리마인더"],
 ];
 
 export default function MyPage() {
