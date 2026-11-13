@@ -74,6 +74,8 @@
 
   NEXT_PUBLIC_TOSS_CLIENT_KEY=   # 토스페이먼츠 결제위젯 클라이언트 키(test_gck_/live_gck_)
 
+  운영 값은 GitHub 저장소 Variables(Settings → Secrets and variables → Actions → Variables)에서 관리. `NEXT_PUBLIC_*`는 빌드할 때 번들에 들어가므로 값을 바꾸면 `main`에 새 커밋이 들어가 이미지를 다시 빌드해야 운영에 반영됨. 운영 `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`은 서비스 도메인(`moagwa.zruor.cc`)
+
   ## 로그인
 
   - Google 로그인: Firebase Authentication 사용
