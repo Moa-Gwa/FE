@@ -1,6 +1,6 @@
 "use client";
 
-import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
+import { getMessaging, getToken, isSupported } from "firebase/messaging";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getFirebaseApp, isFirebaseConfigured, VAPID_KEY } from "@/lib/firebase";
 
@@ -104,22 +104,6 @@ export function useFcmToken() {
     void checkSupport();
     return () => { cancelled = true; };
   }, [enable]);
-
-  // 화면을 보고 있을 때 도착한 메시지도 알림으로 표시함.
-  // new Notification()은 iOS 홈 화면 앱에서 동작하지 않아 서비스 워커로 띄움
-  useEffect(() => {
-    if (status !== "ready") return;
-    return onMessage(getMessaging(getFirebaseApp()), async (payload) => {
-      const title = payload.data?.title ?? payload.notification?.title;
-      if (!title) return;
-      const registration = await navigator.serviceWorker.ready;
-      await registration.showNotification(title, {
-        body: payload.data?.body ?? payload.notification?.body ?? "",
-        icon: "/moa-gwa-logo.png",
-        data: { url: payload.data?.url ?? "/" },
-      });
-    });
-  }, [status]);
 
   return { status, token, error, enable };
 }

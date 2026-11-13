@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
+import { useForegroundPush } from "@/hooks/useForegroundPush";
 import { useChatConnection } from "@/hooks/useChat";
 import { useNoticeStream } from "@/hooks/useNoticeStream";
 import { logout } from "@/lib/api";
@@ -44,6 +45,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const router = useRouter();
   const pathname = usePathname();
   const connected = useNoticeStream();
+  useForegroundPush(role === "STUDENT" && session?.role === "STUDENT");
   const [logoutError, setLogoutError] = useState<unknown>(null);
   // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
   useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
