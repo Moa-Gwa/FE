@@ -1308,7 +1308,7 @@ input[aria-invalid="true"],textarea[aria-invalid="true"],select[aria-invalid="tr
 .personal-schedule-form .personal-delete{color:var(--coral-strong)}
 
 .personal-schedule-hint{margin:10px 0 0;text-align:center;font-size:12px;color:var(--g500)}
-.personal-schedule-dialog{position:fixed;inset:0;margin:auto;border:0;width:calc(100% - 32px);max-width:960px;height:min(720px,calc(100dvh - 32px));max-height:calc(100dvh - 32px);padding:32px;box-sizing:border-box;color:var(--g900);overscroll-behavior:contain}
+.personal-schedule-dialog{position:fixed;inset:0;margin:auto;border:0;width:calc(100% - 32px);max-width:960px;height:min(820px,calc(100dvh - 32px));max-height:calc(100dvh - 32px);padding:32px;box-sizing:border-box;color:var(--g900);overscroll-behavior:contain}
 .personal-schedule-dialog::backdrop{background:rgba(0,0,0,.4)}
 .personal-schedule-dialog .personal-schedule-form{padding:0;border:0}
 .personal-schedule-dialog .personal-schedule-heading{padding-right:20px;flex-wrap:wrap}

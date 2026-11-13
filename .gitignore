@@ -50,3 +50,6 @@ certificates
 /.next-e2e/
 /playwright-report/
 /test-results/
+
+# 로컬 개발 도구 설정
+.claude/

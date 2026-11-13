@@ -10,6 +10,7 @@ import { fmtDateTime } from "@/lib/format";
 import type { NotificationItem } from "@/types";
 
 const TYPE_LABEL: Record<string, string> = {
+  REMINDER: "리마인더",
   NEW_NOTICE: "새 공지",
   URGENT: "중요 공지",
   TRADE_REQUESTED: "거래 요청",
@@ -18,6 +19,7 @@ const TYPE_LABEL: Record<string, string> = {
 
 /** 거래 알림의 noticeId는 물품 id */
 function hrefOf(n: NotificationItem) {
+  if (n.source === "PERSONAL") return "/schedule";
   return n.source === "MARKET" ? `/life/items/${n.noticeId}` : `/notices/${n.source.toLowerCase()}/${n.noticeId}`;
 }
 
