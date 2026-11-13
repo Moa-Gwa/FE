@@ -28,9 +28,9 @@ function isStandalone() {
 /** 권한을 묻기 전에 알 수 있는 상태. 버튼을 누르기 전부터 안내를 보여 주기 위함 */
 function initialStatus(): FcmStatus {
   if (!isFirebaseConfigured) return "no-config";
-  if (typeof Notification === "undefined" || !("serviceWorker" in navigator)) {
-    return isIos() && !isStandalone() ? "ios-install" : "unsupported";
-  }
+  // iOS 16.4+ Safari 탭에도 Notification API는 있지만 푸시는 홈 화면 앱에서만 오므로 API 유무와 별개로 먼저 확인함
+  if (isIos() && !isStandalone()) return "ios-install";
+  if (typeof Notification === "undefined" || !("serviceWorker" in navigator)) return "unsupported";
   return Notification.permission === "denied" ? "denied" : "idle";
 }
 
