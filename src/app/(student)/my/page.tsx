@@ -167,7 +167,7 @@ export default function MyPage() {
             </div>
           ))}
           <InlineError error={settings.error ?? update.error} />
-          <p className="hint">푸시 발송은 준비 중이에요. 켜 두시면 준비되는 대로 이 기기로 받아요. 앱 안 알림센터에는 항상 쌓여요.</p>
+          <p className="hint">푸시를 꺼도 앱 안 알림센터에는 항상 쌓여요.</p>
         </div>
       </section>
 

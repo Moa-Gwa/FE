@@ -24,6 +24,11 @@ export function subscribePushToken(onChange: () => void) {
   };
 }
 
+/** 서버에서 이미 지워진 토큰(만료·미등록)을 이 기기에서도 잊음 */
+export function forgetPushToken() {
+  storePushToken(null);
+}
+
 function storePushToken(token: string | null) {
   try {
     if (token) localStorage.setItem(STORAGE_KEY, token);
@@ -38,6 +43,11 @@ function storePushToken(token: string | null) {
 export async function registerPushToken(token: string) {
   await api<void>("/me/push-tokens", { method: "PUT", body: { token } });
   storePushToken(token);
+}
+
+/** 이 기기로 테스트 알림을 보냄 */
+export async function sendTestPush(token: string) {
+  await api<void>("/me/push-tokens/test", { method: "POST", body: { token } });
 }
 
 /** 서버 등록 해제 + FCM 토큰 폐기. 로그아웃 때도 호출해 다음 사용자에게 알림이 가지 않게 한다. */
