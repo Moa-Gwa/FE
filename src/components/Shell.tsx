@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AdminMobileMenu from "@/components/AdminMobileMenu";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
@@ -90,9 +91,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     );
   }
 
-  return (
-    <div className="shell">
-      <aside className="side">
+  const sidebar = <>
+
         <Logo />
         <div className="role-tag admin">ADMIN CONSOLE</div>
         <nav className="nav">{nav.map((n) => link(n))}</nav>
@@ -113,9 +113,14 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
           </button>
           <InlineError error={logoutError} />
         </div>
-      </aside>
+
+  </>;
+
+  return (
+    <div className="shell">
+      <aside className="side">{sidebar}</aside>
+      <AdminMobileMenu>{sidebar}</AdminMobileMenu>
       <main className="main">{children}</main>
-      <nav className="mobile-nav">{nav.map((n) => link(n))}</nav>
     </div>
   );
 }
