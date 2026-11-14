@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AdminMobileMenu from "@/components/AdminMobileMenu";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
@@ -90,32 +91,37 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     );
   }
 
+  // 데스크톱 사이드바와 모바일 메뉴가 같은 내용을 씀
+  const sidebar = (
+    <>
+      <Logo />
+      <div className="role-tag admin">ADMIN CONSOLE</div>
+      <nav className="nav">{nav.map((n) => link(n))}</nav>
+      <div className="side-bottom">
+        <div className="profile-mini">
+          <div className="avatar">{session.name.slice(0, 1)}</div>
+          <div>
+            <strong>{session.name}</strong>
+            <span>{session.organization?.name}</span>
+          </div>
+        </div>
+        <p className="list-note">
+          <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
+          {connected ? "실시간 연결됨" : "연결 중…"}
+        </p>
+        <button className="logout" onClick={signOut}>
+          로그아웃
+        </button>
+        <InlineError error={logoutError} />
+      </div>
+    </>
+  );
+
   return (
     <div className="shell">
-      <aside className="side">
-        <Logo />
-        <div className="role-tag admin">ADMIN CONSOLE</div>
-        <nav className="nav">{nav.map((n) => link(n))}</nav>
-        <div className="side-bottom">
-          <div className="profile-mini">
-            <div className="avatar">{session.name.slice(0, 1)}</div>
-            <div>
-              <strong>{session.name}</strong>
-              <span>{session.organization?.name}</span>
-            </div>
-          </div>
-          <p className="list-note">
-            <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
-            {connected ? "실시간 연결됨" : "연결 중…"}
-          </p>
-          <button className="logout" onClick={signOut}>
-            로그아웃
-          </button>
-          <InlineError error={logoutError} />
-        </div>
-      </aside>
+      <aside className="side">{sidebar}</aside>
+      <AdminMobileMenu>{sidebar}</AdminMobileMenu>
       <main className="main">{children}</main>
-      <nav className="mobile-nav">{nav.map((n) => link(n))}</nav>
     </div>
   );
 }
