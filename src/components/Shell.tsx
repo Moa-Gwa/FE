@@ -78,11 +78,20 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   );
 
   if (role === "STUDENT") {
-    // students always get the phone-sized layout, centered on wide screens
+    // 모바일 하단 메뉴와 넓은 화면 사이드 메뉴는 같은 경로를 사용한다.
     return (
       <div className="m-bg">
         <div className="m-shell">
-          <main className="main-m">{children}</main>
+          <aside className="side student-side" aria-label="학생 사이드 메뉴">
+            <Logo />
+            <nav className="nav" aria-label="학생 메뉴">{nav.map(n => link(n))}</nav>
+            <div className="side-bottom">
+              <div className="profile-mini"><strong>{session.name}</strong></div>
+              <button className="logout" onClick={signOut}>로그아웃</button>
+              <InlineError error={logoutError} />
+            </div>
+          </aside>
+          <main className="main-m" data-page={pathname}>{children}</main>
           <nav className="m-nav" aria-label="주 메뉴">
             {nav.map((n) => link(n))}
           </nav>

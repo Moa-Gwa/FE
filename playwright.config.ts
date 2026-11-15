@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: "./e2e",
   timeout: 30_000,
   fullyParallel: true,
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://localhost:3100",
     viewport: { width: 1280, height: 900 },

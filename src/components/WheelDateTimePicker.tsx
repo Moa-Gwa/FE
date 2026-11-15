@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const ROW_HEIGHT = 40;
+const ROW_HEIGHT = 44;
 const pad = (n: number) => String(n).padStart(2, "0");
 const numbers = (start: number, count: number) => Array.from({ length: count }, (_, i) => start + i);
 
