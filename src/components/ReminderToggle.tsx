@@ -15,7 +15,7 @@ export default function ReminderToggle({ source, id }: { source: string; id: num
     mutationFn: (enabled: boolean) => api<State>(path, { method: "PUT", body: { enabled } }),
     onSuccess: data => client.setQueryData(queryKey, data),
   });
-  return <div className="correction-box">
+  return <div className="correction-box reminder-settings">
     <div className="setting-row">
       <span>{source === "PERSONAL" ? "시작" : "마감"} 24시간 전 리마인더</span>
       <button type="button" role="switch" aria-label="24시간 전 리마인더" aria-checked={query.data?.enabled ?? false}

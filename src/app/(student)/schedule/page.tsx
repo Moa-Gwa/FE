@@ -154,7 +154,7 @@ export default function SchedulePage() {
       <section className="section personal-schedule-section">
         {isStudent ? <>
           <button type="button" className="secondary personal-schedule-add" onClick={() => setEditor({ entry: null, day: selected ?? today })}>+ 일정 추가</button>
-          <p className="personal-schedule-hint">날짜를 더블클릭하면 바로 추가할 수 있어요.</p>
+          <p className="personal-schedule-hint">날짜를 두 번 탭하거나 더블클릭하면 바로 추가할 수 있어요.</p>
         </> : <Link href="/login" className="secondary personal-schedule-add">로그인하고 내 일정 추가</Link>}
       </section>
       {isStudent && editor && <PersonalScheduleForm key={editor.entry?.noticeId ?? editor.day} entry={editor.entry} day={editor.day} fixedDate={editor.fixedDate}
@@ -166,6 +166,7 @@ export default function SchedulePage() {
           setCursor({ year, month: month - 1 });
         }} />}
 
+      <div className="schedule-layout">
       <section className="section sched-cal">
         <Calendar
           year={cursor.year}
@@ -210,6 +211,7 @@ export default function SchedulePage() {
         </nav>
         {body}
       </section>
+      </div>
     </>
   );
 }

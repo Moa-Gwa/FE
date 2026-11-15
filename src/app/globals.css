@@ -1538,10 +1538,9 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
   .main-m{padding:32px 40px 64px}
   .m-shell .main-m[data-page="/home"] .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
   .m-shell .main-m[data-page="/explore"] > .notice-list{grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
-  .main-m:has(> .sched-cal){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
-  .main-m:has(> .sched-cal) > *{grid-column:1/-1}
-  .main-m:has(> .sched-cal) > .sched-cal{grid-column:1;margin:0;position:sticky;top:24px}
-  .main-m:has(> .sched-cal) > .sched-list{grid-column:2;margin:0}
+  .schedule-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+  .schedule-layout > .sched-cal{margin:0;position:sticky;top:24px}
+  .schedule-layout > .sched-list{margin:0}
   .main-m .sched-list .segmented{margin:0 0 20px;padding:0;flex-wrap:wrap}
   .m-shell .calendar{padding:12px}
   .writer-edit:only-child .writer-inner{width:100%}
@@ -1578,7 +1577,8 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 .main :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select),.main-m :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select){min-height:44px}
 .pill-link,.logout-text,.admin-menu-close{min-height:44px}
 .pill-link{display:inline-flex;align-items:center}
-.dt-pop{position:fixed;left:50%!important;right:auto!important;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overflow:auto}
+.dt-pop{position:absolute;left:0;right:auto;top:calc(100% + 8px);transform:none;width:min(560px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overflow:auto}
+@media(max-width:600px){.dt-pop{position:fixed;left:16px!important;right:16px!important;top:50%;transform:translateY(-50%);width:auto}}
 .dt-cal{width:308px;max-width:100%}
 .dt-col button{min-height:44px}
 @media(max-width:600px){.dt-cal{width:100%}.dt-time{width:100%}}
@@ -1599,3 +1599,13 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 }
 :where(.main,.main-m,.login-card,.writer,.publish,.admin-mobile-drawer) button{min-width:44px}
 .side .logout{min-width:44px;min-height:44px}
+
+.schedule-layout{min-width:0}
+.schedule-layout > *{min-width:0}
+.reminder-settings{gap:6px;padding:10px 12px;font-size:13px}
+.reminder-settings .setting-row{padding:0;border-bottom:0;font-size:13px;min-height:44px}
+.reminder-settings .hint{margin:0;font-size:12px;line-height:1.5}
+.reminder-create{padding:0;gap:4px}
+.reminder-create label{font-size:13px}
+
+.calendar-grid .day{touch-action:manipulation}

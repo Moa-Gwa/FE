@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Calendar from "@/components/Calendar";
 import Icon from "@/components/Icon";
 
@@ -68,6 +68,41 @@ export default function DateTimeField({
       document.removeEventListener("keydown", off);
     };
   }, [open]);
+
+  // 넓은 화면은 버튼에 붙이고, 화면 가장자리에서는 좌우 보정·위쪽 열기로 넘침을 막는다.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const position = () => {
+      const field = box.current;
+      const popup = field?.querySelector<HTMLElement>(".dt-pop");
+      if (!field || !popup) return;
+      if (window.matchMedia("(max-width: 600px)").matches) {
+        popup.style.removeProperty("left");
+        popup.style.removeProperty("top");
+        popup.style.removeProperty("max-height");
+        return;
+      }
+      const anchor = field.getBoundingClientRect();
+      const above = Math.max(0, anchor.top - 24);
+      const below = Math.max(0, window.innerHeight - anchor.bottom - 24);
+      const up = above > below;
+      popup.style.maxHeight = `${Math.max(1, up ? above : below)}px`;
+      const bounds = popup.getBoundingClientRect();
+      const left = Math.max(16, Math.min(anchor.left, window.innerWidth - bounds.width - 16));
+      popup.style.left = `${left - anchor.left}px`;
+      popup.style.top = up ? `${-bounds.height - 8}px` : `${anchor.height + 8}px`;
+    };
+    position();
+    const onScroll = (event: Event) => {
+      if (!(event.target instanceof Node) || !box.current?.querySelector(".dt-pop")?.contains(event.target)) position();
+    };
+    window.addEventListener("resize", position);
+    document.addEventListener("scroll", onScroll, true);
+    return () => {
+      window.removeEventListener("resize", position);
+      document.removeEventListener("scroll", onScroll, true);
+    };
+  }, [open, cursor.year, cursor.month]);
 
   // keep the selected hour / minute in view when the picker opens
   useEffect(() => {
