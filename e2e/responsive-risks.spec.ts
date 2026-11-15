@@ -109,7 +109,7 @@ for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await responsiveFixtures(page, 'STUDENT');
     await page.goto('/notices/manual/1');
-    const reminder = page.locator('.reminder-settings');
+    const reminder = page.locator('.reminder-settings').filter({ hasText: '마감 24시간 전 리마인더' });
     await expect(reminder.getByRole('switch')).toBeEnabled();
     const rect = (await reminder.boundingBox())!;
     const switchRect = (await reminder.getByRole('switch').boundingBox())!;
