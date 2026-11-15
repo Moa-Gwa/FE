@@ -100,30 +100,31 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     );
   }
 
-  const sidebar = <>
-
-        <Logo />
-        <div className="role-tag admin">ADMIN CONSOLE</div>
-        <nav className="nav">{nav.map((n) => link(n))}</nav>
-        <div className="side-bottom">
-          <div className="profile-mini">
-            <div className="avatar">{session.name.slice(0, 1)}</div>
-            <div>
-              <strong>{session.name}</strong>
-              <span>{session.organization?.name}</span>
-            </div>
+  // 데스크톱 사이드바와 모바일 메뉴가 같은 내용을 씀
+  const sidebar = (
+    <>
+      <Logo />
+      <div className="role-tag admin">ADMIN CONSOLE</div>
+      <nav className="nav">{nav.map((n) => link(n))}</nav>
+      <div className="side-bottom">
+        <div className="profile-mini">
+          <div className="avatar">{session.name.slice(0, 1)}</div>
+          <div>
+            <strong>{session.name}</strong>
+            <span>{session.organization?.name}</span>
           </div>
-          <p className="list-note">
-            <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
-            {connected ? "실시간 연결됨" : "연결 중…"}
-          </p>
-          <button className="logout" onClick={signOut}>
-            로그아웃
-          </button>
-          <InlineError error={logoutError} />
         </div>
-
-  </>;
+        <p className="list-note">
+          <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
+          {connected ? "실시간 연결됨" : "연결 중…"}
+        </p>
+        <button className="logout" onClick={signOut}>
+          로그아웃
+        </button>
+        <InlineError error={logoutError} />
+      </div>
+    </>
+  );
 
   return (
     <div className="shell">
