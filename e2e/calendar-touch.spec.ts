@@ -3,7 +3,7 @@ import { responsiveFixtures } from './fixtures/responsive';
 
 test.describe('touch calendar', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  test('a single tap selects; two taps on the same day open a fixed-date editor', async ({ page }) => {
+  test('a single tap selects; two taps on the same day open a period editor starting on the tapped date', async ({ page }) => {
     await responsiveFixtures(page, 'STUDENT');
     await page.goto('/schedule');
     // Some mobile browsers do not synthesize dblclick from taps.
@@ -17,8 +17,8 @@ test.describe('touch calendar', () => {
     await day.tap();
     await day.tap();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('시간 (한국 시간)', { exact: true })).toBeVisible();
-    await expect(page.getByRole('listbox', { name: '년', exact: true })).toHaveCount(0);
+    await expect(page.getByText('시작 날짜·시간 (한국 시간)', { exact: true })).toBeVisible();
+    await expect(page.getByRole('listbox', { name: '년', exact: true })).toBeVisible();
     await expect(page.getByRole('listbox', { name: '시', exact: true })).toBeVisible();
   });
   test('taps on different days do not open the editor', async ({ page }) => {
