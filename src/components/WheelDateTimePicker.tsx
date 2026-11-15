@@ -64,7 +64,7 @@ export default function WheelDateTimePicker({ value, onChange, disabled = false,
   const [year, month, day] = date.split("-").map(Number);
   const [hour, minute] = time.split(":").map(Number);
   const currentYear = new Date().getFullYear();
-  const firstYear = currentYear;
+  const firstYear = Math.min(currentYear, year);
   const lastYear = Math.max(currentYear + 10, year);
   const update = (part: number, next: number) => {
     const parts = [year, month, day, hour, minute];
