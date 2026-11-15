@@ -1484,6 +1484,11 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 .calendar-head button{min-width:44px;min-height:44px}
 .calendar-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
 .calendar-grid .day{min-height:44px}
+.m-shell .calendar{padding:12px}
+.m-shell .calendar-grid{gap:3px 0}
+.m-shell .life-head{align-items:flex-start;gap:12px}
+.m-shell .life-head-links{gap:10px}
+.m-shell .life-bar{padding-inline:12px;gap:8px}
 
 @media(max-width:600px){
   .m-shell{width:100%;max-width:none}
@@ -1507,26 +1512,13 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 }
 @media(min-width:601px){
   .m-bg{background:var(--g100)}
-  .m-shell{max-width:none;width:100%;min-height:100dvh}
-  .student-side{display:flex;width:var(--student-side-width);z-index:5;padding:24px 12px}
+  .m-shell{max-width:calc(600px + var(--student-side-width));width:100%;min-height:100dvh}
+  .student-side{display:flex;left:max(0px,calc((100% - 600px - var(--student-side-width))/2));width:var(--student-side-width);z-index:5;padding:24px 12px}
   .student-side .logo{padding:0 4px}
-  .main-m{margin-left:var(--student-side-width);width:calc(100% - var(--student-side-width));max-width:1440px;padding:28px 24px 64px}
+  /* Center the menu and phone-width content as one frame. */
+  .main-m{margin-left:var(--student-side-width);width:calc(100% - var(--student-side-width));max-width:600px;padding:8px 20px 64px}
   .m-nav{display:none}
-  .m-shell .main-m > .notice-list,.m-shell .section > .notice-list,.m-shell .grid.two{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:16px}
-  .m-shell .main-m > .notice-list,.m-shell .profile-card,.m-shell .home-top{margin-inline:0}
-  .m-shell .notice-card{min-width:0;margin:0;height:100%}
-  .m-shell .main-m > .detail-card{max-width:860px}
-  .m-shell .main-m[data-page^="/life/"] > .life-card,.m-shell .main-m[data-page^="/life/"] > .life-back-row{max-width:860px;margin-inline:auto}
-  .m-shell .main-m > .life-card{margin-inline:0}
-  .m-shell .main-m > .life-form,.m-shell .main-m > .interests{max-width:860px;margin-inline:auto}
-  .m-shell .home-top{border-radius:20px;padding-inline:24px}
-  .m-shell .home-top > .search{max-width:100%}
-  .m-shell .home-top .hero{min-height:240px}
-  .m-shell .home-top .hero .hero-art{width:clamp(150px,22vw,240px);right:12px}
-  .m-shell .home-top .hero h2,.m-shell .home-top .hero p{max-width:60%}
-  .life-gallery{margin-inline:0;max-width:100%;border-radius:16px}
-  .life-gallery > *{max-height:520px;object-fit:contain}
-  .life-bar,.life-fab-wrap{left:var(--student-side-width);right:0;width:auto;max-width:1440px;transform:none;bottom:0;padding-inline:24px}
+  .life-bar,.life-fab-wrap{left:max(var(--student-side-width),calc((100% - 600px + var(--student-side-width))/2));right:auto;width:calc(100% - var(--student-side-width));max-width:600px;transform:none;bottom:0}
   .life-bar{padding-bottom:max(12px,env(safe-area-inset-bottom))}
   .life-fab-wrap{bottom:20px}
   .chat-list{height:calc(100dvh - 240px);min-height:240px}
@@ -1535,14 +1527,6 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 }
 @media(min-width:1024px){
   :root{--student-side-width:224px}
-  .main-m{padding:32px 40px 64px}
-  .m-shell .main-m[data-page="/home"] .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .m-shell .main-m[data-page="/explore"] > .notice-list{grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))}
-  .schedule-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
-  .schedule-layout > .sched-cal{margin:0;position:sticky;top:24px}
-  .schedule-layout > .sched-list{margin:0}
-  .main-m .sched-list .segmented{margin:0 0 20px;padding:0;flex-wrap:wrap}
-  .m-shell .calendar{padding:12px}
   .writer-edit:only-child .writer-inner{width:100%}
   .main{min-width:0}
 }
@@ -1582,18 +1566,6 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 .dt-cal{width:308px;max-width:100%}
 .dt-col button{min-height:44px}
 @media(max-width:600px){.dt-cal{width:100%}.dt-time{width:100%}}
-@media(min-width:601px){
-  /* Two-column cards need their own vertical composition, not a squeezed phone row. */
-  .m-shell .notice-card:has(> .nc-body){display:grid;grid-template-columns:40px minmax(0,1fr) 44px;gap:12px;padding:16px;border:1px solid var(--g200);border-radius:16px;background:#fff;align-content:start}
-  .m-shell .notice-card > .nc-avatar{grid-column:1;grid-row:1}
-  .m-shell .notice-card > .save,.m-shell .notice-card > .nc-go{grid-column:3;grid-row:1;align-self:center}
-  .m-shell .notice-card > .nc-body{grid-column:1/-1;grid-row:2;min-height:88px}
-  .m-shell .notice-card > .nc-body h3{-webkit-line-clamp:2}
-  .m-shell .notice-card > .nc-thumbnail{grid-column:1/-1;grid-row:3;width:100%}
-  .m-shell .notice-card .thumb{width:100%;height:160px;object-fit:cover}
-  .m-shell .notice-card .nc-meta{flex-wrap:wrap}
-  .m-shell .notice-card .nc-sub{flex-basis:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-}
 @media(max-width:600px){
   .main :where(input,select,textarea),.main-m :where(input,select,textarea),.login-card :where(input,select,textarea){font-size:16px}
 }

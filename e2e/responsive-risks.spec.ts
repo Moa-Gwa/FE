@@ -45,7 +45,7 @@ for (const width of [390, 768, 1280]) {
 }
 
 for (const width of [1024, 1280]) {
-  test(`${width}px schedule layout survives an outer wrapper`, async ({ page }) => {
+  test(`${width}px phone schedule stays stacked inside an outer wrapper`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await responsiveFixtures(page, 'STUDENT');
     await page.goto('/schedule');
@@ -56,7 +56,7 @@ for (const width of [1024, 1280]) {
       return { calendar: { x: c.x, y: c.y, width: c.width }, list: { x: l.x, y: l.y, width: l.width } };
     });
     const before = await bounds();
-    expect(Math.abs(before.calendar.y - before.list.y)).toBeLessThan(3);
+    expect(before.list.y).toBeGreaterThan(before.calendar.y);
     await page.evaluate(() => {
       const layout = document.querySelector('.schedule-layout')!;
       const wrapper = document.createElement('section');
@@ -65,8 +65,8 @@ for (const width of [1024, 1280]) {
     });
     const after = await bounds();
     await evidence(page, `schedule-wrapper-${width}`, { before, after });
-    expect(Math.abs(after.calendar.y - after.list.y)).toBeLessThan(3);
-    expect(after.list.x).toBeGreaterThan(after.calendar.x);
+    expect(after.list.y).toBeGreaterThan(after.calendar.y);
+    expect(Math.abs(after.list.x - after.calendar.x)).toBeLessThan(1);
   });
 }
 

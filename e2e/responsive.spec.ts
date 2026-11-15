@@ -49,7 +49,23 @@ for (const width of [390,768,1280]) {
           else await expect(page.locator('.m-nav')).not.toBeVisible();
           if (width > 600) {
             await expect(page.locator('.student-side')).toBeVisible();
-            expect(await page.locator('.m-shell').evaluate(el => el.getBoundingClientRect().width)).toBeGreaterThan(600);
+            const main = (await page.locator('.main-m').boundingBox())!;
+            const side = (await page.locator('.student-side').boundingBox())!;
+            expect(main.width).toBeLessThanOrEqual(600);
+            expect(main.width).toBeCloseTo(Math.min(600, width - side.width), 0);
+            expect(main.x).toBeCloseTo(side.x + side.width, 0);
+            expect(side.x).toBeCloseTo(width - main.x - main.width, 0);
+            for (const selector of ['.notice-list', '.grid.two']) {
+              for (const columns of await page.locator(`.main-m ${selector}`).evaluateAll(elements => elements.map(el => getComputedStyle(el).gridTemplateColumns))) {
+                expect(columns.split(' ').length, `${path}: single-column list`).toBe(1);
+              }
+            }
+            const bars = page.locator('.life-bar,.life-fab-wrap');
+            const bar = await bars.count() ? await bars.first().boundingBox() : null;
+            if (bar) {
+              expect(bar.x).toBeCloseTo(main.x, 0);
+              expect(bar.width).toBeCloseTo(main.width, 0);
+            }
           }
         }
       }
