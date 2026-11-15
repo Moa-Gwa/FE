@@ -89,7 +89,7 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
         <label htmlFor="personal-memo">메모 (선택)</label>
         <textarea id="personal-memo" rows={2} value={memo} maxLength={1000} placeholder="기억할 내용을 남겨 보세요" onChange={(e) => setMemo(e.target.value)} />
       </div>
-      {entry ? <ReminderToggle source="PERSONAL" id={entry.noticeId} /> : <div className="form-group">
+      {entry ? <ReminderToggle source="PERSONAL" id={entry.noticeId} /> : <div className="form-group reminder-settings reminder-create">
         <label><input type="checkbox" checked={reminderEnabled} onChange={e => setReminderEnabled(e.target.checked)} /> 시작 24시간 전 리마인더</label>
         <p className="hint">{new Date(`${at}:00+09:00`).getTime() - openedAt <= 86400000 ? "24시간 전 알림 시점이 지났어요. 현재 날짜로는 알림을 보내지 않아요." : "앱 안 알림으로 알려드려요. 기기 푸시는 MY에서 켜 주세요."}</p>
       </div>}

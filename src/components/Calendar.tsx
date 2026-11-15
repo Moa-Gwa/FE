@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { kstDay } from "@/lib/format";
 
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -21,7 +22,7 @@ export default function Calendar({
   markedDays: Set<string>;
   selected: string | null;
   onSelect: (day: string) => void;
-  /** Double-click (or Shift+Enter) a date to add an entry. */
+  /** Double-click, touch double-tap, or Shift+Enter to add an entry. */
   onAdd?: (day: string) => void;
   onMove: (delta: number) => void;
   /** inclusive "YYYY-MM-DD" bounds to tint (e.g. this week) */
@@ -29,6 +30,8 @@ export default function Calendar({
   /** "YYYY-MM-DD": days before this are not selectable */
   minDay?: string;
 }) {
+  const pointerType = useRef("");
+  const lastTap = useRef<{ day: string; at: number } | null>(null);
   const first = new Date(year, month, 1);
   const count = new Date(year, month + 1, 0).getDate();
   const today = kstDay(new Date());
@@ -69,8 +72,21 @@ export default function Calendar({
               aria-label={`${month + 1}월 ${i + 1}일`}
               className={`day ${markedDays.has(key) ? "event" : ""} ${key === today ? "today" : ""} ${key === selected ? "selected" : ""} ${inRange ? "in-range" : ""} ${edge} ${disabled ? "disabled" : ""}`}
               aria-disabled={disabled || undefined}
-              onClick={() => !disabled && onSelect(key)}
-              onDoubleClick={() => !disabled && onAdd?.(key)}
+              onPointerDown={(event) => { pointerType.current = event.pointerType; }}
+              onClick={(event) => {
+                if (disabled) return;
+                onSelect(key);
+                if (!onAdd || pointerType.current !== "touch" || event.detail === 0) return;
+                const at = performance.now();
+                const previous = lastTap.current;
+                if (previous?.day === key && at - previous.at <= 350) {
+                  lastTap.current = null;
+                  onAdd(key);
+                } else lastTap.current = { day: key, at };
+              }}
+              onDoubleClick={() => {
+                if (!disabled && pointerType.current !== "touch") onAdd?.(key);
+              }}
               onKeyDown={(e) => {
                 if (disabled || (e.key !== "Enter" && e.key !== " ")) return;
                 e.preventDefault();

@@ -11,7 +11,7 @@ export default function AdminMobileMenu({ children }: { children: React.ReactNod
     if (!open) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const desktop = window.matchMedia("(min-width: 821px)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
     const closeOnDesktop = () => { if (desktop.matches) dialog.current?.close(); };
     desktop.addEventListener("change", closeOnDesktop);
     return () => {
