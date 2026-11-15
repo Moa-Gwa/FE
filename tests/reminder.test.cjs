@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const ts = require('typescript');
 const { renderToStaticMarkup } = require('react-dom/server');
-function render(state, source = 'PERSONAL') {
+function render(state, source = 'PERSONAL', kind = 'DEADLINE') {
   let changed;
   const mocks = {
     '@tanstack/react-query': { useQuery: () => ({ data: state }), useQueryClient: () => ({}),
@@ -16,7 +16,7 @@ function render(state, source = 'PERSONAL') {
   }).outputText;
   const loaded = { exports: {} };
   new Function('require', 'module', 'exports', output)(name => mocks[name] ?? require(name), loaded, loaded.exports);
-  const tree = loaded.exports.default({ source, id: 1 });
+  const tree = loaded.exports.default({ source, id: 1, kind });
   return { html: renderToStaticMarkup(tree), toggle: () => tree.props.children[0].props.children[1].props.onClick(), changed: () => changed };
 }
 test('reminder switch reflects saved state and toggles it', () => {
@@ -35,4 +35,12 @@ test('late reminder and crawled-date verification guidance are shown', () => {
 });
 test('reminder controls are disabled until settings load', () => {
   assert.match(render(undefined).html, /disabled=""/);
+});
+
+test('event start uses a separate one-hour label and late guidance', () => {
+  const view = render({ enabled: true, tooLate: true }, 'CRAWLED', 'EVENT_START');
+  assert.match(view.html, /행사 시작.*1시간 전 리마인더/);
+  assert.match(view.html, /1시간 전 알림 시점이 지났어요/);
+  assert.match(view.html, /자동 추출된 행사 시작일/);
+  assert.doesNotMatch(view.html, /24시간 전/);
 });
