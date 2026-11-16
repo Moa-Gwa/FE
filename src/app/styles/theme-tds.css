@@ -1036,12 +1036,30 @@ span.chip.on,
   list-style: none;
 }
 .select-sheet {
+  height: min(72vh, 620px);
+  height: min(72dvh, 620px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+.select-sheet > .sheet-handle,
+.select-sheet > .row-between,
+.select-sheet > .pick-search {
+  flex-shrink: 0;
+}
+.select-sheet .pick-search input {
+  font-size: 16px;
 }
 .select-sheet .row-between {
   margin-bottom: 12px;
 }
 .select-sheet .pick-list {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  scrollbar-gutter: stable;
   margin: 8px -20px 0;
 }
 .sheet-scroll {
