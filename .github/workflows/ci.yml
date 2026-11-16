@@ -41,7 +41,7 @@ jobs:
           POSTGRES_DB: moagwa_e2e
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U moagwa"
+          --health-cmd "pg_isready -U moagwa -d moagwa_e2e"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -60,10 +60,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: BE 실행(develop 이미지, local 프로필)
         # local 프로필: 개발용 로그인·관리자 계정, 인증 코드 응답 노출. 학사일정은 e2e/static의 고정 페이지에서 수집
+        # 브라우저 요청은 FE 개발 서버(3100)의 Origin을 달고 프록시되므로 CORS 허용 필요
         run: |
           docker run -d --name be --network host \
             -e SPRING_PROFILES_ACTIVE=local -e SERVER_PORT=18080 \
             -e SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/moagwa_e2e \
+            -e CORS_ALLOWED_ORIGINS=http://localhost:3100 \
             -e ACADEMIC_CALENDAR_FETCH_URL='http://localhost:3101/academic-{year}.html' \
             ghcr.io/moa-gwa/be:develop
           for i in $(seq 1 60); do curl -sf localhost:18080/api/categories > /dev/null && exit 0; sleep 2; done

@@ -25,6 +25,7 @@ psql -h localhost -U moagwa -d moagwa -c "CREATE DATABASE moagwa_e2e OWNER moagw
 # 2. BE 저장소에서 E2E 전용 BE 실행
 SPRING_PROFILES_ACTIVE=local SERVER_PORT=18080 \
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/moagwa_e2e \
+CORS_ALLOWED_ORIGINS=http://localhost:3100 \
 UPLOAD_DIR=/tmp/moagwa-e2e-uploads \
 ACADEMIC_CALENDAR_FETCH_URL='http://localhost:3101/academic-{year}.html' \
 ./mvnw spring-boot:run
