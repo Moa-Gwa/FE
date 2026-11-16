@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
-import { responsiveFixtures } from './fixtures/responsive';
+import { loginAs, seed } from './support';
 
 async function evidence(page: Page, name: string, data: unknown) {
   const json = JSON.stringify(data, null, 2);
@@ -12,8 +12,8 @@ async function evidence(page: Page, name: string, data: unknown) {
 for (const width of [390, 768, 1280]) {
   test(`${width}px date popup stays anchored and within viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page, 'ADMIN');
-    await page.goto('/admin/notices/1/edit');
+    await loginAs(page, 'ADMIN');
+    await page.goto(`/admin/notices/${seed().notices.wide}/edit`);
     await page.locator('.writer-title').fill('날짜 팝업 위치 검사');
     await page.getByRole('button', { name: '저장하기', exact: true }).click();
     const trigger = page.getByRole('button', { name: '신청 마감', exact: true });
@@ -47,7 +47,7 @@ for (const width of [390, 768, 1280]) {
 for (const width of [1024, 1280]) {
   test(`${width}px phone schedule stays stacked inside an outer wrapper`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page, 'STUDENT');
+    await loginAs(page, 'STUDENT');
     await page.goto('/schedule');
     await expect(page.locator('.sched-cal')).toBeVisible();
     const bounds = () => page.evaluate(() => {
@@ -74,9 +74,9 @@ for (const width of [600, 601, 640, 768, 1023]) {
   test(`${width}px student navigation boundary and action rows`, async ({ page }) => {
     test.setTimeout(90_000);
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page, 'STUDENT');
+    await loginAs(page, 'STUDENT');
     const results = [];
-    for (const path of ['/home', '/explore', '/schedule', '/life', '/life/new', '/life/group/1', '/notifications', '/my', '/my/interests']) {
+    for (const path of ['/home', '/explore', '/schedule', '/life', '/life/new', `/life/group/${seed().group}`, '/notifications', '/my', '/my/interests']) {
       await page.goto(path);
       await expect(page.locator('.main-m')).toBeVisible();
       const result = await page.evaluate(() => {
@@ -107,8 +107,8 @@ for (const width of [600, 601, 640, 768, 1023]) {
 for (const width of [390, 1280]) {
   test(`${width}px compact reminder keeps a usable switch`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page, 'STUDENT');
-    await page.goto('/notices/manual/1');
+    await loginAs(page, 'STUDENT');
+    await page.goto(`/notices/manual/${seed().notices.wide}`);
     const reminder = page.locator('.reminder-settings').filter({ hasText: '마감 24시간 전 리마인더' });
     await expect(reminder.getByRole('switch')).toBeEnabled();
     const rect = (await reminder.boundingBox())!;

@@ -1,9 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
-import { responsiveFixtures } from './fixtures/responsive';
+import { loginAs, seed } from './support';
 
-const studentPages = ['/home','/explore','/notices/manual/1','/notices/crawled/1','/schedule','/life','/life/items/1','/life/new','/life/group/new','/life/group/1','/life/group/1/pay','/life/group/1/pay/success','/life/group/1/pay/fail','/life/chats','/life/chats/1','/life/my','/life/verify','/notifications','/my','/my/interests'];
-const adminPages = ['/admin/dashboard','/admin/notices','/admin/notices/new','/admin/notices/1/edit','/admin/schedule','/admin/organization','/admin/corrections','/admin/applications'];
-const authPages = ['/login','/admin-apply','/admin-setup?token=test'];
+// 준비 단계에서 만든 실제 데이터 id로 경로를 만듦
+const studentPages = () => {
+  const s = seed();
+  return ['/home', '/explore', `/notices/manual/${s.notices.wide}`, `/notices/crawled/${s.crawled}`, '/schedule', '/life', `/life/items/${s.item}`, '/life/new', '/life/group/new',
+    `/life/group/${s.group}`, `/life/group/${s.group}/pay`, `/life/group/${s.group}/pay/success`, `/life/group/${s.group}/pay/fail`, '/life/chats', `/life/chats/${s.chatRoom}`,
+    '/life/my', '/life/verify', '/notifications', '/my', '/my/interests'];
+};
+const adminPages = () => ['/admin/dashboard', '/admin/notices', '/admin/notices/new', `/admin/notices/${seed().notices.wide}/edit`, '/admin/schedule', '/admin/organization', '/admin/corrections', '/admin/applications'];
+const authPages = () => ['/login', '/admin-apply', '/admin-setup?token=test'];
 
 async function inspect(page: Page, name: string) {
   await page.waitForTimeout(150);
@@ -29,11 +35,12 @@ async function inspect(page: Page, name: string) {
 }
 
 for (const width of [390,768,1280]) {
-  for (const [role, paths] of [['STUDENT',studentPages],['ADMIN',adminPages],[null,authPages]] as const) {
+  for (const [role, pages] of [['STUDENT', studentPages], ['ADMIN', adminPages], [null, authPages]] as const) {
     test(`${width}px ${role ?? 'AUTH'} page screenshots and overflow`, async ({ page }) => {
       test.setTimeout(180_000);
       await page.setViewportSize({ width, height: 900 });
-      await responsiveFixtures(page, role);
+      await loginAs(page, role);
+      const paths = pages();
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       for (const path of paths) {
@@ -75,7 +82,7 @@ for (const width of [390,768,1280]) {
   test(`${width}px personal modal and editor publish settings`, async ({ page }) => {
     test.setTimeout(90_000);
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page,'STUDENT');
+    await loginAs(page, 'STUDENT');
     await page.goto('/schedule');
     await page.getByRole('button',{name:'+ 일정 추가'}).click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -86,8 +93,8 @@ for (const width of [390,768,1280]) {
     await expect(hour).toHaveAttribute('aria-activedescendant', 'wheel-시-1');
     expect(await hour.locator('button').first().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole('button',{name:'일정 창 닫기'}).click();
-    await responsiveFixtures(page,'ADMIN');
-    await page.goto('/admin/notices/1/edit');
+    await loginAs(page, 'ADMIN');
+    await page.goto(`/admin/notices/${seed().notices.wide}/edit`);
     await page.locator('.writer-title').fill('반응형 공지 작성 테스트');
     await page.getByRole('button',{name:'저장하기',exact:true}).click({ timeout: 10_000 });
     await expect(page.getByRole('dialog',{name:'게시 설정'})).toBeVisible();

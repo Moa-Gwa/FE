@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { responsiveFixtures } from './fixtures/responsive';
+import { loginStudent } from './support';
 
 test.describe('touch calendar', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   test('a single tap selects; two taps on the same day open a period editor starting on the tapped date', async ({ page }) => {
-    await responsiveFixtures(page, 'STUDENT');
+    await loginStudent(page);
     await page.goto('/schedule');
     // Some mobile browsers do not synthesize dblclick from taps.
     await page.evaluate(() => document.addEventListener('dblclick', event => event.stopImmediatePropagation(), true));
@@ -22,7 +22,7 @@ test.describe('touch calendar', () => {
     await expect(page.getByRole('listbox', { name: '시', exact: true })).toBeVisible();
   });
   test('taps on different days do not open the editor', async ({ page }) => {
-    await responsiveFixtures(page, 'STUDENT');
+    await loginStudent(page);
     await page.goto('/schedule');
     const days = page.locator('.sched-cal .day[role=button]');
     await days.nth(10).tap();
@@ -33,7 +33,7 @@ test.describe('touch calendar', () => {
 });
 
 test('desktop double click and Shift+Enter still open the editor', async ({ page }) => {
-  await responsiveFixtures(page, 'STUDENT');
+  await loginStudent(page);
   await page.goto('/schedule');
   const day = page.locator('.sched-cal .day[role=button]').nth(10);
   await day.dblclick();

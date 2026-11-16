@@ -27,7 +27,24 @@ jobs:
 
   responsive:
     name: 브라우저·반응형 검사
-    runs-on: ubuntu-latest
+    # 실제 BE 이미지(ARM 전용)와 Postgres를 띄워 실행하므로 ARM 러너 사용
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: moagwa
+          POSTGRES_PASSWORD: moagwa
+          POSTGRES_DB: moagwa_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U moagwa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,8 +52,30 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: GHCR 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: BE 실행(develop 이미지, local 프로필)
+        # local 프로필: 개발용 로그인·관리자 계정, 인증 코드 응답 노출. 학사일정은 e2e/static의 고정 페이지에서 수집
+        run: |
+          docker run -d --name be --network host \
+            -e SPRING_PROFILES_ACTIVE=local -e SERVER_PORT=18080 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/moagwa_e2e \
+            -e ACADEMIC_CALENDAR_FETCH_URL='http://localhost:3101/academic-{year}.html' \
+            ghcr.io/moa-gwa/be:develop
+          for i in $(seq 1 60); do curl -sf localhost:18080/api/categories > /dev/null && exit 0; sleep 2; done
+          docker logs be; exit 1
+      - name: psql 설치
+        # 크롤링 공지는 작성 API가 없어 테스트 준비 단계에서 SQL로 넣음
+        run: command -v psql || (sudo apt-get update && sudo apt-get install -y postgresql-client)
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e -- --workers=2
+      - name: BE 로그
+        if: failure()
+        run: docker logs be
       - uses: actions/upload-artifact@v4
         if: always()
         with:
