@@ -573,9 +573,11 @@ body{color:var(--g900)}
 .pick-row.on{color:var(--g900)}
 .pick-row.on .svg-icon{color:var(--coral-strong)}
 .pick-empty{padding:14px 20px;list-style:none}
-.select-sheet{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.select-sheet{height:min(72dvh,620px);display:flex;flex-direction:column;overflow:hidden;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.select-sheet > .sheet-handle,.select-sheet > .row-between,.select-sheet > .pick-search{flex-shrink:0}
+.select-sheet .pick-search input{font-size:16px}
 .select-sheet .row-between{margin-bottom:12px}
-.select-sheet .pick-list{margin:8px -20px 0}
+.select-sheet .pick-list{flex:1;min-height:0;max-height:none;overflow:auto;scrollbar-gutter:stable;margin:8px -20px 0}
 .sheet-scroll{max-height:56vh;overflow:auto;overscroll-behavior:contain}
 .sheet-back{z-index:20}
 
