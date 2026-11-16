@@ -39,15 +39,17 @@ export default function NotificationsPage() {
   return (
     <>
       <TopBar
+        back
         title="알림"
         sub="관심 학과·단체의 새 공지와 거래 소식을 알려드려요."
         actions={
-          <button className="secondary" disabled={!query.data?.unreadCount} onClick={() => readAll.mutate()}>
+          <button className="secondary" disabled={!query.data?.unreadCount || readAll.isPending} onClick={() => readAll.mutate()}>
             모두 읽음
           </button>
         }
       />
-      <InlineError error={readAll.error} />
+      <p className="list-note">읽은 알림은 읽은 날부터 14일 후 자동으로 삭제돼요.</p>
+      <InlineError error={readAll.error || readOne.error} />
       {query.isPending ? (
         <div className="empty">불러오는 중…</div>
       ) : query.isError ? (
@@ -59,7 +61,7 @@ export default function NotificationsPage() {
           {items.map((n) => (
             <article
               key={n.id}
-              className={`notice-card compact ${n.read ? "" : "unread"}`}
+              className={`notice-card compact notification-card ${n.read ? "notification-read" : "unread"}`}
               style={{ cursor: "pointer" }}
               onClick={() => {
                 if (!n.read) readOne.mutate(n.id);
@@ -68,7 +70,7 @@ export default function NotificationsPage() {
             >
               <div className="notice-card-top">
                 <Badge color={n.type === "URGENT" ? "blue" : "elephant"}>{TYPE_LABEL[n.type] ?? n.type}</Badge>
-                {!n.read && (
+                {n.read ? <Badge color="elephant" label="읽은 알림">읽음</Badge> : (
                   <Badge color="blue" variant="fill" label="읽지 않은 알림">
                     NEW
                   </Badge>

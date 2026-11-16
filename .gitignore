@@ -53,3 +53,4 @@ certificates
 
 # 로컬 개발 도구 설정
 .claude/
+/e2e/.seed.json

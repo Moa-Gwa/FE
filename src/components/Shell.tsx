@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AdminMobileMenu from "@/components/AdminMobileMenu";
+import AppNotices from "@/components/AppNotices";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
@@ -77,11 +79,20 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   );
 
   if (role === "STUDENT") {
-    // students always get the phone-sized layout, centered on wide screens
+    // 모바일 하단 메뉴와 넓은 화면 사이드 메뉴는 같은 경로를 사용한다.
     return (
       <div className="m-bg">
         <div className="m-shell">
-          <main className="main-m">{children}</main>
+          <aside className="side student-side" aria-label="학생 사이드 메뉴">
+            <Logo />
+            <nav className="nav" aria-label="학생 메뉴">{nav.map(n => link(n))}</nav>
+            <div className="side-bottom">
+              <div className="profile-mini"><strong>{session.name}</strong></div>
+              <button className="logout" onClick={signOut}>로그아웃</button>
+              <InlineError error={logoutError} />
+            </div>
+          </aside>
+          <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
           <nav className="m-nav" aria-label="주 메뉴">
             {nav.map((n) => link(n))}
           </nav>
@@ -90,32 +101,37 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     );
   }
 
+  // 데스크톱 사이드바와 모바일 메뉴가 같은 내용을 씀
+  const sidebar = (
+    <>
+      <Logo />
+      <div className="role-tag admin">ADMIN CONSOLE</div>
+      <nav className="nav">{nav.map((n) => link(n))}</nav>
+      <div className="side-bottom">
+        <div className="profile-mini">
+          <div className="avatar">{session.name.slice(0, 1)}</div>
+          <div>
+            <strong>{session.name}</strong>
+            <span>{session.organization?.name}</span>
+          </div>
+        </div>
+        <p className="list-note">
+          <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
+          {connected ? "실시간 연결됨" : "연결 중…"}
+        </p>
+        <button className="logout" onClick={signOut}>
+          로그아웃
+        </button>
+        <InlineError error={logoutError} />
+      </div>
+    </>
+  );
+
   return (
     <div className="shell">
-      <aside className="side">
-        <Logo />
-        <div className="role-tag admin">ADMIN CONSOLE</div>
-        <nav className="nav">{nav.map((n) => link(n))}</nav>
-        <div className="side-bottom">
-          <div className="profile-mini">
-            <div className="avatar">{session.name.slice(0, 1)}</div>
-            <div>
-              <strong>{session.name}</strong>
-              <span>{session.organization?.name}</span>
-            </div>
-          </div>
-          <p className="list-note">
-            <span className="live-dot" style={{ background: connected ? "#36a77f" : "#c9c0cf" }} />
-            {connected ? "실시간 연결됨" : "연결 중…"}
-          </p>
-          <button className="logout" onClick={signOut}>
-            로그아웃
-          </button>
-          <InlineError error={logoutError} />
-        </div>
-      </aside>
-      <main className="main">{children}</main>
-      <nav className="mobile-nav">{nav.map((n) => link(n))}</nav>
+      <aside className="side">{sidebar}</aside>
+      <AdminMobileMenu>{sidebar}</AdminMobileMenu>
+      <main className="main"><AppNotices role="ADMIN" />{children}</main>
     </div>
   );
 }

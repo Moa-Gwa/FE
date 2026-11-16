@@ -2,13 +2,16 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
+import ScheduleColorDialog from "@/components/ScheduleColorDialog";
 import PersonalScheduleForm from "@/components/PersonalScheduleForm";
 import Calendar from "@/components/Calendar";
 import Icon from "@/components/Icon";
 import TopBar from "@/components/TopBar";
+import { occursOn, scheduleRange } from "@/lib/calendarEvents";
 import { api } from "@/lib/api";
 import { fmtTime, kstDay } from "@/lib/format";
 import { useSession } from "@/lib/session";
@@ -31,8 +34,10 @@ const entryKey = (e: ScheduleEntry) => `${e.type}-${e.source}-${e.noticeId}-${e.
 function EntryRow({ e, onEdit }: { e: ScheduleEntry; onEdit: (e: ScheduleEntry) => void }) {
   const deadline = e.type === "DEADLINE";
   const personal = e.source === "PERSONAL";
+  const academic = e.source === "ACADEMIC";
+  const period = scheduleRange(e);
   const content = <>
-      <span className="sched-time">{fmtTime(e.at)}</span>
+      <span className="sched-time">{academic ? "종일" : fmtTime(e.at)}</span>
       <div className="nc-body">
         <h3>
           {e.bookmarked && (
@@ -44,12 +49,14 @@ function EntryRow({ e, onEdit }: { e: ScheduleEntry; onEdit: (e: ScheduleEntry) 
           {e.title}
         </h3>
         <div className="nc-meta">
-          <Badge color={deadline ? "yellow" : "elephant"}>{personal ? "내 일정" : deadline ? "마감" : "행사"}</Badge>
+          <Badge color={deadline ? "yellow" : "elephant"}>{academic ? "학사" : personal ? "내 일정" : deadline ? "마감" : "행사"}</Badge>
           <span className="nc-sub">{[e.organizationName, e.location].filter(Boolean).join(" · ")}</span>
         </div>
+        {e.endAt && <p className="sched-period">{dayLabel(period.from)} {academic ? "" : fmtTime(e.at)} ~ {dayLabel(academic ? period.to : kstDay(e.endAt))} {academic ? "" : fmtTime(e.endAt)}</p>}
         {personal && e.memo && <p className="personal-schedule-memo">{e.memo}</p>}
       </div>
     </>;
+  if (academic) return <a href={e.sourceUrl ?? "https://www.catholic.ac.kr/ko/support/calendar2024_list.do"} target="_blank" rel="noopener noreferrer" className="notice-card sched-row">{content}</a>;
   return personal ? (
     <button type="button" className="notice-card sched-row personal-schedule-row" onClick={() => onEdit(e)} aria-label={`${e.title} 일정 수정`}>{content}</button>
   ) : (
@@ -74,6 +81,7 @@ function DayGroup({ day, list, today, onEdit }: { day: string; list: ScheduleEnt
 }
 
 export default function SchedulePage() {
+  const router = useRouter();
   const now = new Date();
   const today = kstDay(now);
   const weekFrom = ymd(now);
@@ -82,8 +90,9 @@ export default function SchedulePage() {
   const [mode, setMode] = useState<Mode>("week");
   const [selected, setSelected] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const [colorEntry, setColorEntry] = useState<ScheduleEntry | null>(null);
   const [savedOnly, setSavedOnly] = useState(false);
-  const [editor, setEditor] = useState<{ entry: ScheduleEntry | null; day: string; fixedDate?: boolean } | null>(null);
+  const [editor, setEditor] = useState<{ entry: ScheduleEntry | null; day: string } | null>(null);
   const editEntry = (entry: ScheduleEntry) => setEditor({ entry, day: kstDay(entry.at) });
   // 저장한 공지가 일정에 포함되므로 계정별로 캐시를 나눔(다른 계정의 저장 표시 노출 방지)
   const session = useSession();
@@ -105,16 +114,16 @@ export default function SchedulePage() {
   const monthEntries = useMemo(() => onlyBookmarked(month.data, onlySaved), [month.data, onlySaved]);
   const weekEntries = useMemo(() => onlyBookmarked(week.data, onlySaved), [week.data, onlySaved]);
 
-  const marked = useMemo(() => new Set(monthEntries.map((e) => kstDay(e.at))), [monthEntries]);
+  const marked = useMemo(() => new Set(Array.from({ length: new Date(cursor.year, cursor.month + 1, 0).getDate() }, (_, i) => `${monthFrom.slice(0, 8)}${pad(i + 1)}`).filter(day => monthEntries.some(e => occursOn(e, day)))), [monthEntries, monthFrom, cursor.year, cursor.month]);
   const weekGroups = useMemo(() => {
     const groups = new Map<string, ScheduleEntry[]>();
     for (const e of weekEntries) {
-      const d = kstDay(e.at);
+      const d = kstDay(e.at) < weekFrom ? weekFrom : kstDay(e.at);
       groups.set(d, [...(groups.get(d) ?? []), e]);
     }
     // today first, then the rest of the week in date order
     return [...groups.entries()].sort(([a], [b]) => (a === today ? -1 : b === today ? 1 : a.localeCompare(b)));
-  }, [weekEntries, today]);
+  }, [weekEntries, today, weekFrom]);
 
   const pick = (m: Mode) => {
     setMode(m);
@@ -136,7 +145,7 @@ export default function SchedulePage() {
   } else {
     const day = mode === "today" ? today : selected!;
     const source = mode === "today" ? week : month;
-    const list = (mode === "today" ? weekEntries : monthEntries).filter((e) => kstDay(e.at) === day);
+    const list = (mode === "today" ? weekEntries : monthEntries).filter((e) => occursOn(e, day));
     body = source.isPending ? (
       <div className="empty">불러오는 중…</div>
     ) : source.isError ? (
@@ -150,14 +159,14 @@ export default function SchedulePage() {
 
   return (
     <>
-      <TopBar title="일정" sub="행사·마감부터 나만의 일정까지 한눈에 확인하세요." />
+      <TopBar title="일정" sub="학사일정·행사·마감부터 나만의 일정까지 한눈에 확인하세요." />
       <section className="section personal-schedule-section">
         {isStudent ? <>
           <button type="button" className="secondary personal-schedule-add" onClick={() => setEditor({ entry: null, day: selected ?? today })}>+ 일정 추가</button>
-          <p className="personal-schedule-hint">날짜를 더블클릭하면 바로 추가할 수 있어요.</p>
+          <p className="personal-schedule-hint">날짜를 두 번 탭하거나 더블클릭하면 바로 추가할 수 있어요.</p>
         </> : <Link href="/login" className="secondary personal-schedule-add">로그인하고 내 일정 추가</Link>}
       </section>
-      {isStudent && editor && <PersonalScheduleForm key={editor.entry?.noticeId ?? editor.day} entry={editor.entry} day={editor.day} fixedDate={editor.fixedDate}
+      {isStudent && editor && <PersonalScheduleForm key={editor.entry?.noticeId ?? editor.day} entry={editor.entry} day={editor.day}
         onClose={() => setEditor(null)} onSaved={(day) => {
           setSavedOnly(false);
           setSelected(day);
@@ -166,18 +175,27 @@ export default function SchedulePage() {
           setCursor({ year, month: month - 1 });
         }} />}
 
+      {colorEntry && <ScheduleColorDialog entry={colorEntry} onClose={() => setColorEntry(null)} onOpen={() => {
+        setColorEntry(null);
+        if (colorEntry.source === "PERSONAL") editEntry(colorEntry);
+        else if (colorEntry.source === "ACADEMIC") window.open(colorEntry.sourceUrl ?? "https://www.catholic.ac.kr/ko/support/calendar2024_list.do", "_blank", "noopener,noreferrer");
+        else router.push(`/notices/${colorEntry.source.toLowerCase()}/${colorEntry.noticeId}`);
+      }} />}
+      <div className="schedule-layout">
       <section className="section sched-cal">
         <Calendar
           year={cursor.year}
           month={cursor.month}
           markedDays={marked}
+          entries={monthEntries}
+          onEntrySelect={isStudent ? setColorEntry : undefined}
           selected={mode === "week" ? null : mode === "today" ? today : selected}
           range={mode === "week" ? { from: weekFrom, to: weekTo } : null}
           onSelect={(d) => {
             setMode(d === today ? "today" : "day");
             setSelected(d);
           }}
-          onAdd={isStudent ? (day) => setEditor({ entry: null, day, fixedDate: true }) : undefined}
+          onAdd={isStudent ? (day) => setEditor({ entry: null, day }) : undefined}
           onMove={(d) => {
             const next = new Date(cursor.year, cursor.month + d, 1);
             setCursor({ year: next.getFullYear(), month: next.getMonth() });
@@ -210,6 +228,7 @@ export default function SchedulePage() {
         </nav>
         {body}
       </section>
+      </div>
     </>
   );
 }

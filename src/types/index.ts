@@ -91,9 +91,13 @@ export interface OrganizationView {
 }
 
 export interface ScheduleEntry {
-  type: "EVENT" | "DEADLINE" | "PERSONAL";
+  /** This viewer's color override; null uses the default. */
+  color?: string | null;
+  /** Exclusive end; null for legacy point schedules and deadlines. */
+  endAt?: string | null;
+  type: "EVENT" | "DEADLINE" | "PERSONAL" | "ACADEMIC";
   at: string;
-  source: Source | "PERSONAL";
+  source: Source | "PERSONAL" | "ACADEMIC";
   noticeId: number;
   title: string;
   organizationName: string;
@@ -101,6 +105,7 @@ export interface ScheduleEntry {
   /** 로그인한 학생이 저장한 공지 */
   bookmarked: boolean;
   memo?: string | null;
+  sourceUrl?: string | null;
 }
 
 export interface Profile {

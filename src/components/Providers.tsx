@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import "@/lib/installPrompt";
 import { onSessionChange } from "@/lib/session";
 
 const ToastContext = createContext<(message: string) => void>(() => {});

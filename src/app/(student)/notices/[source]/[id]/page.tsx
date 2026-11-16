@@ -80,7 +80,7 @@ export default function NoticePage() {
 
   return (
     <>
-      <TopBar title="공지 상세" />
+      <TopBar title="공지 상세" back />
       <button className="back" onClick={() => router.back()}>
         ← 뒤로
       </button>
@@ -191,6 +191,7 @@ export default function NoticePage() {
               </a>
             )}
           </div>
+          {session?.role === "STUDENT" && n.bookmarked && n.eventStartAt && <ReminderToggle source={src} id={id} kind="EVENT_START" />}
           {session?.role === "STUDENT" && n.bookmarked && n.deadlineAt && <ReminderToggle source={src} id={id} />}
           <InlineError error={shareError ?? toggle.error} />
         </article>

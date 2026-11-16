@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import ScheduleColorPicker from "@/components/ScheduleColorPicker";
 import ReminderToggle from "@/components/ReminderToggle";
 import WheelDateTimePicker from "@/components/WheelDateTimePicker";
 import InlineError from "@/components/InlineError";
@@ -10,11 +11,11 @@ import { api } from "@/lib/api";
 import type { ScheduleEntry } from "@/types";
 
 const localTime = (at: string) => new Date(new Date(at).getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 16);
+const addHour = (value: string) => localTime(new Date(new Date(`${value}:00+09:00`).getTime() + 3600000).toISOString());
 
-export default function PersonalScheduleForm({ entry, day, fixedDate = false, onClose, onSaved }: {
+export default function PersonalScheduleForm({ entry, day, onClose, onSaved }: {
   entry: ScheduleEntry | null;
   day: string;
-  fixedDate?: boolean;
   onClose: () => void;
   onSaved: (day: string) => void;
 }) {
@@ -38,7 +39,10 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
     const minute = Math.floor(Number(existing.slice(14, 16)) / 5) * 5;
     return `${existing.slice(0, 14)}${String(minute).padStart(2, "0")}`;
   });
+  const [endAt, setEndAt] = useState(() => entry?.endAt ? localTime(entry.endAt) : addHour(at));
+  const [boundary, setBoundary] = useState<"start" | "end">("start");
   const [location, setLocation] = useState(entry?.location ?? "");
+  const [color, setColor] = useState<string | null>(entry?.color ?? null);
   const [memo, setMemo] = useState(entry?.memo ?? "");
   const [openedAt] = useState(() => Date.now());
   const [reminderEnabled, setReminderEnabled] = useState(false);
@@ -46,7 +50,7 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
   const save = useMutation({
     mutationFn: (remove: boolean) => api(entry ? `/me/schedules/${entry.noticeId}` : "/me/schedules", {
       method: remove ? "DELETE" : entry ? "PUT" : "POST",
-      ...(remove ? {} : { body: { ...(!entry ? { reminderEnabled } : {}), title: title.trim(), at: new Date(`${at}:00+09:00`).toISOString(), location: location.trim() || null, memo: memo.trim() || null } }),
+      ...(remove ? {} : { body: { ...(!entry ? { reminderEnabled } : {}), title: title.trim(), color, endAt: new Date(`${endAt}:00+09:00`).toISOString(), at: new Date(`${at}:00+09:00`).toISOString(), location: location.trim() || null, memo: memo.trim() || null } }),
     }),
     onSuccess: async (_, remove) => {
       await client.invalidateQueries({ queryKey: ["schedule"] });
@@ -68,18 +72,26 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
     <button type="button" className="link-btn personal-schedule-close" aria-label="일정 창 닫기" disabled={save.isPending} onClick={onClose}>×</button>
     <form className="personal-schedule-form correction-box" onSubmit={(e) => {
       e.preventDefault();
-      if (!title.trim() || !at) { setInvalid("제목과 날짜·시간을 입력해 주세요."); return; }
+      if (!title.trim() || !at || !endAt) { setInvalid("제목과 날짜·시간을 입력해 주세요."); return; }
+      if (endAt <= at) { setInvalid("종료 날짜·시간은 시작 날짜·시간 이후로 선택해 주세요."); return; }
       setInvalid("");
       save.mutate(false);
     }}>
       <div className="personal-schedule-heading"><h2 id="personal-schedule-title">{entry ? "내 일정 수정" : "내 일정 추가"}</h2><span>나에게만 보여요</span></div>
       <div className="form-group personal-field-date">
-        <span className="wheel-field-label">{fixedDate ? "시간 (한국 시간)" : "날짜·시간 (한국 시간)"}</span>
-        <WheelDateTimePicker timeOnly={fixedDate} value={at} onChange={setAt} disabled={save.isPending} />
+        <div className="personal-period-tabs" role="group" aria-label="일정 기간">
+          <button type="button" aria-pressed={boundary === "start"} onClick={() => setBoundary("start")}><strong>시작</strong><span>{at.replace("T", " ")}</span></button>
+          <button type="button" aria-pressed={boundary === "end"} onClick={() => setBoundary("end")}><strong>종료</strong><span>{endAt.replace("T", " ")}</span></button>
+        </div>
+        <span className="wheel-field-label">{boundary === "start" ? "시작 날짜·시간 (한국 시간)" : "종료 날짜·시간 (한국 시간)"}</span>
+        <WheelDateTimePicker key={boundary} value={boundary === "start" ? at : endAt} onChange={value => {
+          if (boundary === "end") setEndAt(value);
+          else { setAt(value); if (endAt <= value) setEndAt(addHour(value)); }
+        }} disabled={save.isPending} />
       </div>
       <div className="form-group personal-field-title">
-        <label htmlFor="personal-title">제목</label>
-        <input id="personal-title" value={title} maxLength={100} required placeholder="예: 팀 프로젝트 회의" onChange={(e) => setTitle(e.target.value)} autoFocus />
+        <div className="personal-title-row"><div><label htmlFor="personal-title">제목</label>
+        <input id="personal-title" value={title} maxLength={100} required placeholder="예: 팀 프로젝트 회의" onChange={(e) => setTitle(e.target.value)} autoFocus /></div><ScheduleColorPicker compact value={color} onChange={setColor} disabled={save.isPending} /></div>
       </div>
       <div className="form-group personal-field-location">
         <label htmlFor="personal-location">장소 (선택)</label>
@@ -89,7 +101,7 @@ export default function PersonalScheduleForm({ entry, day, fixedDate = false, on
         <label htmlFor="personal-memo">메모 (선택)</label>
         <textarea id="personal-memo" rows={2} value={memo} maxLength={1000} placeholder="기억할 내용을 남겨 보세요" onChange={(e) => setMemo(e.target.value)} />
       </div>
-      {entry ? <ReminderToggle source="PERSONAL" id={entry.noticeId} /> : <div className="form-group">
+      {entry ? <ReminderToggle source="PERSONAL" id={entry.noticeId} /> : <div className="form-group reminder-settings reminder-create">
         <label><input type="checkbox" checked={reminderEnabled} onChange={e => setReminderEnabled(e.target.checked)} /> 시작 24시간 전 리마인더</label>
         <p className="hint">{new Date(`${at}:00+09:00`).getTime() - openedAt <= 86400000 ? "24시간 전 알림 시점이 지났어요. 현재 날짜로는 알림을 보내지 않아요." : "앱 안 알림으로 알려드려요. 기기 푸시는 MY에서 켜 주세요."}</p>
       </div>}

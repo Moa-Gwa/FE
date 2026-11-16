@@ -59,6 +59,14 @@ export default function HtmlNoticeBody({ html }: { html: string }) {
     return () => restore.forEach((fn) => fn());
   }, [html]);
 
+  // 웹앱 실행 중 원문 링크가 앱 화면을 대신하지 않도록 새 창으로 엶
+  useEffect(() => {
+    body.current?.querySelectorAll<HTMLAnchorElement>("a[href^='http']").forEach((a) => {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    });
+  }, [html]);
+
   const open = (target: EventTarget | null) => {
     if (!(target instanceof Element) || !body.current) return false;
     const trigger = target.closest<HTMLElement>("[data-notice-image]");

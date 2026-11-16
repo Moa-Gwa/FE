@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Providers from "@/components/Providers";
 import "./globals.css";
@@ -17,6 +17,16 @@ const spoqa = localFont({
 export const metadata: Metadata = {
   title: "모아과 — 학내 통합 공지",
   description: "대학·학과·학생자치단체의 공지를 한곳에서 확인하세요.",
+  // iOS 홈 화면 앱: 상태 표시줄이 화면을 덮지 않는 기본 스타일
+  appleWebApp: { capable: true, title: "모아과", statusBarStyle: "default" },
+};
+
+// 노치·홈 인디케이터 영역까지 그리고, 여백은 safe-area-inset으로 처리함
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

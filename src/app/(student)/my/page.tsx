@@ -20,7 +20,7 @@ import type { FeedItem, NotificationSettings, Profile } from "@/types";
 const SETTINGS: [keyof NotificationSettings, string][] = [
   ["newNotice", "관심 학과·단체·카테고리 새 공지"],
   ["urgent", "중요 공지"],
-  ["eventStart", "행사 시작 알림"],
+  ["eventStart", "행사 시작 1시간 전 알림"],
   ["deadlineSoon", "공지·내 일정 리마인더"],
 ];
 

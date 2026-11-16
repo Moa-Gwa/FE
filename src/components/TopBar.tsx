@@ -2,13 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { NotificationItem } from "@/types";
 
-export default function TopBar({ title, sub, actions, home = false }: { title: string; sub?: string; actions?: React.ReactNode; home?: boolean }) {
+export default function TopBar({ title, sub, actions, home = false, back = false }: { title: string; sub?: string; actions?: React.ReactNode; home?: boolean; back?: boolean }) {
   const session = useSession();
+  const router = useRouter();
   const isStudent = session?.role === "STUDENT";
   const unread = useQuery({
     queryKey: ["notifications"],
@@ -53,7 +55,15 @@ export default function TopBar({ title, sub, actions, home = false }: { title: s
   if (isStudent) {
     return (
       <header className="topbar student">
-        <div className="topbar-actions">{quick}</div>
+        <div className="topbar-actions">
+          {back && (
+            // 웹앱 전체 화면에는 브라우저 뒤로 가기가 없음. 알림 등으로 바로 열린 경우 홈으로 이동
+            <button className="life-back" aria-label="뒤로" onClick={() => (history.length > 1 ? router.back() : router.replace("/home"))}>
+              <Icon name="back" size={24} />
+            </button>
+          )}
+          {quick}
+        </div>
         <div className="title-block">
           <h1>{title}</h1>
           {sub && <p>{sub}</p>}
