@@ -39,6 +39,7 @@ export default function NotificationsPage() {
   return (
     <>
       <TopBar
+        back
         title="알림"
         sub="관심 학과·단체의 새 공지와 거래 소식을 알려드려요."
         actions={

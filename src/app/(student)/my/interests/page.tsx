@@ -148,6 +148,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
   return (
     <>
       <TopBar
+        back={!welcome}
         title={welcome ? "환영해요! 관심정보를 설정해 주세요" : "관심정보 설정"}
         sub="주전공과 관심 학과·단체를 고르면 '나를 위한 공지'를 보여드려요."
       />
