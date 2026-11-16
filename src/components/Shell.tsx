@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminMobileMenu from "@/components/AdminMobileMenu";
+import AppNotices from "@/components/AppNotices";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
@@ -91,7 +92,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
               <InlineError error={logoutError} />
             </div>
           </aside>
-          <main className="main-m" data-page={pathname}>{children}</main>
+          <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
           <nav className="m-nav" aria-label="주 메뉴">
             {nav.map((n) => link(n))}
           </nav>
@@ -130,7 +131,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     <div className="shell">
       <aside className="side">{sidebar}</aside>
       <AdminMobileMenu>{sidebar}</AdminMobileMenu>
-      <main className="main">{children}</main>
+      <main className="main"><AppNotices role="ADMIN" />{children}</main>
     </div>
   );
 }

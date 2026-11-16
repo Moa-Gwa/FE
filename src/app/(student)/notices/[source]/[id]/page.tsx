@@ -80,7 +80,7 @@ export default function NoticePage() {
 
   return (
     <>
-      <TopBar title="공지 상세" />
+      <TopBar title="공지 상세" back />
       <button className="back" onClick={() => router.back()}>
         ← 뒤로
       </button>
