@@ -192,7 +192,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
             <h2>관심 학생자치단체</h2>
             {orgs.length > 0 && <span className="count">{orgs.length}개 선택</span>}
           </div>
-          <PickList options={councils.data ?? []} value={orgs} onToggle={(id) => setOrgs(toggle(orgs, id))} empty="등록된 학생자치단체가 아직 없어요." />
+          <PickList options={councils.data ?? []} value={orgs} onToggle={(id) => setOrgs(toggle(orgs, id))} searchLabel="학생자치단체 검색" empty="등록된 학생자치단체가 아직 없어요." />
         </section>
 
         <section className="section">
