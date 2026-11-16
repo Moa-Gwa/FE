@@ -1,32 +1,12 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { adminApi, createNotice, loginAdmin, loginStudent, seed } from './support';
 
-const urls = ['/uploads/viewer-a.png', '/uploads/viewer-b.png'];
-async function setup(page: Page, layout = 'CAROUSEL', legacy = false, admin = false, single = false) {
-  await page.addInitScript((admin) => localStorage.setItem('moagwa-session', JSON.stringify(admin
-    ? { role: 'ADMIN', name: '관리자', operator: false, organization: { id: 1, name: '학생회', type: 'STUDENT_GOVERNMENT' } }
-    : { role: 'STUDENT', name: '학생', onboarded: true })), admin);
-  const selectedUrls = single ? urls.slice(0, 1) : urls;
-  const blocks = [{ type: 'TEXT', text: '본문' }, { type: 'IMAGES', layout, images: selectedUrls, captions: single ? ['첫 사진 설명'] : ['첫 사진 설명', '둘째 사진 설명'] }];
-  const notice = { id: 1, source: 'MANUAL', organization: { id: 1, name: '학생회', type: 'STUDENT_GOVERNMENT' },
-    title: '사진 확대 공지', description: '본문', contentHtml: layout === 'HTML' ? '<p>학교 공지 본문</p><a href="https://school.example/original"><img src="/uploads/viewer-a.png" alt="학교 사진 하나"></a><img src="/uploads/viewer-b.png" alt="학교 사진 둘"><a href="https://school.example/file.pdf"><img src="/images/icon_pdf.gif" width="16" alt="pdf">첨부파일</a><img src="/uploads/viewer-b.png" style="width:1px;height:1px" alt="">' : null, blocks: legacy || layout === 'HTML' ? null : blocks,
-    categories: [], categoryIds: [1], categoryCodes: ['EVENT'], imageUrls: selectedUrls, images: layout === 'HTML' ? [] : selectedUrls, status: 'DRAFT', urgent: false,
-    publishedAt: '2026-11-01T00:00:00Z', updatedAt: '2026-11-01T00:00:00Z', createdAt: '2026-11-01T00:00:00Z',
-    eventStartAt: null, eventEndAt: null, deadlineAt: null, publishAt: null, location: null, externalLink: null, bookmarked: false, viewCount: 1, bookmarkCount: 0 };
-  await page.route('**/uploads/viewer-*.png', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600"><rect width="1200" height="1600" fill="#f4c7b9"/><text x="120" y="200" font-size="64">Notice photo</text></svg>' }));
-  await page.route('**/api/**', async route => {
-    const path = new URL(route.request().url()).pathname;
-    if (path === '/api/categories') return route.fulfill({ json: [{ id: 1, code: 'EVENT', name: '행사' }] });
-    if (path === '/api/me/notifications') return route.fulfill({ json: { unreadCount: 0, items: [] } });
-    if (path === '/api/admin/notices/1' || path === '/api/notices/1' || path === '/api/crawled-notices/1') return route.fulfill({ json: notice });
-    if (path.endsWith('/view')) return route.fulfill({ status: 204 });
-    if (path === '/api/admin/notices') return route.fulfill({ json: [] });
-    return route.fulfill({ status: 404, json: {} });
-  });
-}
+// 사진 두 장(viewer-a, viewer-b)은 준비 단계에서 실제 BE에 업로드한 파일
+const notice = (kind: keyof ReturnType<typeof seed>['notices']) => `/notices/manual/${seed().notices[kind]}`;
 
 test('slideshow opens full screen, changes images, zooms, resets and closes with Escape', async ({ page }) => {
-  await setup(page);
-  await page.goto('/notices/manual/1');
+  await loginStudent(page);
+  await page.goto(notice('carousel'));
   const opener = page.getByRole('button', { name: '사진 1 크게 보기', exact: true });
   await opener.click();
   const viewer = page.getByRole('dialog', { name: '사진 전체 화면' });
@@ -53,7 +33,7 @@ test('slideshow opens full screen, changes images, zooms, resets and closes with
 });
 
 test('stack opens the tapped image, displays its caption and closes by button', async ({ page }) => {
-  await setup(page, 'STACK'); await page.goto('/notices/manual/1');
+  await loginStudent(page); await page.goto(notice('stack'));
   await page.getByRole('button', { name: '사진 2 크게 보기' }).click();
   const viewer = page.getByRole('dialog');
   await expect(viewer.getByText('2 / 2', { exact: true })).toBeVisible();
@@ -63,28 +43,31 @@ test('stack opens the tapped image, displays its caption and closes by button', 
 });
 
 test('legacy notices without blocks or captions can still open the viewer', async ({ page }) => {
-  await setup(page, 'CAROUSEL', true); await page.goto('/notices/manual/1');
+  await loginStudent(page); await page.goto(notice('legacy'));
   await page.getByRole('button', { name: '사진 1 크게 보기' }).click();
   await expect(page.getByRole('dialog').getByRole('img', { name: '사진 1', exact: true })).toBeVisible();
 });
 
 test('editing, reordering and removing photos keeps the matching caption in the saved request', async ({ page }) => {
-  await setup(page, 'CAROUSEL', false, true); await page.goto('/admin/notices/1/edit');
+  const admin = await adminApi();
+  const draft = await createNotice(admin, { title: '사진 설명 편집', publishMode: 'DRAFT', blocks: [{ type: 'TEXT', text: '본문' }, { type: 'IMAGES', layout: 'CAROUSEL', images: seed().images, captions: ['첫 사진 설명', '둘째 사진 설명'] }] });
+  await admin.dispose();
+  await loginAdmin(page); await page.goto(`/admin/notices/${draft.id}/edit`);
   await expect(page.getByLabel('사진 1 설명 (선택)', { exact: true })).toHaveValue('첫 사진 설명');
   await page.getByRole('button', { name: '앞으로', exact: true }).nth(1).click();
   await expect(page.getByLabel('사진 1 설명 (선택)', { exact: true })).toHaveValue('둘째 사진 설명');
   await page.getByLabel('사진 2 설명 (선택)', { exact: true }).fill('수정한 첫 사진 설명');
   await page.getByRole('button', { name: '이미지 삭제', exact: true }).first().click();
-  const request = page.waitForRequest(r => r.method() === 'PUT' && new URL(r.url()).pathname === '/api/admin/notices/1');
+  const request = page.waitForRequest(r => r.method() === 'PUT' && new URL(r.url()).pathname === `/api/admin/notices/${draft.id}`);
   await page.getByRole('button', { name: '임시저장', exact: true }).click();
   const saved = (await request).postDataJSON();
-  expect(saved.blocks[1].images).toEqual([urls[0]]);
+  expect(saved.blocks[1].images).toEqual([seed().images[0]]);
   expect(saved.blocks[1].captions).toEqual(['수정한 첫 사진 설명']);
 });
 
 test('mobile viewer supports swiping and pinching without moving the page', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  const page = await context.newPage(); await setup(page); await page.goto('http://localhost:3100/notices/manual/1');
+  const page = await context.newPage(); await loginStudent(page); await page.goto(`http://localhost:3100${notice('carousel')}`);
   await page.getByRole('button', { name: '사진 1 크게 보기' }).tap();
   const viewer = page.getByRole('dialog'); const stage = viewer.locator('.image-lightbox-stage');
   const rect = (await stage.boundingBox())!; const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
@@ -103,9 +86,10 @@ test('mobile viewer supports swiping and pinching without moving the page', asyn
 
 
 test('a failed image shows a recoverable message and the next image still opens', async ({ page }) => {
-  await setup(page);
-  await page.route('**/uploads/viewer-a.png', route => route.fulfill({ status: 404, body: '' }));
-  await page.goto('/notices/manual/1');
+  await loginStudent(page);
+  // 깨진 이미지는 실제 BE로 재현할 수 없어 첫 사진 요청만 404로 바꿈
+  await page.route(`**${seed().images[0]}`, route => route.fulfill({ status: 404, body: '' }));
+  await page.goto(notice('carousel'));
   await page.getByRole('button', { name: '사진 1 크게 보기' }).click();
   const viewer = page.getByRole('dialog');
   await expect(viewer.getByText('이미지를 불러올 수 없습니다. 다른 사진을 선택해 주세요.')).toBeVisible();
@@ -115,7 +99,7 @@ test('a failed image shows a recoverable message and the next image still opens'
 
 
 test('a single photo expands without unnecessary navigation controls', async ({ page }) => {
-  await setup(page, 'STACK', false, false, true); await page.goto('/notices/manual/1');
+  await loginStudent(page); await page.goto(notice('single'));
   await page.getByRole('button', { name: '사진 1 크게 보기' }).click();
   const viewer = page.getByRole('dialog');
   await expect(viewer.getByText('1 / 1', { exact: true })).toBeVisible();
@@ -127,11 +111,11 @@ test('a single photo expands without unnecessary navigation controls', async ({ 
 
 
 test('desktop school HTML photos open on click and keyboard, while attachment links keep their destination', async ({ page }) => {
-  await setup(page, 'HTML'); await page.goto('/notices/crawled/1');
+  await loginStudent(page); await page.goto(`/notices/crawled/${seed().crawled}`);
   await page.getByRole('button', { name: '사진 1 크게 보기' }).click();
   const viewer = page.getByRole('dialog');
   await expect(viewer.getByRole('img', { name: '학교 사진 하나' })).toBeVisible();
-  await expect(page).toHaveURL(/notices\/crawled\/1/);
+  await expect(page).toHaveURL(new RegExp(`notices/crawled/${seed().crawled}`));
   await viewer.getByRole('button', { name: '확대', exact: true }).click();
   await expect(viewer.getByRole('button', { name: '확대 초기화' })).toHaveText('150%');
   await page.keyboard.press('Escape');

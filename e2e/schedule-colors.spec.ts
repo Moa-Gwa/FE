@@ -1,21 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { responsiveFixtures } from './fixtures/responsive';
+import { call, loginStudent } from './support';
 
 for (const width of [390, 768, 1280]) {
   test(`${width}px planner appearance and saved colors survive reload and reset`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.clock.setFixedTime(new Date('2026-11-15T03:00:00Z'));
-    await responsiveFixtures(page, 'STUDENT');
-    let color: string | null = null;
-    const academic = { source: 'ACADEMIC', type: 'ACADEMIC', noticeId: 1, title: '기말고사', at: '2026-11-15T15:00:00Z', endAt: '2026-11-24T15:00:00Z', organizationName: '성심교정 학사일정', bookmarked: false };
-    await page.route('**/api/schedule?**', route => route.fulfill({ json: [
-      { ...academic, color },
-      { type: 'PERSONAL', source: 'PERSONAL', noticeId: 2, title: '프로젝트 발표', at: '2026-11-18T09:00:00+09:00', endAt: '2026-11-18T10:00:00+09:00', organizationName: '내 일정', bookmarked: false, color: '#7850A0' },
-    ] }));
-    await page.route('**/api/me/schedule-colors/ACADEMIC/1', route => {
-      color = route.request().postDataJSON().color;
-      return route.fulfill({ status: 204 });
-    });
+    await loginStudent(page);
+    // 기말고사(11/16~11/24)는 학사일정 고정 페이지에서 옴
+    await call(page.request, 'POST', '/me/schedules', { title: '프로젝트 발표', at: '2026-11-18T00:00:00Z', endAt: '2026-11-18T01:00:00Z', color: '#7850A0' });
     await page.goto('/schedule');
     const bars = page.locator('.calendar-event-bar').filter({ hasText: '기말고사' });
     await expect(bars).toHaveCount(2);
@@ -44,14 +36,13 @@ for (const width of [390, 768, 1280]) {
 }
 
 test('failed color saves keep the dialog open with the previous selection', async ({ page }) => {
-  await responsiveFixtures(page, 'STUDENT');
-  await page.route('**/api/schedule?**', route => {
-    const from = new URL(route.request().url()).searchParams.get('from');
-    return route.fulfill({ json: [{ source: 'PERSONAL', type: 'PERSONAL', noticeId: 2, title: '내 일정', at: `${from}T09:00:00+09:00`, bookmarked: false }] });
-  });
+  await page.clock.setFixedTime(new Date('2026-11-18T03:00:00Z'));
+  await loginStudent(page);
+  await call(page.request, 'POST', '/me/schedules', { title: '내 일정', at: '2026-11-18T00:00:00Z' });
+  // 저장 실패는 실제 BE로 재현할 수 없어 이 요청만 실패 응답으로 바꿈
   await page.route('**/api/me/schedule-colors/**', route => route.fulfill({ status: 500, json: { message: '저장 실패' } }));
   await page.goto('/schedule');
-  await page.locator('.calendar-event-bar').first().click();
+  await page.locator('.calendar-event-bar').filter({ hasText: '내 일정' }).first().click();
   await page.getByRole('radio', { name: '초록', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('dialog')).toContainText('저장 실패');

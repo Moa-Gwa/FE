@@ -1,21 +1,9 @@
-import { test, expect, type Page } from '@playwright/test';
-
-async function setup(page: Page, role = 'ADMIN') {
-  await page.addInitScript(role => localStorage.setItem('moagwa-session', JSON.stringify({
-    role, name: '테스트 관리자', operator: false, onboarded: true,
-    organization: { id: 1, name: '학생회', type: 'STUDENT_GOVERNMENT' },
-  })), role);
-  await page.route('**/api/**', route => {
-    const path = new URL(route.request().url()).pathname;
-    if (path === '/api/auth/logout') return route.fulfill({ status: 204 });
-    if (path === '/api/admin/notices') return route.fulfill({ json: [] });
-    return route.fulfill({ status: 404, json: { message: '테스트 응답' } });
-  });
-}
+import { test, expect } from '@playwright/test';
+import { loginAdmin, loginStudent } from './support';
 
 test('mobile admin menu opens, selects a page, closes with Escape and logs out', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await setup(page);
+  await loginAdmin(page);
   await page.goto('/admin/notices');
   const open = page.getByRole('button', { name: '관리자 메뉴 열기' });
   const menu = page.getByRole('dialog', { name: '관리자 메뉴' });
@@ -34,11 +22,13 @@ test('mobile admin menu opens, selects a page, closes with Escape and logs out',
   await menu.getByRole('button', { name: '로그아웃' }).click();
   await expect(page).toHaveURL(/\/login/);
   expect(await page.evaluate(() => localStorage.getItem('moagwa-session'))).toBeNull();
+  // 실제 BE 세션도 끊겨 관리자 API가 거부됨
+  expect((await page.request.get('/api/admin/notices')).status()).toBe(401);
 });
 
 test('backdrop closes menu and desktop retains sidebar logout', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await setup(page);
+  await loginAdmin(page);
   await page.goto('/admin/notices');
   await page.getByRole('button', { name: '관리자 메뉴 열기' }).click();
   await page.mouse.click(370, 400);
@@ -52,7 +42,7 @@ test('backdrop closes menu and desktop retains sidebar logout', async ({ page })
 
 test('student mobile bottom navigation stays available', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await setup(page, 'STUDENT');
+  await loginStudent(page);
   await page.goto('/home');
   await expect(page.getByRole('navigation', { name: '주 메뉴' })).toBeVisible();
   await expect(page.getByRole('button', { name: '관리자 메뉴 열기' })).toHaveCount(0);

@@ -1,27 +1,34 @@
-import { test, expect } from '@playwright/test';
-import { responsiveFixtures } from './fixtures/responsive';
+import { test, expect, type Page } from '@playwright/test';
+import { randomUUID } from 'node:crypto';
+import { adminApi, call, createNotice, loginStudent, seed } from './support';
+
+// 이 파일만 AI융합학부 학생회 공지로 알림을 만들어 다른 테스트의 알림과 섞이지 않게 함
+test.describe.configure({ mode: 'serial' });
+
+/** 학생이 관심 단체로 등록한 단체에 공지를 게시해 실제 알림을 만듦 */
+async function studentWithNotifications(page: Page, titles: string[]) {
+  const admin = await adminApi('ai-council');
+  const org = (await call<{ id: number }>(admin, 'GET', '/admin/organization')).id;
+  const nickname = await loginStudent(page, { onboard: false });
+  await call(page.request, 'PUT', '/me/profile', { nickname, primaryDepartmentId: seed().departmentId, admissionYear: 2026, departmentIds: [], organizationIds: [org], categoryIds: [] });
+  const ids: Record<string, number> = {};
+  for (const title of titles) ids[title] = (await createNotice(admin, { title })).id;
+  await admin.dispose();
+  return ids;
+}
 
 for (const width of [390, 1280]) {
   test(`${width}px single and all-read notifications become gray and stay read on return`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await responsiveFixtures(page, 'STUDENT');
-    const items = [
-      { id: 1, type: 'URGENT', source: 'PERSONAL', noticeId: 1, title: '이미 읽은 알림', body: '내용', read: true, createdAt: '2026-11-15T09:00:00Z' },
-      { id: 2, type: 'REMINDER', source: 'PERSONAL', noticeId: 2, title: '개별 확인 알림', body: '내용', read: false, createdAt: '2026-11-15T10:00:00Z' },
-      { id: 3, type: 'NEW_NOTICE', source: 'PERSONAL', noticeId: 3, title: '모두 확인 알림', body: '내용', read: false, createdAt: '2026-11-15T11:00:00Z' },
-    ];
-    await page.route('**/api/me/notifications**', route => {
-      const path = new URL(route.request().url()).pathname;
-      if (route.request().method() === 'PUT') {
-        for (const n of items) if (path.endsWith('read-all') || path.endsWith(`/${n.id}/read`)) n.read = true;
-        return route.fulfill({ status: 204 });
-      }
-      return route.fulfill({ json: { unreadCount: items.filter(n => !n.read).length, items } });
-    });
+    const tag = randomUUID().slice(0, 4);
+    const [readTitle, singleTitle, allTitle] = [`이미 읽은 알림 ${tag}`, `개별 확인 알림 ${tag}`, `모두 확인 알림 ${tag}`];
+    const ids = await studentWithNotifications(page, [readTitle, singleTitle, allTitle]);
+    const list = await call<{ items: { id: number; title: string }[] }>(page.request, 'GET', '/me/notifications');
+    await call(page.request, 'PUT', `/me/notifications/${list.items.find(n => n.title === readTitle)!.id}/read`);
     await page.goto('/notifications');
-    const read = page.locator('article').filter({ hasText: '이미 읽은 알림' });
-    const single = page.locator('article').filter({ hasText: '개별 확인 알림' });
-    const all = page.locator('article').filter({ hasText: '모두 확인 알림' });
+    const read = page.locator('article').filter({ hasText: readTitle });
+    const single = page.locator('article').filter({ hasText: singleTitle });
+    const all = page.locator('article').filter({ hasText: allTitle });
     await expect(read).toHaveClass(/notification-read/);
     await expect(single).toHaveClass(/unread/);
     const readColor = await read.locator('h3').evaluate(el => getComputedStyle(el).color);
@@ -29,7 +36,7 @@ for (const width of [390, 1280]) {
     expect(await single.locator('h3').evaluate(el => getComputedStyle(el).color)).not.toBe(readColor);
     expect(await single.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(readBackground);
     await single.click();
-    await expect(page).toHaveURL(/\/schedule$/);
+    await expect(page).toHaveURL(new RegExp(`/notices/manual/${ids[singleTitle]}$`));
     await page.goto('/notifications');
     await expect(single).toHaveClass(/notification-read/);
     await expect(single.locator('h3')).toHaveCSS('color', readColor);
@@ -43,7 +50,8 @@ for (const width of [390, 1280]) {
 }
 
 test('failed mark-all preserves unread appearance and shows an error', async ({ page }) => {
-  await responsiveFixtures(page, 'STUDENT');
+  await studentWithNotifications(page, [`읽지 않은 알림 ${randomUUID().slice(0, 4)}`]);
+  // 읽음 처리 실패는 실제 BE로 재현할 수 없어 이 요청만 실패 응답으로 바꿈
   await page.route('**/api/me/notifications/read-all', route => route.fulfill({ status: 500, json: { message: '읽음 처리 실패' } }));
   await page.goto('/notifications');
   await page.getByRole('button', { name: '모두 읽음', exact: true }).click();
