@@ -1623,3 +1623,9 @@ fieldset.blocks-editor{min-width:0;padding:0;margin:0;border:0}
 .schedule-color-options button[aria-checked=true]{border-color:var(--g500)}
 .schedule-color-options button span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-size:18px}
 .schedule-color-dialog > .primary{width:100%;min-height:44px}
+
+/* Read notifications keep a neutral background and text, including on hover. */
+.notification-card.notification-read,.notification-card.notification-read:hover{background:var(--g100)}
+.notification-card.notification-read h3{color:var(--g600)}
+.notification-card.notification-read .notice-meta{color:var(--g500)}
+.notification-card.notification-read .badge{background:var(--g200);color:var(--g600)}
