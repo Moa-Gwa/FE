@@ -1,20 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-type InstallPromptEvent = Event & { prompt: () => Promise<void> };
+import { clearInstallPrompt, pendingInstallPrompt, type InstallPromptEvent } from "@/lib/installPrompt";
 
 const INSTALL_KEY = "moagwa:install-notice-dismissed";
 const DESKTOP_KEY = "moagwa:admin-desktop-notice-dismissed";
-
-// 세션 확인 전(안내가 그려지기 전)에 발생한 설치 이벤트도 쓰도록 모듈 로드 시점부터 보관
-let earlyInstallEvent: InstallPromptEvent | null = null;
-if (typeof window !== "undefined") {
-  addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    earlyInstallEvent = e as InstallPromptEvent;
-  });
-}
 
 function wasDismissed(key: string) {
   try {
@@ -43,7 +33,7 @@ function iosSafariGuide() {
 /** 웹앱 설치 안내, 오프라인 안내, 관리자 데스크톱 권장 안내. Shell이 세션 확인 뒤 브라우저에서만 그림 */
 export default function AppNotices({ role }: { role: "STUDENT" | "ADMIN" }) {
   const [online, setOnline] = useState(() => navigator.onLine);
-  const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(() => earlyInstallEvent);
+  const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(pendingInstallPrompt);
   const [iosGuide] = useState(iosSafariGuide);
   const [narrow, setNarrow] = useState(() => matchMedia("(max-width: 1023px)").matches);
   const [dismissed, setDismissed] = useState(() => ({ install: wasDismissed(INSTALL_KEY), desktop: wasDismissed(DESKTOP_KEY) }));
@@ -55,7 +45,7 @@ export default function AppNotices({ role }: { role: "STUDENT" | "ADMIN" }) {
     const onOffline = () => setOnline(false);
     const onInstallPrompt = (e: Event) => setInstallEvent(e as InstallPromptEvent);
     const onInstalled = () => {
-      earlyInstallEvent = null;
+      clearInstallPrompt();
       setInstallEvent(null);
     };
     narrowQuery.addEventListener("change", onNarrow);
@@ -79,8 +69,7 @@ export default function AppNotices({ role }: { role: "STUDENT" | "ADMIN" }) {
 
   const install = async () => {
     await installEvent?.prompt();
-    // 설치 이벤트는 한 번만 쓸 수 있음
-    earlyInstallEvent = null;
+    clearInstallPrompt();
     setInstallEvent(null);
   };
 
