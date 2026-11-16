@@ -1,0 +1,61 @@
+:root {
+  font-family:
+    var(--font-spoqa),
+    -apple-system,
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    sans-serif;
+  color: var(--ink);
+}
+:root {
+  --coral: #6b9bea;
+  --coral-strong: #3f78d6;
+  --coral-soft: #e3edfc;
+  --coral-50: #f0f5fd;
+  --coral-fill: #cfe0f9;
+  --lilac: #efeaf7;
+  --lilac-strong: #6b5b8e;
+  --paper: #fff;
+  --lav: var(--coral-soft);
+  --lav-strong: var(--coral-strong);
+  --pink: var(--coral-soft);
+  --pink-strong: var(--coral);
+  --mint: var(--gray-soft);
+  --hero-grad: linear-gradient(140deg, #dce9fd 0%, #e9f1fd 55%, #f4f8fe 100%);
+  --glass: rgba(255, 255, 255, 0.72);
+}
+:root {
+  --g50: #f9fafc;
+  --g100: #f2f5f9;
+  --g200: #e4e9f0;
+  --g300: #d1d6db;
+  --g400: #b0b8c1;
+  --g500: #8b95a1;
+  --g600: #6b7684;
+  --g700: #4e5968;
+  --g800: #333d4b;
+  --g900: #191f28;
+  --ink: var(--g900);
+  --ink-2: var(--g700);
+  --sub: var(--g600);
+  --faint: var(--g500);
+  --gray-soft: var(--g100);
+  --gray-text: var(--g700);
+  --line: var(--g100);
+  --bg: var(--g100);
+  --card-shadow: none;
+  --shadow: none;
+  --round: 16px;
+}
+:root {
+  --badge-blue: #2a62c4;
+  --badge-blue-soft: #e8f0fd;
+  --badge-yellow: #8a5300;
+  --badge-yellow-soft: #fff3d6;
+  --badge-red: #c2222e;
+  --badge-red-soft: #ffebec;
+  --badge-red-fill: #d4303b;
+}
+:root {
+  --student-side-width: 176px;
+}
