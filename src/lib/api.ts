@@ -22,7 +22,8 @@ async function refreshSession(): Promise<boolean> {
 
 type Options = Omit<RequestInit, "body"> & { body?: unknown; auth?: boolean };
 
-export async function api<T>(path: string, { body, auth = true, headers, ...init }: Options = {}): Promise<T> {
+/** 로그인 갱신과 오류 처리를 거친 원본 응답. 스트리밍처럼 본문을 직접 읽을 때 씀 */
+export async function apiResponse(path: string, { body, auth = true, headers, ...init }: Options = {}): Promise<Response> {
   const isForm = typeof FormData !== "undefined" && body instanceof FormData;
   const send = () => fetch(`${API_BASE}/api${path}`, {
     ...init,
@@ -56,6 +57,11 @@ export async function api<T>(path: string, { body, auth = true, headers, ...init
     } catch { /* non-JSON error body */ }
     throw new ApiError(res.status, message);
   }
+  return res;
+}
+
+export async function api<T>(path: string, options: Options = {}): Promise<T> {
+  const res = await apiResponse(path, options);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
