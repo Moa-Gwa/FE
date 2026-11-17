@@ -874,6 +874,47 @@ span.chip.on,
   font-size: 12px;
   color: var(--g500);
 }
+.admission-year-field {
+  position: relative;
+}
+.admission-year-field .field {
+  padding-right: 60px;
+  appearance: textfield;
+}
+.admission-year-field input::-webkit-inner-spin-button,
+.admission-year-field input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.admission-year-field .admission-year-options {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 48px;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  appearance: none;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+.admission-year-options option {
+  color: var(--g900);
+  background: #fff;
+}
+.admission-year-options:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: -2px;
+}
+.admission-year-field > .svg-icon {
+  position: absolute;
+  right: 14px;
+  top: 16px;
+  width: 20px;
+  height: 20px;
+  color: var(--g500);
+  pointer-events: none;
+}
 .pick-body {
   padding: 8px 20px 14px;
 }

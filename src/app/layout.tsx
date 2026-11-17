@@ -15,7 +15,8 @@ const spoqa = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "모아과 — 학내 통합 공지",
+  title: "모아과",
+  applicationName: "모아과",
   description: "대학·학과·학생자치단체의 공지를 한곳에서 확인하세요.",
   // iOS 홈 화면 앱: 상태 표시줄이 화면을 덮지 않는 기본 스타일
   appleWebApp: { capable: true, title: "모아과", statusBarStyle: "default" },
