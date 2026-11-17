@@ -454,7 +454,8 @@ button {
 .form-group.full {
   grid-column: 1/-1;
 }
-.form-group label {
+.form-group label,
+.personal-color-label {
   font-size: 12px;
   font-weight: 700;
 }
