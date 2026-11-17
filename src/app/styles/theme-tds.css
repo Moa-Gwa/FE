@@ -938,7 +938,7 @@ span.chip.on,
   text-align: left;
   cursor: pointer;
 }
-.select-field.empty {
+.select-field.is-placeholder {
   color: var(--g500);
 }
 .select-field span {

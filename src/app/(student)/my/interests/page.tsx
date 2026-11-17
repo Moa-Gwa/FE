@@ -63,7 +63,7 @@ function SheetSelect({ id, options, value, onChange, placeholder }: { id: string
   };
   return (
     <>
-      <button type="button" id={id} className={`select-field ${current ? "" : "empty"}`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <button type="button" id={id} className={`select-field ${current ? "" : "is-placeholder"}`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
         <span>{current?.name ?? placeholder}</span>
         <Icon name="down" />
       </button>
