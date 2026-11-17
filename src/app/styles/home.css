@@ -1,8 +1,6 @@
-/* home: hero gradient fills the whole top (behind the header) and fades into the page */
+/* home: hero sits on the shared student background (.m-shell) */
 .home-top {
   position: relative;
-  background: linear-gradient(180deg, rgba(242, 245, 249, 0) 0%, rgba(242, 245, 249, 0) 58%, var(--g100) 100%),
-    var(--hero-grad);
 }
 .home-top .topbar.student {
   background: none;

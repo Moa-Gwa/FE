@@ -13,7 +13,7 @@ body {
   background: #ede8e1;
 }
 .m-shell {
-  background: var(--g100);
+  background: var(--hero-grad) fixed;
   box-shadow: none;
 }
 .main-m {
@@ -912,7 +912,7 @@ span.chip.on,
   gap: 8px;
   margin: 12px -20px 0;
   padding: 12px 20px;
-  background: linear-gradient(to top, var(--g100) 70%, rgba(242, 245, 249, 0));
+  background: linear-gradient(to top, var(--coral-50) 70%, rgba(240, 245, 253, 0));
 }
 .cta-bar button {
   height: 56px;
