@@ -16,7 +16,7 @@ export type ChatbotEvent =
   | { event: "clarify"; data: { thread_id: string; interpretation: string; alternatives: string[] } }
   | { event: "retry"; data: { message: string } }
   | { event: "sources"; data: ChatbotSource[] }
-  | { event: "done"; data: { grounded: boolean } }
+  | { event: "done"; data: { grounded: boolean; cited?: number[] } }
   | { event: "error"; data: { code: string; message: string } };
 
 export type ChatbotTurn = { role: "user" | "assistant"; content: string };

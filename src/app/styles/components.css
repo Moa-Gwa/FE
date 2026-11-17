@@ -1064,7 +1064,20 @@ fieldset.blocks-editor {
   margin: 0 auto 0 -12px;
 }
 
-/* 학교 안내 챗봇: 모바일은 전체 화면, 넓은 화면은 오른쪽 아래 창 */
+/* 학교 안내 챗봇: 로고 버튼으로 열고, 모바일은 전체 화면, 넓은 화면은 오른쪽 아래 창 */
+.chatbot-fab {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(25, 31, 40, 0.16);
+}
+.chatbot-fab img {
+  height: 34px;
+}
 .chatbot-sheet {
   position: fixed;
   z-index: 20;
@@ -1237,6 +1250,7 @@ fieldset.blocks-editor {
   color: var(--g600);
 }
 .chatbot-source-meta a {
+  white-space: nowrap;
   color: var(--coral-strong);
   font-weight: 500;
 }

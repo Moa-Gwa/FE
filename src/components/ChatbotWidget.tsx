@@ -166,6 +166,11 @@ export default function ChatbotWidget({ showButton }: { showButton: boolean }) {
         return patch(id, () => ({ sources: e.data }));
       case "error":
         return patch(id, () => ({ error: e.data.message }));
+      case "done": {
+        // 검색된 자료 전부가 아니라 답변이 실제로 근거로 단 출처만 카드로 보여 줌
+        const cited = e.data.cited;
+        return patch(id, (m) => (cited ? { sources: m.sources?.filter((src) => cited.includes(src.n)) } : {}));
+      }
     }
   };
 
@@ -242,11 +247,11 @@ export default function ChatbotWidget({ showButton }: { showButton: boolean }) {
     return (
       showButton && (
         <div className="life-fab-wrap">
-          <button type="button" className="life-fab" onClick={() => setOpen(true)}>
-            <Icon name="chat" />
-            학교 안내 챗봇
-          </button>
-        </div>
+        <button type="button" className="chatbot-fab" aria-label="학교 안내 챗봇" onClick={() => setOpen(true)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/moa-gwa-logo.png" alt="" />
+        </button>
+      </div>
       )
     );
   }
