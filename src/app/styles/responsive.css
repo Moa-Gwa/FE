@@ -785,26 +785,16 @@
   margin-bottom: 0;
 }
 
-.personal-title-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 112px;
-  gap: 8px;
+/* 창을 열 때 창 자체에 포커스를 두므로 창 테두리에는 포커스 표시를 그리지 않음 */
+.personal-schedule-dialog:focus,
+.schedule-color-dialog:focus {
+  outline: none;
 }
-.personal-title-row > div {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
+.personal-schedule-dialog .personal-schedule-heading {
+  padding-right: 44px;
 }
-.schedule-color-select select {
-  width: 100%;
-  min-height: 44px;
-  padding: 8px;
-  border: 1px solid var(--g200);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--g800);
-  font: inherit;
-  font-size: 13px;
+.personal-field-color .schedule-color-options {
+  margin: 6px 0 0;
 }
 .schedule-color-dialog {
   position: fixed;
