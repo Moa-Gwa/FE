@@ -190,7 +190,8 @@
   margin-top: 4px;
 }
 .home-top .home-bell {
-  position: static;
+  position: relative;
+  inset: auto;
   margin: 0 -8px 0 0;
 }
 .home-top .hero {

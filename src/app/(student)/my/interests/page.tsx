@@ -17,6 +17,7 @@ function toggle(list: number[], id: number) {
 }
 
 type Option = { id: number; name: string; required?: boolean };
+const ADMISSION_YEARS = Array.from({ length: 9 }, (_, index) => String(2018 + index));
 
 /** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. Required rows stay checked and locked. */
 function PickList({ options, value, onToggle, searchLabel, empty }: { options: Option[]; value: number[]; onToggle: (id: number) => void; searchLabel?: string; empty: string }) {
@@ -170,7 +171,14 @@ function InterestsForm({ profile }: { profile: Profile }) {
             </div>
             <div className="form-group">
               <label htmlFor="year">입학년도 (선택)</label>
-              <input id="year" type="number" min={1990} max={2100} value={year} onChange={(e) => setYear(e.target.value)} placeholder="예: 2024" />
+              <div className="admission-year-field">
+                <input id="year" className="field" type="number" inputMode="numeric" min={1990} max={2100} value={year} onChange={(e) => setYear(e.target.value)} placeholder="선택하거나 직접 입력" />
+                <select className="admission-year-options" aria-label="입학년도 목록에서 선택" value={ADMISSION_YEARS.includes(year) ? year : ""} onChange={(e) => setYear(e.target.value)}>
+                  <option value="" disabled>연도 선택</option>
+                  {ADMISSION_YEARS.map((option) => <option key={option} value={option}>{option}년</option>)}
+                </select>
+                <Icon name="down" />
+              </div>
             </div>
             <div className="form-group">
               <label htmlFor="primary">주전공</label>
