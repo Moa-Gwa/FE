@@ -18,11 +18,10 @@ const FIELDS: [CorrectionField, string][] = [
  * 크롤링 공지의 자동 추출 날짜가 원문과 다를 때 학생이 보내는 교정 요청.
  * 날짜를 비우고 메모만 남기면 "이 공지에는 해당 날짜가 없음"으로 접수된다.
  */
-export default function DateCorrectionForm({ noticeId }: { noticeId: number }) {
+export default function DateCorrectionForm({ noticeId, open, onClose, initialField = "DEADLINE" }: { noticeId: number; open: boolean; onClose: () => void; initialField?: CorrectionField }) {
   const session = useSession();
   const toast = useToast();
-  const [open, setOpen] = useState(false);
-  const [field, setField] = useState<CorrectionField>("DEADLINE");
+  const [field, setField] = useState<CorrectionField>(initialField);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [memo, setMemo] = useState("");
@@ -41,7 +40,7 @@ export default function DateCorrectionForm({ noticeId }: { noticeId: number }) {
       }),
     onSuccess: () => {
       toast("교정 요청을 보냈어요. 운영자가 원문을 확인한 뒤 반영해요.");
-      setOpen(false);
+      onClose();
       setStart("");
       setEnd("");
       setMemo("");
@@ -57,13 +56,7 @@ export default function DateCorrectionForm({ noticeId }: { noticeId: number }) {
     if (!next.end && !next.form) send.mutate();
   }
 
-  if (!open) {
-    return (
-      <button type="button" className="link-btn correction-toggle" onClick={() => setOpen(true)}>
-        날짜가 원문과 달라요
-      </button>
-    );
-  }
+  if (!open) return null;
 
   if (session?.role !== "STUDENT") {
     return (
@@ -134,7 +127,7 @@ export default function DateCorrectionForm({ noticeId }: { noticeId: number }) {
           type="button"
           className="secondary"
           onClick={() => {
-            setOpen(false);
+            onClose();
             setInvalid({});
             send.reset();
           }}
