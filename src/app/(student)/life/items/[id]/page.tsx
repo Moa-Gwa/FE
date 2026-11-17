@@ -83,7 +83,7 @@ function Detail({ id }: { id: string }) {
         {d.imageUrls.length ? (
           d.imageUrls.map((u) => <img key={u} src={assetUrl(u)} alt="" />)
         ) : (
-          <Thumb category={d.category} size={430} />
+          <Thumb size={430} />
         )}
       </div>
       {chatRoom && (

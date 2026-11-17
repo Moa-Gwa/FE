@@ -65,7 +65,7 @@ function Detail({ id }: { id: string }) {
   return (
     <>
       <div className="life-card life-detail">
-        <Thumb src={s.imageUrl} category="LIVING" size={120} faded={!open} />
+        <Thumb src={s.imageUrl} size={120} faded={!open} />
         <Badge color={open ? "blue" : "elephant"} size="small">
           {open ? remaining(s.deadlineAt) : GROUP_STATUS_LABEL[s.status]}
         </Badge>

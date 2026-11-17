@@ -58,16 +58,22 @@
   width: auto;
   flex: none;
 }
+/* 막대는 52x28 그대로 그리고, 터치 영역(44px)은 보이지 않는 ::before로 넓힘 */
 .switch {
+  position: relative;
   flex: none;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 0;
+  min-height: 0;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 8px 0;
+  padding: 0;
   border-radius: 999px;
-  background-clip: content-box;
+}
+.switch::before {
+  content: "";
+  position: absolute;
+  inset: -8px 0;
 }
 .switch i {
   flex: none;
@@ -675,7 +681,7 @@
   border-radius: 50%;
   background: #ed4747;
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
 }
 .calendar-planner .calendar-week-days .day::after,
 .calendar-planner .day-dot {
@@ -820,7 +826,7 @@
 .schedule-color-dialog h3 {
   margin: 22px 0 6px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .schedule-color-close {
   position: absolute;

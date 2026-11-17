@@ -250,6 +250,7 @@ export default function ChatbotWidget({ showButton }: { showButton: boolean }) {
         <button type="button" className="chatbot-fab" aria-label="학교 안내 챗봇" onClick={() => setOpen(true)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/moa-gwa-logo.png" alt="" />
+          <span className="chatbot-fab-label" aria-hidden="true">Ask me!</span>
         </button>
       </div>
       )
