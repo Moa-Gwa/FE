@@ -392,6 +392,7 @@ export interface AdminApplication {
   department: string;
   contactName: string;
   email: string;
+  loginId: string;
   phone: string;
   channelUrl: string;
   reason: string;
