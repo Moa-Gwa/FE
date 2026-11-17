@@ -14,7 +14,7 @@ import { useCategories, useOrganizations } from "@/hooks/useMeta";
 import { api, logout } from "@/lib/api";
 import { STATUS_LABEL } from "@/lib/format";
 import { unregisterPushToken } from "@/lib/push";
-import { useSession } from "@/lib/session";
+import { setSession, useSession } from "@/lib/session";
 import type { FeedItem, NotificationSettings, Profile } from "@/types";
 
 const SETTINGS: [keyof NotificationSettings, string][] = [
@@ -32,6 +32,18 @@ export default function MyPage() {
   const { categories } = useCategories();
   const departments = useOrganizations("DEPARTMENT");
   const [logoutError, setLogoutError] = useState<unknown>(null);
+  // 탈퇴는 되돌릴 수 없어 버튼을 두 번 눌러야 진행
+  const [confirmWithdraw, setConfirmWithdraw] = useState(false);
+  const withdraw = useMutation({
+    mutationFn: async () => {
+      await unregisterPushToken().catch(() => {});
+      await api("/me", { method: "DELETE" });
+    },
+    onSuccess: () => {
+      setSession(null);
+      router.replace("/login");
+    },
+  });
   const [filter, setFilter] = useState("");
 
   const profile = useQuery({ queryKey: ["me", "profile"], queryFn: () => api<Profile>("/me/profile") });
@@ -188,6 +200,18 @@ export default function MyPage() {
           로그아웃
         </button>
         <InlineError error={logoutError} />
+        <button
+          className="logout-text"
+          disabled={withdraw.isPending}
+          onClick={() => (confirmWithdraw ? withdraw.mutate() : setConfirmWithdraw(true))}
+        >
+          {confirmWithdraw ? "탈퇴하면 저장한 공지, 일정, 거래 글, 채팅이 삭제돼요. 한 번 더 누르면 탈퇴해요" : "회원 탈퇴"}
+        </button>
+        <InlineError error={withdraw.error} />
+        <nav className="legal-links" aria-label="약관">
+          <Link href="/terms">이용약관</Link>
+          <Link href="/privacy">개인정보 처리방침</Link>
+        </nav>
     </>
   );
 }

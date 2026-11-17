@@ -123,6 +123,7 @@ export default function VerifyPage() {
                 <p className="life-note">
                   <Icon name="clock" size={14} /> 인증 코드는 받은 뒤 10분 동안 유효해요.
                 </p>
+                <p className="life-note">학교 메일은 재학생 확인과 중복 인증 방지에만 쓰고, 탈퇴하면 삭제돼요.</p>
                 <InlineError error={error} />
                 <button className="life-btn" disabled={!id.trim() || send.isPending}>
                   {send.isPending ? "보내는 중…" : "인증 코드 받기"}

@@ -1063,3 +1063,25 @@ fieldset.blocks-editor {
 .topbar.student .topbar-actions .life-back {
   margin: 0 auto 0 -12px;
 }
+
+/* 이용약관, 개인정보 처리방침, 동의 화면 */
+.legal {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+  color: var(--ink);
+  line-height: 1.7;
+  word-break: keep-all;
+}
+.legal h1 { font-size: 24px; margin: 16px 0; }
+.legal h2 { font-size: 17px; margin: 28px 0 8px; }
+.legal ol, .legal ul { padding-left: 20px; }
+.legal li { margin: 4px 0; }
+.legal-back, .legal-links a { color: var(--g500); font-size: 14px; }
+.legal-links { display: flex; justify-content: center; gap: 16px; margin-top: 16px; }
+.consent-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.consent-row { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.consent-row input { width: 18px; height: 18px; flex: none; }
+.consent-row span { flex: 1; }
+.consent-row a { color: var(--g500); font-size: 13px; }
+.consent-row.all { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
