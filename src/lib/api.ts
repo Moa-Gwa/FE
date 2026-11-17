@@ -3,7 +3,8 @@ import { getSession, setSession } from "@/lib/session";
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  /** fields: 검증 실패 시 서버가 돌려준 항목별 오류 메시지 */
+  constructor(public status: number, message: string, public fields?: Record<string, string>) { super(message); }
 }
 
 let refreshing: Promise<boolean> | null = null;
@@ -22,7 +23,8 @@ async function refreshSession(): Promise<boolean> {
 
 type Options = Omit<RequestInit, "body"> & { body?: unknown; auth?: boolean };
 
-export async function api<T>(path: string, { body, auth = true, headers, ...init }: Options = {}): Promise<T> {
+/** 로그인 갱신과 오류 처리를 거친 원본 응답. 스트리밍처럼 본문을 직접 읽을 때 씀 */
+export async function apiResponse(path: string, { body, auth = true, headers, ...init }: Options = {}): Promise<Response> {
   const isForm = typeof FormData !== "undefined" && body instanceof FormData;
   const send = () => fetch(`${API_BASE}/api${path}`, {
     ...init,
@@ -50,12 +52,19 @@ export async function api<T>(path: string, { body, auth = true, headers, ...init
   }
   if (!res.ok) {
     let message = `요청에 실패했습니다 (${res.status})`;
+    let fields: Record<string, string> | undefined;
     try {
       const data = await res.json();
       if (data?.message) message = data.message;
+      fields = data?.errors;
     } catch { /* non-JSON error body */ }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, fields);
   }
+  return res;
+}
+
+export async function api<T>(path: string, options: Options = {}): Promise<T> {
+  const res = await apiResponse(path, options);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }

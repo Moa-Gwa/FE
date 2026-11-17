@@ -18,19 +18,19 @@ for (const width of [390, 768, 1280]) {
     await expect(page.getByRole('dialog', { name: '기말고사' })).toBeVisible();
     await page.getByRole('radio', { name: '분홍', exact: true }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(184, 59, 114)');
-    await expect(bars.last().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(184, 59, 114)');
+    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(245, 198, 218)');
+    await expect(bars.last().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(245, 198, 218)');
     await page.reload();
-    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(184, 59, 114)');
+    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(245, 198, 218)');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await page.screenshot({ path: test.info().outputPath(`planner-${width}.png`), fullPage: true });
     await bars.first().click();
     await page.getByRole('radio', { name: '기본 색상', exact: true }).click();
     await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(20, 125, 86)');
+    await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(191, 230, 211)');
     await page.getByRole('button', { name: '+ 일정 추가' }).click();
-    await page.getByLabel('일정 색상', { exact: true }).selectOption('#7850A0');
-    await expect(page.getByLabel('일정 색상', { exact: true })).toHaveValue('#7850A0');
+    await page.getByLabel('일정 색상', { exact: true }).selectOption('#DCCBEE');
+    await expect(page.getByLabel('일정 색상', { exact: true })).toHaveValue('#DCCBEE');
     await page.screenshot({ path: test.info().outputPath(`color-form-${width}.png`) });
   });
 }

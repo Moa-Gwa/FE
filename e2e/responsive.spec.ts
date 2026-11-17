@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { loginAs, seed } from './support';
+import { loginAdmin, loginAs, seed } from './support';
 
 // 준비 단계에서 만든 실제 데이터 id로 경로를 만듦
 const studentPages = () => {
@@ -22,7 +22,8 @@ async function inspect(page: Page, name: string) {
     return r.left < -1 || r.right > innerWidth + 1;
   }).map(el => ({ tag: el.tagName, name: el.getAttribute('name'), className: el.className })));
   expect.soft(clipped, `${name}: form controls`).toEqual([]);
-  const smallTargets = await page.evaluate(() => [...document.querySelectorAll('button:not(:disabled)')].filter(el => {
+  // 달력 일정 막대는 얇은 막대로 표시하므로 44px 크기 검사에서 제외
+  const smallTargets = await page.evaluate(() => [...document.querySelectorAll('button:not(:disabled):not(.calendar-event-bar)')].filter(el => {
     const r = el.getBoundingClientRect();
     return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'
       && !el.closest('[data-nextjs-dialog],nextjs-portal') && (r.width < 43.5 || r.height < 43.5);
@@ -93,7 +94,8 @@ for (const width of [390,768,1280]) {
     await expect(hour).toHaveAttribute('aria-activedescendant', 'wheel-시-1');
     expect(await hour.locator('button').first().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole('button',{name:'일정 창 닫기'}).click();
-    await loginAs(page, 'ADMIN');
+    // 시드 공지는 총학생회 계정이 작성함. 운영자는 별도 단체라 이 공지를 수정할 수 없음
+    await loginAdmin(page);
     await page.goto(`/admin/notices/${seed().notices.wide}/edit`);
     await page.locator('.writer-title').fill('반응형 공지 작성 테스트');
     await page.getByRole('button',{name:'저장하기',exact:true}).click({ timeout: 10_000 });

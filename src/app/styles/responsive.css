@@ -65,10 +65,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 3px;
+  padding: 8px 0;
+  border-radius: 999px;
+  background-clip: content-box;
 }
 .switch i {
   flex: none;
+  margin: 0 3px;
 }
 .setting-row {
   gap: 12px;
@@ -632,7 +635,7 @@
 }
 .calendar-week {
   position: relative;
-  min-height: clamp(112px, 22vw, 156px);
+  min-height: 72px;
   padding-bottom: 4px;
   border-top: 1px solid #f1f2f4;
   min-width: 0;
@@ -681,14 +684,14 @@
 .calendar-week-bars {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0;
+  gap: 1px 0;
   min-width: 0;
 }
 .calendar-event-bar {
   display: flex;
   align-items: center;
   min-width: 0 !important;
-  min-height: 44px;
+  min-height: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -719,6 +722,24 @@
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   margin-right: 0;
+}
+/* 선택한 주만 크게 펼치고 나머지 주는 얇은 막대로 줄임 */
+.calendar-week.expanded {
+  min-height: clamp(112px, 22vw, 156px);
+}
+.calendar-week:not(.expanded) .calendar-event-bar {
+  min-height: 20px;
+}
+.calendar-week:not(.expanded) .calendar-event-label {
+  font-size: 10px;
+  line-height: 14px;
+  padding: 1px 3px;
+}
+.calendar-more {
+  padding-left: 4px;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--g500);
 }
 .calendar-event-bar:focus-visible {
   outline: 2px solid var(--coral);

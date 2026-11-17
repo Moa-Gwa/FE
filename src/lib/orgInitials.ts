@@ -13,7 +13,7 @@ export const ORG_INITIALS: Record<string, string> = {
   // 인문계열
   국어국문학과: "국문",
   철학과: "철학",
-  사학과: "사학",
+  국사학과: "국사",
   영어영문학과: "영문",
   중국어중국학과: "중문",
   일본어일본문화학과: "일문",
@@ -75,6 +75,7 @@ export const ORG_INITIALS: Record<string, string> = {
   약학대학: "약학",
 
   // 학생자치단체
+  운영자: "운영",
   총학생회: "총학",
   "AI융합학부 학생회": "AI",
 };

@@ -48,6 +48,7 @@ export default function NoticePage() {
   }, [src, id, path, query.isSuccess, session?.role, session?.name, qc]);
 
   const [shareError, setShareError] = useState<string | null>(null);
+  const [correcting, setCorrecting] = useState(false);
   const toggle = useMutation({
     mutationFn: (saved: boolean) => api<void>(`/me/bookmarks/${src}/${id}`, { method: saved ? "DELETE" : "PUT" }),
     onMutate: () => setShareError(null),
@@ -110,7 +111,7 @@ export default function NoticePage() {
           <h1>{n.title}</h1>
           <div className="detail-info">
             <span>
-              {n.organization.name} ({ORG_TYPE_LABEL[n.organization.type]})
+              {n.organization.name === "운영자" ? "운영자" : `${n.organization.name} (${ORG_TYPE_LABEL[n.organization.type]})`}
             </span>
             <span>등록 {fmtDate(n.publishedAt)}</span>
             {n.updatedAt !== n.publishedAt && n.source === "MANUAL" && <span>수정 {fmtDate(n.updatedAt)}</span>}
@@ -118,6 +119,12 @@ export default function NoticePage() {
           </div>
 
           {(n.eventStartAt || n.deadlineAt || n.location) && (
+            <div className="info-callout">
+            {n.source === "CRAWLED" && (n.eventStartAt || n.deadlineAt) && (
+              <button type="button" className="correction-chip" aria-expanded={correcting} onClick={() => setCorrecting(true)}>
+                날짜가 원문과 달라요
+              </button>
+            )}
             <dl className="info-grid">
               {n.eventStartAt && (
                 <>
@@ -143,6 +150,7 @@ export default function NoticePage() {
                 </>
               )}
             </dl>
+            </div>
           )}
           {n.source === "CRAWLED" && (
             <div className="extracted-info">
@@ -161,7 +169,12 @@ export default function NoticePage() {
                   ))}
                 </ul>
               )}
-              <DateCorrectionForm noticeId={n.id} />
+              {!n.eventStartAt && !n.deadlineAt && !correcting && (
+                <button type="button" className="link-btn correction-toggle" onClick={() => setCorrecting(true)}>
+                  날짜가 원문과 달라요
+                </button>
+              )}
+              <DateCorrectionForm noticeId={n.id} open={correcting} onClose={() => setCorrecting(false)} initialField={n.deadlineAt ? "DEADLINE" : "EVENT"} />
             </div>
           )}
 

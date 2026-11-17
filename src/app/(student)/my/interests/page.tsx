@@ -16,14 +16,16 @@ function toggle(list: number[], id: number) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 }
 
-type Option = { id: number; name: string };
+type Option = { id: number; name: string; required?: boolean };
+// 올해와 이전 8년. 그 밖의 연도는 직접 입력
+const ADMISSION_YEARS = Array.from({ length: 9 }, (_, index) => String(new Date().getFullYear() - 8 + index));
 
-/** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. */
+/** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. Required rows stay checked and locked. */
 function PickList({ options, value, onToggle, searchLabel, empty }: { options: Option[]; value: number[]; onToggle: (id: number) => void; searchLabel?: string; empty: string }) {
   const [q, setQ] = useState("");
   const shown = options
     .filter((o) => o.name.includes(q.trim()))
-    .sort((a, b) => Number(value.includes(b.id)) - Number(value.includes(a.id)));
+    .sort((a, b) => Number(!!b.required || value.includes(b.id)) - Number(!!a.required || value.includes(a.id)));
   return (
     <div className="pick-body">
       {searchLabel && (
@@ -34,11 +36,11 @@ function PickList({ options, value, onToggle, searchLabel, empty }: { options: O
       )}
       <ul className={`pick-list ${searchLabel ? "scroll" : ""}`} role="listbox" aria-multiselectable="true">
         {shown.map((o) => {
-          const on = value.includes(o.id);
+          const on = !!o.required || value.includes(o.id);
           return (
             <li key={o.id}>
-              <button type="button" role="option" aria-selected={on} className={`pick-row ${on ? "on" : ""}`} onClick={() => onToggle(o.id)}>
-                <span>{o.name}</span>
+              <button type="button" role="option" aria-selected={on} aria-disabled={o.required} className={`pick-row ${on ? "on" : ""}`} onClick={() => !o.required && onToggle(o.id)}>
+                <span>{o.required ? `${o.name} (필수, 해제 불가)` : o.name}</span>
                 <Icon name="check" />
               </button>
             </li>
@@ -63,7 +65,7 @@ function SheetSelect({ id, options, value, onChange, placeholder }: { id: string
   };
   return (
     <>
-      <button type="button" id={id} className={`select-field ${current ? "" : "empty"}`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <button type="button" id={id} className={`select-field ${current ? "" : "is-placeholder"}`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
         <span>{current?.name ?? placeholder}</span>
         <Icon name="down" />
       </button>
@@ -123,6 +125,16 @@ function InterestsForm({ profile }: { profile: Profile }) {
   const [orgs, setOrgs] = useState(profile.organizationIds);
   const [cats, setCats] = useState(profile.categoryIds);
 
+  // 주전공을 고르거나 바꾸면 관심 학과와 학과 학생회를 함께 체크하고, 예전 주전공 것은 해제함. 그 뒤 해제는 학생 선택대로 둠
+  const choosePrimary = (id: number | null) => {
+    if (id === primary) return; // 같은 학과를 다시 고르면 학생이 해제한 학생회를 되살리지 않음
+    const councilOf = (dept: number | null) => departments.data?.find((d) => d.id === dept)?.studentGovernmentId ?? null;
+    const add = (list: number[], value: number | null) => (value === null || list.includes(value) ? list : [...list, value]);
+    setDepts(add(depts.filter((d) => d !== primary), id));
+    setOrgs(add(orgs.filter((o) => o !== councilOf(primary)), councilOf(id)));
+    setPrimary(id);
+  };
+
   const save = useMutation({
     mutationFn: () =>
       api<Profile>("/me/profile", {
@@ -170,11 +182,18 @@ function InterestsForm({ profile }: { profile: Profile }) {
             </div>
             <div className="form-group">
               <label htmlFor="year">입학년도 (선택)</label>
-              <input id="year" type="number" min={1990} max={2100} value={year} onChange={(e) => setYear(e.target.value)} placeholder="예: 2024" />
+              <div className="admission-year-field">
+                <input id="year" className="field" type="number" inputMode="numeric" min={1990} max={2100} value={year} onChange={(e) => setYear(e.target.value)} placeholder="선택하거나 직접 입력" />
+                <select className="admission-year-options" aria-label="입학년도 목록에서 선택" value={ADMISSION_YEARS.includes(year) ? year : ""} onChange={(e) => setYear(e.target.value)}>
+                  <option value="" disabled>연도 선택</option>
+                  {ADMISSION_YEARS.map((option) => <option key={option} value={option}>{option}년</option>)}
+                </select>
+                <Icon name="down" />
+              </div>
             </div>
             <div className="form-group">
               <label htmlFor="primary">주전공</label>
-              <SheetSelect id="primary" options={departments.data ?? []} value={primary} onChange={setPrimary} placeholder="주전공을 선택해 주세요" />
+              <SheetSelect id="primary" options={departments.data ?? []} value={primary} onChange={choosePrimary} placeholder="주전공을 선택해 주세요" />
               <span className="hint">복수전공·전과 예정이라면 아래 관심 학과에 추가하세요.</span>
             </div>
           </div>

@@ -13,7 +13,7 @@ body {
   background: #ede8e1;
 }
 .m-shell {
-  background: var(--g100);
+  background: var(--hero-grad) fixed;
   box-shadow: none;
 }
 .main-m {
@@ -385,6 +385,10 @@ span.chip.on,
 .chips .chip.on {
   background: var(--coral-strong);
   color: #fff;
+}
+/* 탐색 화면 검색 범위 칩 */
+.search + .chips {
+  margin: 10px 0 8px;
 }
 .list-toolbar {
   margin: 10px 0 8px;
@@ -874,6 +878,47 @@ span.chip.on,
   font-size: 12px;
   color: var(--g500);
 }
+.admission-year-field {
+  position: relative;
+}
+.admission-year-field .field {
+  padding-right: 60px;
+  appearance: textfield;
+}
+.admission-year-field input::-webkit-inner-spin-button,
+.admission-year-field input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.admission-year-field .admission-year-options {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 48px;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  appearance: none;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+.admission-year-options option {
+  color: var(--g900);
+  background: #fff;
+}
+.admission-year-options:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: -2px;
+}
+.admission-year-field > .svg-icon {
+  position: absolute;
+  right: 14px;
+  top: 16px;
+  width: 20px;
+  height: 20px;
+  color: var(--g500);
+  pointer-events: none;
+}
 .pick-body {
   padding: 8px 20px 14px;
 }
@@ -912,7 +957,7 @@ span.chip.on,
   gap: 8px;
   margin: 12px -20px 0;
   padding: 12px 20px;
-  background: linear-gradient(to top, var(--g100) 70%, rgba(242, 245, 249, 0));
+  background: linear-gradient(to top, var(--coral-50) 70%, rgba(240, 245, 253, 0));
 }
 .cta-bar button {
   height: 56px;
@@ -938,7 +983,7 @@ span.chip.on,
   text-align: left;
   cursor: pointer;
 }
-.select-field.empty {
+.select-field.is-placeholder {
   color: var(--g500);
 }
 .select-field span {

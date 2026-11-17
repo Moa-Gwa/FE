@@ -74,6 +74,7 @@ function ApplicationCard({
   const qc = useQueryClient();
   const toast = useToast();
   const [reason, setReason] = useState("");
+  const [name, setName] = useState(a.organizationName);
 
   const issued = (r: SetupLinkIssued, message: string) => {
     onLinkIssued(r.setupLink);
@@ -82,7 +83,8 @@ function ApplicationCard({
   };
 
   const approve = useMutation({
-    mutationFn: () => api<SetupLinkIssued>(`/admin/applications/${a.id}/approve`, { method: "POST" }),
+    mutationFn: () =>
+      api<SetupLinkIssued>(`/admin/applications/${a.id}/approve`, { method: "POST", body: { organizationName: name.trim() || null } }),
     onSuccess: (r) => issued(r, "승인하고 설정 링크를 메일로 보냈어요."),
   });
   const resend = useMutation({
@@ -91,9 +93,12 @@ function ApplicationCard({
   });
   const reject = useMutation({
     mutationFn: () =>
-      api<void>(`/admin/applications/${a.id}/reject`, { method: "POST", body: { reason: reason.trim() || null } }),
-    onSuccess: () => {
-      toast("신청을 반려했어요.");
+      api<{ mailSent: boolean }>(`/admin/applications/${a.id}/reject`, {
+        method: "POST",
+        body: { reason: reason.trim() || null },
+      }),
+    onSuccess: (r) => {
+      toast(r.mailSent ? "신청을 반려하고 안내 메일을 보냈어요." : "신청을 반려했어요. 안내 메일은 보내지 못했어요.");
       qc.invalidateQueries({ queryKey: ["admin", "applications"] });
     },
   });
@@ -108,6 +113,7 @@ function ApplicationCard({
       <p>
         담당자: {a.contactName} · {a.email} · {a.phone}
       </p>
+      <p>신청 아이디: {a.loginId}</p>
       <p>
         공식 채널:{" "}
         <a href={a.channelUrl} target="_blank" rel="noreferrer">
@@ -120,6 +126,11 @@ function ApplicationCard({
 
       {a.status === "PENDING" && (
         <>
+          <div className="form-group">
+            <label htmlFor={`name-${a.id}`}>승인할 단체 이름</label>
+            <input id={`name-${a.id}`} value={name} maxLength={100} onChange={(e) => setName(e.target.value)} />
+            <span className="hint">학과 학생회는 &quot;학과명 학생회&quot;(예: 철학과 학생회)로 맞추면 학생 관심정보에 학과와 함께 자동 등록돼요.</span>
+          </div>
           <div className="form-group">
             <label htmlFor={`reason-${a.id}`}>반려 사유 (선택)</label>
             <input id={`reason-${a.id}`} value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />

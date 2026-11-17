@@ -603,6 +603,21 @@
   font-size: 15px;
   color: var(--g900);
 }
+.life-req-main {
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.life-req-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.life-req-actions .life-btn.ghost {
+  margin-top: 0;
+}
 
 /* 하단 고정 바: 탭바(하단 16px + 64px) 위에 둔다 */
 .life-bar,

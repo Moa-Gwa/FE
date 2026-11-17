@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
-import { loginAs, seed } from './support';
+import { loginAdmin, loginAs, seed } from './support';
 
 async function evidence(page: Page, name: string, data: unknown) {
   const json = JSON.stringify(data, null, 2);
@@ -12,7 +12,8 @@ async function evidence(page: Page, name: string, data: unknown) {
 for (const width of [390, 768, 1280]) {
   test(`${width}px date popup stays anchored and within viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await loginAs(page, 'ADMIN');
+    // 시드 공지는 총학생회 계정이 작성함. 운영자는 별도 단체라 이 공지를 수정할 수 없음
+    await loginAdmin(page);
     await page.goto(`/admin/notices/${seed().notices.wide}/edit`);
     await page.locator('.writer-title').fill('날짜 팝업 위치 검사');
     await page.getByRole('button', { name: '저장하기', exact: true }).click();
