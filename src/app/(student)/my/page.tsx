@@ -168,7 +168,7 @@ export default function MyPage() {
             </div>
           ))}
           <InlineError error={settings.error ?? update.error} />
-          <p className="hint">푸시를 꺼도 앱 안 알림센터에는 항상 쌓여요.</p>
+          <p className="hint">푸시를 꺼도 앱 안 알림센터에는 항상 쌓여요. 운영자 공지 알림은 끌 수 없어요.</p>
         </div>
       </section>
 

@@ -88,6 +88,8 @@ export interface OrganizationView {
   name: string;
   type: OrgType;
   college: string | null;
+  /** BE #112: 운영자처럼 구독을 해제할 수 없는 단체 */
+  required?: boolean;
 }
 
 export interface ScheduleEntry {

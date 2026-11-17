@@ -16,14 +16,14 @@ function toggle(list: number[], id: number) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 }
 
-type Option = { id: number; name: string };
+type Option = { id: number; name: string; required?: boolean };
 
-/** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. */
+/** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. Required rows stay checked and locked. */
 function PickList({ options, value, onToggle, searchLabel, empty }: { options: Option[]; value: number[]; onToggle: (id: number) => void; searchLabel?: string; empty: string }) {
   const [q, setQ] = useState("");
   const shown = options
     .filter((o) => o.name.includes(q.trim()))
-    .sort((a, b) => Number(value.includes(b.id)) - Number(value.includes(a.id)));
+    .sort((a, b) => Number(!!b.required || value.includes(b.id)) - Number(!!a.required || value.includes(a.id)));
   return (
     <div className="pick-body">
       {searchLabel && (
@@ -34,11 +34,11 @@ function PickList({ options, value, onToggle, searchLabel, empty }: { options: O
       )}
       <ul className={`pick-list ${searchLabel ? "scroll" : ""}`} role="listbox" aria-multiselectable="true">
         {shown.map((o) => {
-          const on = value.includes(o.id);
+          const on = !!o.required || value.includes(o.id);
           return (
             <li key={o.id}>
-              <button type="button" role="option" aria-selected={on} className={`pick-row ${on ? "on" : ""}`} onClick={() => onToggle(o.id)}>
-                <span>{o.name}</span>
+              <button type="button" role="option" aria-selected={on} aria-disabled={o.required} className={`pick-row ${on ? "on" : ""}`} onClick={() => !o.required && onToggle(o.id)}>
+                <span>{o.required ? `${o.name} (필수, 해제 불가)` : o.name}</span>
                 <Icon name="check" />
               </button>
             </li>

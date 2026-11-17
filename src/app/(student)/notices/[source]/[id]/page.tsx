@@ -110,7 +110,7 @@ export default function NoticePage() {
           <h1>{n.title}</h1>
           <div className="detail-info">
             <span>
-              {n.organization.name} ({ORG_TYPE_LABEL[n.organization.type]})
+              {n.organization.name === "운영자" ? "운영자" : `${n.organization.name} (${ORG_TYPE_LABEL[n.organization.type]})`}
             </span>
             <span>등록 {fmtDate(n.publishedAt)}</span>
             {n.updatedAt !== n.publishedAt && n.source === "MANUAL" && <span>수정 {fmtDate(n.updatedAt)}</span>}
