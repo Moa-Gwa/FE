@@ -681,14 +681,14 @@
 .calendar-week-bars {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0;
+  gap: 1px 0;
   min-width: 0;
 }
 .calendar-event-bar {
   display: flex;
   align-items: center;
   min-width: 0 !important;
-  min-height: 44px;
+  min-height: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
