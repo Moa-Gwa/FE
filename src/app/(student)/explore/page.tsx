@@ -15,6 +15,11 @@ const ORG_TYPES = [
   ["STUDENT_GOVERNMENT", "학생자치단체"],
 ];
 const STATUSES = [["", "전체"], ...(["UPCOMING", "ONGOING", "DEADLINE_SOON", "CLOSED"] as const).map((s) => [s, STATUS_LABEL[s]])];
+const FIELDS = [
+  ["", "전체"],
+  ["title", "제목"],
+  ["content", "내용"],
+];
 const SORTS = [
   ["latest", "최신순"],
   ["deadline", "마감 임박순"],
@@ -31,6 +36,7 @@ function Explore() {
   const status = params.get("status") ?? "";
   const sort = params.get("sort") ?? "latest";
   const q = params.get("q") ?? "";
+  const field = params.get("field") ?? "";
 
   const [text, setText] = useState(q);
 
@@ -82,6 +88,14 @@ function Explore() {
         />
       </label>
 
+      <div className="chips" role="group" aria-label="검색 범위">
+        {FIELDS.map(([value, label]) => (
+          <button key={value} className={`chip ${field === value ? "on" : ""}`} aria-pressed={field === value} onClick={() => set("field", value)}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       <nav className="segmented" aria-label="발행 주체">
         {ORG_TYPES.map(([value, label]) => (
           <button key={value} className={orgType === value ? "on" : ""} aria-pressed={orgType === value} onClick={() => set("orgType", value)}>
@@ -105,7 +119,7 @@ function Explore() {
         </button>
       </div>
 
-      <FeedList params={{ orgType, category, status, sort, q }} />
+      <FeedList params={{ orgType, category, status, sort, q, field }} />
 
       {sheet && (
         <div className="sheet-back" onClick={() => setSheet(false)}>

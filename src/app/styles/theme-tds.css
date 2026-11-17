@@ -386,6 +386,10 @@ span.chip.on,
   background: var(--coral-strong);
   color: #fff;
 }
+/* 탐색 화면 검색 범위 칩 */
+.search + .chips {
+  margin: 10px 0 8px;
+}
 .list-toolbar {
   margin: 10px 0 8px;
   padding: 0;
