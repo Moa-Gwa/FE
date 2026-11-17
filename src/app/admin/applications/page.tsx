@@ -91,9 +91,12 @@ function ApplicationCard({
   });
   const reject = useMutation({
     mutationFn: () =>
-      api<void>(`/admin/applications/${a.id}/reject`, { method: "POST", body: { reason: reason.trim() || null } }),
-    onSuccess: () => {
-      toast("신청을 반려했어요.");
+      api<{ mailSent: boolean }>(`/admin/applications/${a.id}/reject`, {
+        method: "POST",
+        body: { reason: reason.trim() || null },
+      }),
+    onSuccess: (r) => {
+      toast(r.mailSent ? "신청을 반려하고 안내 메일을 보냈어요." : "신청을 반려했어요. 안내 메일은 보내지 못했어요.");
       qc.invalidateQueries({ queryKey: ["admin", "applications"] });
     },
   });
@@ -108,6 +111,7 @@ function ApplicationCard({
       <p>
         담당자: {a.contactName} · {a.email} · {a.phone}
       </p>
+      <p>신청 아이디: {a.loginId}</p>
       <p>
         공식 채널:{" "}
         <a href={a.channelUrl} target="_blank" rel="noreferrer">
