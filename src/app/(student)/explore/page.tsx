@@ -83,7 +83,7 @@ function Explore() {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="공지 제목, 학과, 키워드"
+          placeholder="공지 제목, 내용, 학과, 키워드"
           aria-label="공지 검색"
         />
       </label>
