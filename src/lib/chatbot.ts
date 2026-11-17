@@ -24,7 +24,8 @@ export type ChatbotTurn = { role: "user" | "assistant"; content: string };
 export type ResumeChoice = { choice: "confirm" | "alternative" | "retry"; index?: number };
 
 async function stream(path: string, body: unknown, onEvent: (e: ChatbotEvent) => void, signal: AbortSignal) {
-  const res = await apiResponse(path, { method: "POST", body, signal, headers: { Accept: "text/event-stream" } });
+  // Accept: text/event-stream을 붙이면 BE 오류 응답(JSON)이 협상에 실패해 빈 500이 되므로 붙이지 않음
+  const res = await apiResponse(path, { method: "POST", body, signal });
   const reader = res.body!.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = "";
   for (;;) {

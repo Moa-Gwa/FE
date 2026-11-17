@@ -341,7 +341,7 @@ export default function ChatbotWidget({ showButton }: { showButton: boolean }) {
               {m.notice && <p className="chatbot-text">{m.notice}</p>}
               {!m.done && !m.text && !m.clarify && <p className="chatbot-typing">답변을 찾고 있어요…</p>}
 
-              {m.done && m.text && m.sources && m.sources.length > 0 && (
+              {m.done && !m.error && m.text && m.sources && m.sources.length > 0 && (
                 <ol className="chatbot-sources" aria-label="출처">
                   {m.sources.map((s) => (
                     <SourceCard key={s.n} id={m.id} source={s} />
