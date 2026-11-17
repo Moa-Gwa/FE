@@ -23,7 +23,7 @@ button {
   color: var(--sub);
 }
 .eyebrow {
-  font-weight: 700;
+  font-weight: 500;
 }
 .logo i {
   font-style: normal;
@@ -101,7 +101,7 @@ button {
   border-radius: 13px;
   font-size: 12px;
   color: var(--pink-strong);
-  font-weight: 700;
+  font-weight: 500;
 }
 .nav {
   display: grid;
@@ -117,7 +117,7 @@ button {
   text-align: left;
   color: var(--sub);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .nav button:hover {
   background: #faf7fc;
@@ -140,7 +140,7 @@ button {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-weight: 700;
+  font-weight: 500;
 }
 .profile-mini strong {
   display: block;
@@ -237,7 +237,7 @@ button {
   background: transparent;
   color: var(--lav-strong);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 4px;
 }
 .notice-list {
@@ -264,7 +264,7 @@ button {
   align-items: center;
 }
 .deadline {
-  font-weight: 700;
+  font-weight: 500;
 }
 .save {
   margin-left: auto;
@@ -279,7 +279,7 @@ button {
   color: var(--pink-strong);
 }
 .category {
-  font-weight: 700;
+  font-weight: 500;
 }
 .category.active,
 .category:hover {
@@ -352,7 +352,7 @@ button {
   position: relative;
 }
 .calendar-grid .day.event {
-  font-weight: 700;
+  font-weight: 500;
 }
 .calendar-grid .day.event:after {
   content: "";
@@ -392,11 +392,11 @@ button {
 }
 .primary {
   color: #fff;
-  font-weight: 700;
+  font-weight: 500;
 }
 .secondary {
   padding: 10px 14px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .table-wrap {
   overflow: auto;
@@ -457,7 +457,7 @@ button {
 .form-group label,
 .personal-color-label {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .form-group input,
 .form-group textarea,
@@ -526,7 +526,7 @@ button {
   line-height: 1.4;
 }
 .detail-info {
-  padding: 14px 0;
+  padding: 8px 0;
   border-block: 1px solid var(--line);
   display: flex;
   gap: 14px;
@@ -601,7 +601,7 @@ a {
 .logo {
   display: flex;
   align-items: center;
-  font-weight: 700;
+  font-weight: 500;
 }
 .logo img {
   object-fit: contain;
@@ -634,6 +634,13 @@ a {
   gap: 9px;
   flex-wrap: wrap;
 }
+/* 버튼 모양 링크도 버튼처럼 글자를 가운데 정렬 */
+a.primary,
+a.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .chips {
   display: flex;
   gap: 7px;
@@ -641,7 +648,7 @@ a {
 }
 .chip {
   border-radius: 99px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .chip.on {
   border-color: var(--lav);
@@ -656,7 +663,7 @@ a {
   padding: 9px 14px;
   background: #fff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--sub);
 }
 .tab.on {
@@ -746,7 +753,7 @@ a {
 }
 .info-grid dt {
   color: var(--sub);
-  font-weight: 700;
+  font-weight: 500;
 }
 .info-grid dd {
   margin: 0;
@@ -807,14 +814,14 @@ a {
   font-size: 13px;
 }
 .radio-row label {
-  font-weight: 600;
+  font-weight: 500;
 }
 .check {
   display: flex;
   gap: 8px;
   align-items: center;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .modal-back {
   position: fixed;
@@ -892,7 +899,7 @@ button:disabled {
   border-radius: 13px;
   color: var(--sub);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .nav a:hover {
   background: #faf7fc;
@@ -999,8 +1006,9 @@ button:disabled {
 
 /* Tailwind preflight resets heading weight; restore it */
 h1,
-h2 {
-  font-weight: 700;
+h2,
+th {
+  font-weight: 500;
 }
 h3 {
   font-weight: 500;
@@ -1190,11 +1198,48 @@ h3 {
   border: 1px dashed #cbbfe0;
   background: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .block-preview {
   border-top: 1px dashed var(--line);
   padding-top: 12px;
   display: grid;
   gap: 8px;
+}
+
+/* 마스코트(모냥이) */
+.empty-mascot {
+  display: block;
+  width: 112px;
+  margin: 0 auto 12px;
+}
+.mascot-hello {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.mascot-hello img {
+  width: 72px;
+  flex: none;
+}
+.mascot-hello p {
+  word-break: keep-all;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--g100);
+  font-size: 14px;
+  font-weight: 500;
+}
+.topbar.student .title-block:has(.title-art) {
+  position: relative;
+  padding-right: 152px;
+}
+/* 발이 검색창 바로 위에 닿도록 아래로 내림 */
+.title-art {
+  position: absolute;
+  right: 56px;
+  bottom: -36px;
+  width: 88px;
 }

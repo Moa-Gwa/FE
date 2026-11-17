@@ -11,7 +11,7 @@ export default function GroupRow({ group }: { group: GroupBuySummary }) {
   const urgent = open && closingSoon(group.deadlineAt);
   return (
     <Link href={`/life/group/${group.id}`} className={`life-item ${open ? "" : "closed"}`}>
-      <Thumb src={group.imageUrl} category="LIVING" faded={!open} />
+      <Thumb src={group.imageUrl} faded={!open} />
       <div className="life-item-body">
         <h3 className={open ? "" : "muted"}>{group.title}</h3>
         <p className="life-sub">

@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { NotificationItem } from "@/types";
 
-export default function TopBar({ title, sub, actions, home = false, back = false }: { title: string; sub?: string; actions?: React.ReactNode; home?: boolean; back?: boolean }) {
+export default function TopBar({ title, sub, actions, home = false, back = false, art }: { title: string; sub?: string; actions?: React.ReactNode; home?: boolean; back?: boolean; /** 제목 옆 장식용 마스코트 */ art?: string }) {
   const session = useSession();
   const router = useRouter();
   const isStudent = session?.role === "STUDENT";
@@ -65,6 +65,7 @@ export default function TopBar({ title, sub, actions, home = false, back = false
           {quick}
         </div>
         <div className="title-block">
+          {art && <img className="title-art" src={art} alt="" />}
           <h1>{title}</h1>
           {sub && <p>{sub}</p>}
         </div>

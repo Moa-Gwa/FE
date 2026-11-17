@@ -55,7 +55,7 @@ export default function NotificationsPage() {
       ) : query.isError ? (
         <InlineError error={query.error} />
       ) : items.length === 0 ? (
-        <div className="empty">아직 알림이 없어요.<br />관심정보를 설정하면 새 공지를 알려드려요.</div>
+        <div className="empty"><img className="empty-mascot" src="/mascot-sleep.webp" alt="" />아직 알림이 없어요.<br />관심정보를 설정하면 새 공지를 알려드려요.</div>
       ) : (
         <div className="notice-list">
           {items.map((n) => (

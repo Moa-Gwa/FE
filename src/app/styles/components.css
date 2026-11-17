@@ -7,7 +7,7 @@
   flex: none;
   vertical-align: middle;
   border-radius: 5px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
   letter-spacing: -0.01em;
 }
@@ -70,7 +70,7 @@
   flex: none;
   font-size: 13px;
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g700);
 }
 .nc-flag::after {
@@ -89,8 +89,9 @@
   font-weight: 500;
   color: var(--g500);
 }
+/* 굵기 대신 "중요" 배지와 같은 색으로 강조 */
 .notice-card.urgent h3 {
-  font-weight: 700;
+  color: var(--coral-strong);
 }
 .detail-badges,
 .wp-badges {
@@ -111,11 +112,11 @@
   background: rgba(25, 31, 40, 0.5);
   color: #fff;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 .life-due {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--badge-red);
 }
 .life-item.closed .life-progress i {
@@ -125,9 +126,11 @@
   display: block;
   margin: 6px 0 18px;
 }
-/* 채팅 목록: 안 읽은 방은 제목 굵게·마지막 메시지 진하게 */
+/* 채팅 목록: 안 읽은 방은 제목과 마지막 메시지를 진하게 */
+.chat-row-body strong {
+  color: var(--g600);
+}
 .chat-row.has-unread .chat-row-body strong {
-  font-weight: 700;
   color: var(--g900);
 }
 .chat-row.has-unread .chat-row-sub {
@@ -143,7 +146,7 @@
 .life-group-title {
   margin: 0 4px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g800);
 }
 .life-group-title span {
@@ -156,7 +159,7 @@
   flex: 1;
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g700);
 }
 .pay-widget {
@@ -198,7 +201,7 @@
   margin: 0;
   font-size: 20px;
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--g900);
   text-wrap: balance;
@@ -252,7 +255,7 @@
   background: var(--badge-red);
   color: #fff;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
 }
 input[aria-invalid="true"],
@@ -295,7 +298,7 @@ select[aria-invalid="true"] {
   margin-bottom: 2px;
   color: var(--g500);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 .keyword-list {
   display: flex;
@@ -313,11 +316,6 @@ select[aria-invalid="true"] {
   color: var(--g700);
   font-size: 13px;
 }
-.correction-toggle {
-  align-self: flex-start;
-  font-size: 13px;
-}
-/* 행사 일시, 신청 마감 콜아웃 안쪽 오른쪽 위의 교정 요청 버튼 */
 .info-callout {
   display: flex;
   flex-direction: column;
@@ -328,17 +326,33 @@ select[aria-invalid="true"] {
 .info-callout .info-grid {
   margin: 0;
 }
+/* 공지 정보 줄: 한 줄 유지, 모자라면 작성 단체 이름을 말줄임 */
+.detail-info:has(.correction-chip) {
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.detail-info:has(.correction-chip) > * {
+  flex-shrink: 0;
+}
+.detail-info:has(.correction-chip) > :first-child {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 공지 정보 줄(조회 옆) 작은 글자 링크. 터치 영역 44px은 음수 여백으로 줄 높이에 영향 없이 확보 */
 .correction-chip {
-  align-self: flex-end;
-  margin: 10px 10px 0 0;
-  height: 28px;
-  padding: 0 10px;
-  border: 1px solid var(--g200);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--g700);
+  margin: -13px 0 -13px auto;
+  height: auto;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--g500);
   font-size: 12px;
-  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
 }
 .correction-chip:focus-visible {
@@ -590,7 +604,7 @@ select[aria-invalid="true"] {
   margin: 0 0 20px;
   text-align: center;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g900);
   font-variant-numeric: tabular-nums;
 }
@@ -648,7 +662,7 @@ select[aria-invalid="true"] {
 }
 .wheel-list button.selected {
   color: var(--coral-strong);
-  font-weight: 700;
+  font-weight: 500;
 }
 .wheel-list:focus-visible {
   outline: 2px solid var(--coral);
@@ -721,7 +735,7 @@ select[aria-invalid="true"] {
 .notice-attachments h2 {
   margin: 0 0 12px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .notice-attachments h2 span {
   margin-left: 4px;
@@ -761,7 +775,7 @@ select[aria-invalid="true"] {
 }
 .attachment-file-icon span {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
 }
 .attachment-name {
@@ -992,7 +1006,7 @@ fieldset.blocks-editor {
   border-radius: 12px;
   color: var(--g600);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .admin-mobile-drawer .nav a.active {
   background: var(--coral-soft);
@@ -1097,14 +1111,27 @@ fieldset.blocks-editor {
   pointer-events: auto;
   display: grid;
   place-items: center;
+  position: relative;
   width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(25, 31, 40, 0.16);
+  height: 64px;
+  background: none;
 }
+/* 동그란 배경 없이 말풍선 모양 로고 자체를 버튼으로 */
 .chatbot-fab img {
-  height: 34px;
+  height: 64px;
+  filter: drop-shadow(0 6px 12px rgba(25, 31, 40, 0.18));
+}
+/* "Ask me!" 말풍선: 채팅 버튼이라는 신호 */
+.chatbot-fab-label {
+  position: absolute;
+  top: 6px;
+  left: -30px;
+  padding: 4px 8px;
+  border-radius: 10px 10px 2px 10px;
+  background: var(--coral-strong);
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
 }
 .chatbot-sheet {
   position: fixed;
@@ -1199,7 +1226,7 @@ fieldset.blocks-editor {
   background: var(--coral-soft);
   color: var(--coral-strong);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   vertical-align: 1px;
   text-decoration: none;
 }
@@ -1217,7 +1244,7 @@ fieldset.blocks-editor {
   background: none;
   color: var(--coral-strong);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .chatbot-chips {
   display: flex;
@@ -1237,7 +1264,7 @@ fieldset.blocks-editor {
 .chatbot-chip.primary {
   border-color: var(--coral-strong);
   color: var(--coral-strong);
-  font-weight: 600;
+  font-weight: 500;
 }
 .chatbot-typing {
   margin: 0;
@@ -1266,11 +1293,11 @@ fieldset.blocks-editor {
 .chatbot-source-n {
   flex: none;
   color: var(--coral-strong);
-  font-weight: 700;
+  font-weight: 500;
 }
 .chatbot-source a {
   color: var(--g900);
-  font-weight: 600;
+  font-weight: 500;
 }
 .chatbot-source-meta {
   display: block;

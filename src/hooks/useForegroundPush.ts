@@ -24,7 +24,7 @@ export function useForegroundPush(enabled: boolean) {
           const registration = await navigator.serviceWorker.getRegistration("/firebase-messaging-sw.js");
           await registration?.showNotification(title, {
             body: payload.data?.body ?? payload.notification?.body ?? "",
-            icon: "/moa-gwa-logo.png", data: { url: payload.data?.url ?? "/" },
+            icon: "/mascot-guide-192.png", data: { url: payload.data?.url ?? "/" },
           });
         } catch (error) { console.error("푸시 알림 표시 실패", error); }
       });

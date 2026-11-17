@@ -23,16 +23,16 @@ async function open(page: Page, body: object) {
 }
 
 for (const width of [390, 768, 1280]) {
-  test(`correction button sits at the top right inside the date callout at ${width}px`, async ({ page }) => {
+  test(`correction link sits at the right end of the info line at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await open(page, notice);
-    const callout = page.locator('.info-callout');
-    const button = callout.getByRole('button', { name: '날짜가 원문과 달라요' });
+    const info = page.locator('.detail-info');
+    const button = info.getByRole('button', { name: '날짜 오류' });
     await expect(button).toBeVisible();
-    const box = (await callout.boundingBox())!;
+    const box = (await info.boundingBox())!;
     const b = (await button.boundingBox())!;
-    expect(b.y - box.y).toBeLessThan(16);
-    expect(box.x + box.width - (b.x + b.width)).toBeLessThan(16);
+    expect(box.x + box.width - (b.x + b.width)).toBeLessThan(2);
+    expect(b.height).toBeGreaterThanOrEqual(43.5);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
     await button.click();
@@ -42,9 +42,9 @@ for (const width of [390, 768, 1280]) {
   });
 }
 
-test('notice without dates keeps the correction link below the evidence', async ({ page }) => {
-  await open(page, { ...notice, eventStartAt: null, eventEndAt: null, deadlineAt: null });
-  await expect(page.locator('.info-callout .correction-chip')).toHaveCount(0);
-  await page.locator('.extracted-info').getByRole('button', { name: '날짜가 원문과 달라요' }).click();
+test('notice without dates still opens the correction form from the info line', async ({ page }) => {
+  await open(page, { ...notice, eventStartAt: null, eventEndAt: null, deadlineAt: null, location: null });
+  await expect(page.locator('.info-callout')).toHaveCount(0);
+  await page.locator('.detail-info').getByRole('button', { name: '날짜 오류' }).click();
   await expect(page.getByRole('radio', { name: '행사 일시' })).toHaveAttribute('aria-checked', 'true');
 });

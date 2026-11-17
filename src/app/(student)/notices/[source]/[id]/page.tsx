@@ -116,15 +116,15 @@ export default function NoticePage() {
             <span>등록 {fmtDate(n.publishedAt)}</span>
             {n.updatedAt !== n.publishedAt && n.source === "MANUAL" && <span>수정 {fmtDate(n.updatedAt)}</span>}
             <span>조회 {n.viewCount}</span>
+            {n.source === "CRAWLED" && (
+              <button type="button" className="correction-chip" aria-expanded={correcting} onClick={() => setCorrecting(true)}>
+                날짜 오류
+              </button>
+            )}
           </div>
 
           {(n.eventStartAt || n.deadlineAt || n.location) && (
             <div className="info-callout">
-            {n.source === "CRAWLED" && (n.eventStartAt || n.deadlineAt) && (
-              <button type="button" className="correction-chip" aria-expanded={correcting} onClick={() => setCorrecting(true)}>
-                날짜가 원문과 달라요
-              </button>
-            )}
             <dl className="info-grid">
               {n.eventStartAt && (
                 <>
@@ -168,11 +168,6 @@ export default function NoticePage() {
                     </li>
                   ))}
                 </ul>
-              )}
-              {!n.eventStartAt && !n.deadlineAt && !correcting && (
-                <button type="button" className="link-btn correction-toggle" onClick={() => setCorrecting(true)}>
-                  날짜가 원문과 달라요
-                </button>
               )}
               <DateCorrectionForm noticeId={n.id} open={correcting} onClose={() => setCorrecting(false)} initialField={n.deadlineAt ? "DEADLINE" : "EVENT"} />
             </div>

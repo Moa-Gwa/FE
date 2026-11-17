@@ -77,7 +77,7 @@ function Explore() {
 
   return (
     <>
-      <TopBar title="공지 탐색" sub="관심 있는 소식을 빠르게 찾아보세요." />
+      <TopBar title="공지 탐색" sub="관심 있는 소식을 빠르게 찾아보세요." art="/mascot-search.webp" />
       <label className="search">
         <Icon name="search" />{" "}
         <input
@@ -119,7 +119,10 @@ function Explore() {
         </button>
       </div>
 
-      <FeedList params={{ orgType, category, status, sort, q, field }} />
+      <FeedList
+        params={{ orgType, category, status, sort, q, field }}
+        {...(q && { emptyText: "검색 결과가 없습니다. 다른 키워드로 검색해 보세요!", emptyImage: "/mascot-search.webp" })}
+      />
 
       {sheet && (
         <div className="sheet-back" onClick={() => setSheet(false)}>
