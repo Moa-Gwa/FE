@@ -317,6 +317,34 @@ select[aria-invalid="true"] {
   align-self: flex-start;
   font-size: 13px;
 }
+/* 행사 일시, 신청 마감 콜아웃 안쪽 오른쪽 위의 교정 요청 버튼 */
+.info-callout {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 0;
+  border-radius: 12px;
+  background: var(--g50);
+}
+.info-callout .info-grid {
+  margin: 0;
+}
+.correction-chip {
+  align-self: flex-end;
+  margin: 10px 10px -6px 0;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--g200);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--g700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.correction-chip:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
 .correction-box {
   display: flex;
   flex-direction: column;
