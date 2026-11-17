@@ -330,7 +330,7 @@ select[aria-invalid="true"] {
 }
 .correction-chip {
   align-self: flex-end;
-  margin: 10px 10px -6px 0;
+  margin: 10px 10px 0 0;
   height: 28px;
   padding: 0 10px;
   border: 1px solid var(--g200);
