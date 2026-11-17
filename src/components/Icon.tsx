@@ -179,6 +179,19 @@ const PATHS = {
     </>
   ),
   back: <path d="m15 18-6-6 6-6" />,
+  smile: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+    </>
+  ),
+  frown: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01" />
+    </>
+  ),
+  send: <path d="m22 2-7 20-4-9-9-4zM22 2 11 13" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;
