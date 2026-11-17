@@ -10,7 +10,7 @@ export default function ItemRow({ item }: { item: MarketItemSummary }) {
   const sold = item.status === "SOLD";
   return (
     <Link href={`/life/items/${item.id}`} className="life-item">
-      <Thumb src={item.thumbnail} category={item.category} veil={item.status === "ON_SALE" ? undefined : STATUS_LABEL[item.status]} />
+      <Thumb src={item.thumbnail} veil={item.status === "ON_SALE" ? undefined : STATUS_LABEL[item.status]} />
       <div className="life-item-body">
         <h3 className={sold ? "muted" : ""}>{item.title}</h3>
         <p className="life-sub">{[CATEGORY_LABEL[item.category], timeAgo(item.createdAt), item.tradePlace].filter(Boolean).join(" · ")}</p>

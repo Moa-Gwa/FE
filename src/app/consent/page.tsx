@@ -59,6 +59,10 @@ function Consent() {
   return (
     <main className="login-shell">
       <section className="login-card">
+        <div className="mascot-hello">
+          <img src="/mascot-guide.webp" alt="" />
+          <p>모아과가 가톨릭대 공지를 빠르게 물어다 줄게!</p>
+        </div>
         <h1>서비스 이용 동의</h1>
         <p className="muted">모아과를 이용하려면 아래 필수 항목에 동의해 주세요.</p>
         {status ? (

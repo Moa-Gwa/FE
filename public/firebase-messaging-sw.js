@@ -27,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
   // Firebase가 표시 완료까지 push 이벤트 수명을 유지할 수 있도록 Promise를 반환한다.
   return self.registration.showNotification(title, {
     body: data.body || payload.notification?.body || '',
-    icon: '/moa-gwa-logo.png',
+    icon: '/mascot-guide-192.png',
     data: { url: data.url || '/' }
   });
 });

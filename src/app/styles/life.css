@@ -155,7 +155,7 @@
 .life-steps span.on {
   background: var(--coral-soft);
   color: var(--coral-strong);
-  font-weight: 600;
+  font-weight: 500;
 }
 .life-label,
 .life-form label {
@@ -214,7 +214,7 @@
   text-align: center;
   font-size: 28px;
   letter-spacing: 0.4em;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g900);
   outline: 0;
   box-sizing: border-box;
@@ -323,7 +323,7 @@
   color: #fff;
   font: inherit;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.02em;
   cursor: pointer;
   text-decoration: none;
@@ -353,6 +353,58 @@
 .life-gate .life-btn {
   margin-top: 14px;
 }
+/* 고양이가 안내 카드 윗변을 바닥 삼아 서 있게 */
+.life-gate-art {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 260px;
+  margin: 48px auto -2px;
+}
+.life-gate-art + .life-gate {
+  margin-top: 0;
+}
+.life-gate h2 svg {
+  display: inline-block;
+  vertical-align: -0.15em;
+  color: var(--coral-strong);
+}
+/* 인증 전 생활 탭 소개 */
+.life-gate-features {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 14px 0 0;
+  padding: 16px;
+  list-style: none;
+  border-radius: 14px;
+  background: var(--g50);
+  text-align: left;
+}
+.life-gate-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.life-gate-features span {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: var(--coral-strong);
+}
+.life-gate-features strong {
+  font-size: 14px;
+  color: var(--g800);
+}
+.life-gate .life-gate-features p {
+  font-size: 13px;
+  line-height: 1.45;
+}
 
 /* 칩 · 탭 · 정렬 */
 .life-seg {
@@ -374,7 +426,7 @@
 }
 .life-seg button.on {
   color: var(--g900);
-  font-weight: 600;
+  font-weight: 500;
   border-bottom-color: var(--g900);
 }
 .life-chips {
@@ -402,7 +454,7 @@
 .life-chip.on {
   background: var(--coral-strong);
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
 }
 .life-toolbar {
   display: flex;
@@ -440,7 +492,7 @@
   place-items: center;
   border-radius: 14px;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.9);
+  background: var(--g100);
 }
 .life-thumb img {
   width: 100%;
@@ -564,7 +616,7 @@
   place-items: center;
   background: var(--g100);
   color: var(--g700);
-  font-weight: 600;
+  font-weight: 500;
 }
 .life-price {
   font-size: 22px;
@@ -708,7 +760,7 @@
 .life-qty span {
   min-width: 20px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
 }
 .life-fab-wrap {
   bottom: var(--m-nav-h, 76px);
@@ -727,7 +779,7 @@
   background: var(--g900);
   color: #fff;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
 }
 .m-shell:has(.life-bar) .main-m {
@@ -741,18 +793,17 @@
   height: 28px;
 }
 
-/* hero logo: 무화과 로고(하늘색 톤) — 제목 오른쪽, 검색창 위 */
+/* hero: 안내자 모냥이, 발이 검색창 뒤로 가려지게 */
 .m-shell .home-top .hero .hero-art {
   z-index: 0;
-  top: 4px;
-  right: 6px;
-  width: 160px;
+  top: 18px;
+  right: -20px;
+  width: 240px;
   height: auto;
-  transform: rotate(6deg);
   opacity: 1;
   -webkit-mask-image: none;
   mask-image: none;
-  filter: drop-shadow(0 12px 18px rgba(63, 120, 214, 0.25));
+  filter: none;
   pointer-events: none;
 }
 

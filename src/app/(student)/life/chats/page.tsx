@@ -19,7 +19,7 @@ function Rooms() {
     <div className="chat-rows">
       {rooms.data.map((r) => (
         <Link key={r.id} href={`/life/chats/${r.id}`} className={`chat-row ${r.unread > 0 ? "has-unread" : ""}`}>
-          <Thumb src={r.thumbnail} category={r.category ?? "LIVING"} size={40} />
+          <Thumb src={r.thumbnail} size={40} />
           <div className="chat-row-body">
             <strong>{r.type === "GROUP" ? r.title : r.partner}</strong>
             <p className="chat-row-sub">{r.lastMessage ?? "아직 메시지가 없어요"}</p>

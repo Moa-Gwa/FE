@@ -44,7 +44,7 @@
   font: inherit;
   font-size: 36px;
   line-height: 1.35;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.03em;
   color: var(--g900);
 }
@@ -312,7 +312,7 @@
   margin: 12px 0 24px;
   font-size: 28px;
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.03em;
   color: var(--g900);
   overflow-wrap: anywhere;
@@ -383,7 +383,7 @@
 .publish h2 {
   margin: 0 0 16px;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g900);
 }
 .publish-col:last-child h2 {
@@ -407,7 +407,7 @@
 .pub-title {
   margin: 18px 0 6px;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g900);
   overflow-wrap: anywhere;
 }
@@ -577,7 +577,7 @@
 }
 .dt-cal .calendar-head strong {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .dt-cal .calendar-grid {
   display: grid;
@@ -754,7 +754,7 @@
 .tpl-head h2 {
   margin: 0;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--g900);
 }
 .tpl-body {

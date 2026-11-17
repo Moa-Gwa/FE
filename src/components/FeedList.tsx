@@ -14,6 +14,7 @@ export default function FeedList({
   params = {},
   path = "/feed",
   emptyText = "조건에 맞는 공지가 없어요.",
+  emptyImage,
   onTotal,
   limit,
   moreHref,
@@ -21,6 +22,8 @@ export default function FeedList({
   params?: Record<string, string | undefined>;
   path?: string;
   emptyText?: string;
+  /** 빈 화면 위에 띄울 장식용 마스코트 이미지 */
+  emptyImage?: string;
   onTotal?: (n: number) => void;
   /** Show only the first `limit` items (no infinite scroll) and a "더 보기" link to `moreHref`. */
   limit?: number;
@@ -56,7 +59,7 @@ export default function FeedList({
 
   if (query.isError) return <InlineError error={query.error} />;
   if (query.isPending) return <div className="empty">불러오는 중…</div>;
-  if (items.length === 0) return <div className="empty">{emptyText}</div>;
+  if (items.length === 0) return <div className="empty">{emptyImage && <img className="empty-mascot" src={emptyImage} alt="" />}{emptyText}</div>;
 
   if (limit) {
     return (
