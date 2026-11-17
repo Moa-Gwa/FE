@@ -3,7 +3,8 @@ import { getSession, setSession } from "@/lib/session";
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  /** fields: 검증 실패 시 서버가 돌려준 항목별 오류 메시지 */
+  constructor(public status: number, message: string, public fields?: Record<string, string>) { super(message); }
 }
 
 let refreshing: Promise<boolean> | null = null;
@@ -51,11 +52,13 @@ export async function apiResponse(path: string, { body, auth = true, headers, ..
   }
   if (!res.ok) {
     let message = `요청에 실패했습니다 (${res.status})`;
+    let fields: Record<string, string> | undefined;
     try {
       const data = await res.json();
       if (data?.message) message = data.message;
+      fields = data?.errors;
     } catch { /* non-JSON error body */ }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, fields);
   }
   return res;
 }
