@@ -46,7 +46,7 @@ function Items() {
     queryKey: ["market", "items", category, sort, query],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
-      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&status=ON_SALE&sort=${sort}&q=${encodeURIComponent(query)}${category ? `&category=${category}` : ""}`),
+      api<MarketItemPage>(`/market/items?page=${pageParam}&size=20&status=ON_SALE,RESERVED&sort=${sort}&q=${encodeURIComponent(query)}${category ? `&category=${category}` : ""}`),
     getNextPageParam: (last) => (last.hasNext ? last.page + 1 : undefined),
   });
   const items = list.data?.pages.flatMap((p) => p.items) ?? [];
@@ -66,7 +66,7 @@ function Items() {
           ))}
         </div>
         <div className="life-toolbar">
-          <span className="life-sub">판매 중인 물품</span>
+          <span className="life-sub">판매 중, 예약 중 물품</span>
           <button className="pill-link" onClick={() => setSorting(true)} aria-haspopup="dialog">
             {SORT_LABEL[sort]}
             <Icon name="down" size={14} />
