@@ -619,7 +619,7 @@
   margin-top: 0;
 }
 
-/* 하단 고정 바: 탭바(하단 16px + 64px) 위에 둔다 */
+/* 하단 고정 바와 챗봇 버튼: Shell이 잰 탭바 실제 높이(--m-nav-h, 안전 영역 포함) 바로 위에 둔다 */
 .life-bar,
 .life-fab-wrap {
   position: fixed;
@@ -631,7 +631,7 @@
   pointer-events: none;
 }
 .life-bar {
-  bottom: 76px;
+  bottom: var(--m-nav-h, 76px);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -711,7 +711,7 @@
   font-weight: 600;
 }
 .life-fab-wrap {
-  bottom: 76px;
+  bottom: var(--m-nav-h, 76px);
   display: flex;
   justify-content: flex-end;
   padding: 0 20px 12px;

@@ -80,7 +80,7 @@ export async function createNotice(req: APIRequestContext, body: Record<string, 
 }
 
 /** 테스트 데이터 준비용 관리자 API 세션. 쓰고 나면 dispose */
-export async function adminApi(loginId: 'student-council' | 'ai-council' | 'operator' = 'student-council') {
+export async function adminApi(loginId: 'student-council' | 'cs-council' | 'operator' = 'student-council') {
   const ctx = await request.newContext({ baseURL: API });
   await call(ctx, 'POST', '/admin/auth/login', { loginId, password: ADMIN_PASSWORD });
   return ctx;

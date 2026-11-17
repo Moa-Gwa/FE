@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminMobileMenu from "@/components/AdminMobileMenu";
 import AppNotices from "@/components/AppNotices";
 import ChatbotWidget from "@/components/ChatbotWidget";
@@ -56,6 +56,17 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified && !needsConsent ? session.name : null);
   const nav = role === "STUDENT" ? STUDENT_NAV : session?.operator ? [...ADMIN_NAV, ...OPERATOR_NAV] : ADMIN_NAV;
 
+  // 하단 탭바는 홈 화면 웹앱에서 아래쪽 안전 영역만큼 높아짐. 실제 높이를 재서 챗봇, 생활 탭 고정 버튼을 그 위에 둠
+  const measureNav = useCallback((nav: HTMLElement | null) => {
+    if (!nav) return;
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => root.style.setProperty("--m-nav-h", `${nav.getBoundingClientRect().height}px`));
+    observer.observe(nav);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--m-nav-h");
+    };
+  }, []);
   useEffect(() => {
     if (session === null || (session && session.role !== role)) router.replace("/login");
     else if (needsConsent) router.replace(`/consent?next=${encodeURIComponent(pathname + window.location.search)}`);
@@ -99,7 +110,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
           <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
           {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지 */}
           <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />
-          <nav className="m-nav" aria-label="주 메뉴">
+          <nav className="m-nav" aria-label="주 메뉴" ref={measureNav}>
             {nav.map((n) => link(n))}
           </nav>
         </div>

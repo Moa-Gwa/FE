@@ -2,12 +2,12 @@ import { test, expect, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { adminApi, call, createNotice, loginStudent, seed } from './support';
 
-// 이 파일만 AI융합학부 학생회 공지로 알림을 만들어 다른 테스트의 알림과 섞이지 않게 함
+// 이 파일만 컴퓨터정보공학부 학생회 공지로 알림을 만들어 다른 테스트의 알림과 섞이지 않게 함
 test.describe.configure({ mode: 'serial' });
 
 /** 학생이 관심 단체로 등록한 단체에 공지를 게시해 실제 알림을 만듦 */
 async function studentWithNotifications(page: Page, titles: string[]) {
-  const admin = await adminApi('ai-council');
+  const admin = await adminApi('cs-council');
   const org = (await call<{ id: number }>(admin, 'GET', '/admin/organization')).id;
   const nickname = await loginStudent(page, { onboard: false });
   await call(page.request, 'PUT', '/me/profile', { nickname, primaryDepartmentId: seed().departmentId, admissionYear: 2026, departmentIds: [], organizationIds: [org], categoryIds: [] });

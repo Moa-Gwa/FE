@@ -29,8 +29,14 @@ for (const width of [390, 768, 1280]) {
     await expect(page.getByRole('dialog')).not.toBeVisible();
     await expect(bars.first().locator('.calendar-event-label')).toHaveCSS('background-color', 'rgb(191, 230, 211)');
     await page.getByRole('button', { name: '+ 일정 추가' }).click();
-    await page.getByLabel('일정 색상', { exact: true }).selectOption('#DCCBEE');
-    await expect(page.getByLabel('일정 색상', { exact: true })).toHaveValue('#DCCBEE');
+    // 새 일정 창도 기존 일정 색상 창과 같은 팔레트로 고름
+    const form = page.getByRole('dialog', { name: '내 일정 추가' });
+    await expect(form.getByRole('radio', { name: '기본 색상', exact: true })).toHaveAttribute('aria-checked', 'true');
+    await form.getByRole('radio', { name: '보라', exact: true }).click();
+    await expect(form.getByRole('radio', { name: '보라', exact: true })).toHaveAttribute('aria-checked', 'true');
+    await expect(form).toBeVisible();
+    // 창이 열려도 닫기 버튼에 포커스가 가지 않아 × 둘레에 포커스 테두리가 생기지 않음
+    await expect(form.getByRole('button', { name: '일정 창 닫기' })).not.toBeFocused();
     await page.screenshot({ path: test.info().outputPath(`color-form-${width}.png`) });
   });
 }

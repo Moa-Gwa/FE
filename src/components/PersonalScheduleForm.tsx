@@ -24,6 +24,8 @@ export default function PersonalScheduleForm({ entry, day, onClose, onSaved }: {
     const element = dialog.current;
     const previousOverflow = document.body.style.overflow;
     element?.showModal();
+    // showModal은 첫 버튼(닫기)에 포커스를 줘 × 둘레에 포커스 테두리가 생기므로 창 자체에 포커스
+    element?.focus();
     document.body.style.overflow = "hidden";
     return () => {
       element?.close();
@@ -62,7 +64,7 @@ export default function PersonalScheduleForm({ entry, day, onClose, onSaved }: {
   });
 
   return (
-    <dialog ref={dialog} className="modal personal-schedule-dialog personal-schedule-vertical" aria-labelledby="personal-schedule-title"
+    <dialog ref={dialog} tabIndex={-1} className="modal personal-schedule-dialog personal-schedule-vertical" aria-labelledby="personal-schedule-title"
       onCancel={(e) => { e.preventDefault(); if (!save.isPending) onClose(); }}
       onClick={(e) => {
         if (e.target !== e.currentTarget || save.isPending) return;
@@ -90,8 +92,12 @@ export default function PersonalScheduleForm({ entry, day, onClose, onSaved }: {
         }} disabled={save.isPending} />
       </div>
       <div className="form-group personal-field-title">
-        <div className="personal-title-row"><div><label htmlFor="personal-title">제목</label>
-        <input id="personal-title" value={title} maxLength={100} required placeholder="예: 팀 프로젝트 회의" onChange={(e) => setTitle(e.target.value)} autoFocus /></div><ScheduleColorPicker compact value={color} onChange={setColor} disabled={save.isPending} /></div>
+        <label htmlFor="personal-title">제목</label>
+        <input id="personal-title" value={title} maxLength={100} required placeholder="예: 팀 프로젝트 회의" onChange={(e) => setTitle(e.target.value)} />
+      </div>
+      <div className="form-group personal-field-color">
+        <span className="personal-color-label">일정 색상</span>
+        <ScheduleColorPicker value={color} onChange={setColor} disabled={save.isPending} />
       </div>
       <div className="form-group personal-field-location">
         <label htmlFor="personal-location">장소 (선택)</label>

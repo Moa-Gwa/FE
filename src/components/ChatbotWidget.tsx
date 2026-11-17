@@ -78,7 +78,7 @@ function SourceCard({ id, source }: { id: number; source: ChatbotSource }) {
           <strong>{source.title}</strong>
         )}
         <span className="chatbot-source-meta">
-          {source.kind === "regulation" ? "학교 규정" : "학교 안내"}
+          {source.kind === "regulation" ? "학교 규정" : source.kind === "notice" ? "공지" : "학교 안내"}
           {source.department && `, ${source.department}`}
           {source.phone && (
             <>

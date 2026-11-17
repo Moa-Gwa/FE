@@ -17,6 +17,8 @@ export default function ScheduleColorDialog({ entry, onClose, onOpen }: {
     const element = dialog.current;
     const overflow = document.body.style.overflow;
     element?.showModal();
+    // showModal은 첫 버튼(닫기)에 포커스를 줘 × 둘레에 포커스 테두리가 생기므로 창 자체에 포커스
+    element?.focus();
     document.body.style.overflow = "hidden";
     return () => { element?.close(); document.body.style.overflow = overflow; };
   }, []);
@@ -24,7 +26,7 @@ export default function ScheduleColorDialog({ entry, onClose, onOpen }: {
     mutationFn: (color: string | null) => api(`/me/schedule-colors/${entry.source}/${entry.noticeId}`, { method: "PUT", body: { type: entry.type, color } }),
     onSuccess: async () => { await client.invalidateQueries({ queryKey: ["schedule"] }); onClose(); },
   });
-  return <dialog ref={dialog} className="modal schedule-color-dialog" aria-labelledby="schedule-color-title"
+  return <dialog ref={dialog} tabIndex={-1} className="modal schedule-color-dialog" aria-labelledby="schedule-color-title"
     onCancel={e => { e.preventDefault(); if (!save.isPending) onClose(); }}>
     <button type="button" className="link-btn schedule-color-close" aria-label="색상 창 닫기" disabled={save.isPending} onClick={onClose}>×</button>
     <h2 id="schedule-color-title">{entry.title}</h2>
