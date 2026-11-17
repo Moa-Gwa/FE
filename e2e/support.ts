@@ -39,15 +39,22 @@ type StudentOptions = { nickname?: string; onboard?: boolean; verify?: boolean }
 export async function loginStudent(page: Page, { nickname = `e2e-${randomUUID().slice(0, 8)}`, onboard = true, verify = false }: StudentOptions = {}) {
   const req = page.request;
   let session = await call<{ onboarded: boolean; verified: boolean }>(req, 'POST', '/auth/dev-student', { nickname });
+  await consent(req);
   if (onboard && !session.onboarded) {
     const s = seed();
     await call(req, 'PUT', '/me/profile', { nickname, primaryDepartmentId: s.departmentId, admissionYear: 2026, departmentIds: [], organizationIds: [s.organizationId], categoryIds: [] });
   }
   if (verify && !session.verified) await verifyStudent(req, nickname);
   session = await call(req, 'POST', '/auth/dev-student', { nickname });
-  const stored = { role: 'STUDENT', name: nickname, onboarded: session.onboarded, verified: session.verified };
+  const stored = { role: 'STUDENT', name: nickname, onboarded: session.onboarded, verified: session.verified, consented: true };
   await page.addInitScript((value) => localStorage.setItem('moagwa-session', JSON.stringify(value)), stored);
   return nickname;
+}
+
+/** 현재 버전 약관에 동의함. 동의 전에는 학생 API가 403 */
+export async function consent(req: APIRequestContext) {
+  const { version } = await call<{ version: string }>(req, 'GET', '/me/consent');
+  await call(req, 'PUT', '/me/consent', { version, terms: true, privacy: true });
 }
 
 /** local 프로필은 인증 코드를 응답에 담아 줌(VERIFICATION_EXPOSE_CODE) */

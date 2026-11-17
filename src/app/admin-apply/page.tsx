@@ -70,7 +70,7 @@ function invalidFields(form: HTMLFormElement): Record<string, string> {
   for (const el of Array.from(form.elements)) {
     if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) || el.validity.valid) continue;
     errors[el.name] = el.validity.valueMissing
-      ? "입력해 주세요."
+      ? el instanceof HTMLInputElement && el.type === "checkbox" ? "개인정보 수집, 이용에 동의해 주세요." : "입력해 주세요."
       : (FIELDS.find((f) => f.name === el.name)?.hint ?? el.validationMessage);
   }
   return errors;
@@ -160,6 +160,18 @@ export default function AdminApplyPage() {
                 aria-invalid={!!fieldErrors.reason}
               />
               <InlineError error={fieldErrors.reason} />
+            </div>
+            <div className="form-group">
+              <label className="consent-row">
+                <input type="checkbox" name="privacyAgreed" value="true" required aria-invalid={!!fieldErrors.privacyAgreed} />
+                <span>[필수] 개인정보 수집, 이용 동의</span>
+                <Link href="/privacy" target="_blank">보기</Link>
+              </label>
+              <p className="hint">
+                담당자 이름, 학교 메일, 연락처를 신청 확인과 결과 안내에 써요. 반려된 신청은 30일, 승인된 신청은 1년 뒤
+                삭제돼요.
+              </p>
+              <InlineError error={fieldErrors.privacyAgreed} />
             </div>
             <InlineError error={error} />
             <button className="primary" disabled={busy}>

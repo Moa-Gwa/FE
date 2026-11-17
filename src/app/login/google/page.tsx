@@ -15,7 +15,7 @@ export default function GoogleCallbackPage() {
     operation.current ??= runGoogleLogin();
     operation.current.then((session) => {
       if (!active || !session) return;
-      setSession({ role: "STUDENT", name: session.nickname, onboarded: session.onboarded, verified: session.verified });
+      setSession({ role: "STUDENT", name: session.nickname, onboarded: session.onboarded, verified: session.verified, consented: session.consented });
       window.location.replace(session.onboarded ? "/home" : "/my/interests?welcome=1");
     }).catch((e: unknown) => {
       if (active) setError(e instanceof Error ? e.message : "구글 로그인에 실패했어요.");

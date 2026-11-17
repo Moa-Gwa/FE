@@ -212,6 +212,8 @@ export interface Session {
   organization?: OrgRef;
   /** 서비스 운영자 관리자. 날짜 교정 검토 화면이 이 값을 확인한다. */
   operator?: boolean;
+  /** 현재 버전 약관에 동의했는지. false거나 없으면 동의 화면으로 보냄 */
+  consented?: boolean;
 }
 
 /* ---- 생활거래 (중고거래 · 같이 사기) ---- */

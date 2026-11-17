@@ -4,7 +4,7 @@ import { getFirebaseApp } from "@/lib/firebase";
 import { api } from "@/lib/api";
 
 const PENDING_KEY = "moagwa.googleRedirect";
-export type GoogleSession = { nickname: string; onboarded: boolean; verified: boolean };
+export type GoogleSession = { nickname: string; onboarded: boolean; verified: boolean; consented: boolean };
 let completion: Promise<GoogleSession | null> | undefined;
 
 function loginError(error: unknown): Error {

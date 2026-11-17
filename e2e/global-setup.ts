@@ -2,7 +2,7 @@ import { request, type APIRequestContext } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ADMIN_PASSWORD, API, call, verifyStudent, writeSeed, type Seed } from './support';
+import { ADMIN_PASSWORD, API, call, consent, verifyStudent, writeSeed, type Seed } from './support';
 
 /** 크롤링 공지는 작성 API가 없어 이 DB에 직접 넣음 */
 const DATABASE_URL = process.env.E2E_DATABASE_URL ?? 'postgresql://moagwa:moagwa@localhost:5432/moagwa_e2e';
@@ -14,6 +14,7 @@ const longUrl = 'https://school.example/' + 'long-unbroken-url-'.repeat(12);
 async function session(path: string, body: unknown): Promise<APIRequestContext> {
   const ctx = await request.newContext({ baseURL: API });
   await call(ctx, 'POST', path, body);
+  if (path === '/auth/dev-student') await consent(ctx);
   return ctx;
 }
 
@@ -75,7 +76,7 @@ export default async function globalSetup() {
   await call(viewerCtx, 'POST', `/crawled-notices/${crawled}/date-corrections`, { field: 'DEADLINE', suggestedStart: '2030-06-16', memo: longUrl.slice(0, 300) });
   await call(anon, 'POST', '/admin-applications', {
     organizationName: longTitle, university: '가톨릭대학교', department: longTitle, contactName: '담당자',
-    email: `e2e-${Date.now()}@catholic.ac.kr`, loginId: `e2e-${Date.now()}`, phone: '010-1234-5678', channelUrl: longUrl, reason: longUrl,
+    email: `e2e-${Date.now()}@catholic.ac.kr`, loginId: `e2e-${Date.now()}`, phone: '010-1234-5678', channelUrl: longUrl, reason: longUrl, privacyAgreed: true,
   });
 
   // 생활 화면: 판매자 물품·같이 사기, 화면 검사용 학생과의 거래 채팅

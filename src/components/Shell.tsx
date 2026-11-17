@@ -48,17 +48,20 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
   const router = useRouter();
   const pathname = usePathname();
   const connected = useNoticeStream();
-  useForegroundPush(role === "STUDENT" && session?.role === "STUDENT");
+  // 약관 동의 전 학생은 서비스 API가 403이므로 동의 화면부터 보여 줌
+  const needsConsent = role === "STUDENT" && session?.role === "STUDENT" && !session.consented;
+  useForegroundPush(role === "STUDENT" && session?.role === "STUDENT" && !needsConsent);
   const [logoutError, setLogoutError] = useState<unknown>(null);
   // 세션에 사용자 id가 없어 닉네임으로 계정 변경 감지
-  useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified ? session.name : null);
+  useChatConnection(role === "STUDENT" && session?.role === "STUDENT" && session.verified && !needsConsent ? session.name : null);
   const nav = role === "STUDENT" ? STUDENT_NAV : session?.operator ? [...ADMIN_NAV, ...OPERATOR_NAV] : ADMIN_NAV;
 
   useEffect(() => {
     if (session === null || (session && session.role !== role)) router.replace("/login");
-  }, [session, role, router]);
+    else if (needsConsent) router.replace(`/consent?next=${encodeURIComponent(pathname + window.location.search)}`);
+  }, [session, role, router, needsConsent, pathname]);
 
-  if (!session || session.role !== role) return null;
+  if (!session || session.role !== role || needsConsent) return null;
 
   const signOut = async () => {
     setLogoutError(null);

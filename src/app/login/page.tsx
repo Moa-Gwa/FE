@@ -148,6 +148,10 @@ export default function LoginPage() {
             </button>
           </form>
         )}
+        <nav className="legal-links" aria-label="약관">
+          <Link href="/terms">이용약관</Link>
+          <Link href="/privacy">개인정보 처리방침</Link>
+        </nav>
       </section>
     </main>
   );
