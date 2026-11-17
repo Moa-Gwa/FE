@@ -1,13 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ScheduleEntry } from "@/types";
 import { scheduleKey, weekSegments } from "@/lib/calendarEvents";
+import { colorText, scheduleColor } from "@/lib/scheduleColors";
+import { kstDay } from "@/lib/format";
 
 /** 펼치지 않은 주에 보여 줄 일정 줄 수 */
 const COMPACT_LANES = 2;
-import { colorText, scheduleColor } from "@/lib/scheduleColors";
-import { kstDay } from "@/lib/format";
+/** 두 번 누르기 판정(350ms)이 끝난 뒤 펼칠 주를 바꿔, 두 번째 누름 전에 날짜 칸이 움직이지 않게 함 */
+const EXPAND_DELAY_MS = 400;
 
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -45,6 +47,12 @@ export default function Calendar({
   const first = new Date(year, month, 1);
   const count = new Date(year, month + 1, 0).getDate();
   const today = kstDay(new Date());
+  const focusDay = selected ?? today;
+  const [expandedDay, setExpandedDay] = useState(focusDay);
+  useEffect(() => {
+    const timer = setTimeout(() => setExpandedDay(focusDay), EXPAND_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [focusDay]);
   const pad = (n: number) => String(n).padStart(2, "0");
 
   const cells: (string | null)[] = Array.from({ length: Math.ceil((first.getDay() + count) / 7) * 7 }, (_, i) => {
@@ -113,8 +121,8 @@ export default function Calendar({
           const days = cells.slice(week * 7, week * 7 + 7);
           const segments = weekSegments(entries, days);
           const highlight = days.indexOf(selected ?? today);
-          // 선택한 날(없으면 오늘)이 있는 주만 펼치고, 나머지 주는 일정을 COMPACT_LANES줄까지만 보여 줌
-          const expanded = highlight >= 0;
+          // 선택한 날(없으면 오늘)이 있는 주만 펼치고(EXPAND_DELAY_MS 뒤), 나머지 주는 일정을 COMPACT_LANES줄까지만 보여 줌
+          const expanded = days.includes(expandedDay);
           const shown = expanded ? segments : segments.filter(s => s.lane < COMPACT_LANES);
           const hidden = days.map((_, i) => segments.filter(s => s.lane >= COMPACT_LANES && s.start <= i && i < s.start + s.span).length);
           return <div className={`calendar-week ${expanded ? "expanded" : ""}`} key={week}>
@@ -126,7 +134,7 @@ export default function Calendar({
                 style={{ gridColumn: `${s.start + 1} / span ${s.span}`, gridRow: s.lane + 1 }}
                 title={s.entry.title} aria-label={`${s.entry.title} 일정 보기`}
                 onClick={() => onEntrySelect?.(s.entry)}><span className="calendar-event-label" style={{ background: scheduleColor(s.entry), color: colorText(scheduleColor(s.entry)) }}>{s.entry.title}</span></button>)}
-              {!expanded && hidden.map((n, i) => n > 0 && <span key={`more-${i}`} className="calendar-more" aria-label={`일정 ${n}개 더 있음`} style={{ gridColumn: i + 1, gridRow: COMPACT_LANES + 1 }}>+{n}</span>)}
+              {!expanded && hidden.map((n, i) => n > 0 && <span key={`more-${i}`} className="calendar-more" style={{ gridColumn: i + 1, gridRow: COMPACT_LANES + 1 }}><span aria-hidden="true">+{n}</span><span className="sr-only">일정 {n}개 더 있음</span></span>)}
             </div>
           </div>;
         })}
