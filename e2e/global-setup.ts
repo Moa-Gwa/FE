@@ -75,7 +75,7 @@ export default async function globalSetup() {
   await call(viewerCtx, 'POST', `/crawled-notices/${crawled}/date-corrections`, { field: 'DEADLINE', suggestedStart: '2030-06-16', memo: longUrl.slice(0, 300) });
   await call(anon, 'POST', '/admin-applications', {
     organizationName: longTitle, university: '가톨릭대학교', department: longTitle, contactName: '담당자',
-    email: `e2e-${Date.now()}@catholic.ac.kr`, phone: '010-1234-5678', channelUrl: longUrl, reason: longUrl,
+    email: `e2e-${Date.now()}@catholic.ac.kr`, loginId: `e2e-${Date.now()}`, phone: '010-1234-5678', channelUrl: longUrl, reason: longUrl,
   });
 
   // 생활 화면: 판매자 물품·같이 사기, 화면 검사용 학생과의 거래 채팅
