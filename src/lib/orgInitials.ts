@@ -75,6 +75,7 @@ export const ORG_INITIALS: Record<string, string> = {
   약학대학: "약학",
 
   // 학생자치단체
+  운영자: "운영",
   총학생회: "총학",
   "AI융합학부 학생회": "AI",
 };
