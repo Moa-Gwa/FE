@@ -1,7 +1,7 @@
 /**
  * 공지 카드 왼쪽 원형 아바타에 들어가는 발행처 약칭.
  * 오른쪽 값만 바꾸면 바로 반영돼요. (1~3글자 권장)
- * 목록에 없는 발행처는 이름 앞 두 글자로 자동 생성돼요.
+ * 학과 학생회는 해당 학과와 같은 약칭을 쓰고, 목록에 없는 발행처는 자동 축약해요.
  *
  * 출처: BE V2__seed_organizations_and_crawl_sources.sql + DevDataInitializer(학생자치단체)
  */
@@ -31,6 +31,7 @@ export const ORG_INITIALS: Record<string, string> = {
 
   // 경영·국제·법정·경제·행정·문화
   경영학부: "경영",
+  자유전공학부: "자전",
   회계학과: "회계",
   글로벌비즈니스학과: "글비",
   국제학부: "국제",
@@ -56,7 +57,7 @@ export const ORG_INITIALS: Record<string, string> = {
   컴퓨터정보공학부: "컴공",
   정보통신전자공학부: "정통",
   생명공학과: "생공",
-  에너지환경공학과: "에환",
+  에너지환경공학과: "에환공",
   바이오메디컬화학공학과: "BMCE",
   인공지능학과: "AI",
   데이터사이언스학과: "데사",
@@ -64,7 +65,7 @@ export const ORG_INITIALS: Record<string, string> = {
 
   // 바이오헬스융합대학
   AI의공학과: "의공",
-  바이오로직스공학부: "바로",
+  바이오로직스공학부: "바로공",
 
   // 예체능·교양·융합·기타
   음악과: "음악",
@@ -75,7 +76,15 @@ export const ORG_INITIALS: Record<string, string> = {
   약학대학: "약학",
 
   // 학생자치단체
-  운영자: "운영",
+  운영자: "운영자",
   총학생회: "총학",
-  "AI융합학부 학생회": "AI",
+};
+
+/** BE에서 학과와 학생회를 연결할 때 사용하는 이름 차이(Organization.councilNameOf). */
+export const DEPARTMENT_NAME_ALIASES: Record<string, string> = {
+  영어영문학부: "영어영문학과",
+  일어일본문화학과: "일본어일본문화학과",
+  중국언어문화학과: "중국어중국학과",
+  프랑스어문화학과: "프랑스어프랑스문화학과",
+  경영학과: "경영학부",
 };

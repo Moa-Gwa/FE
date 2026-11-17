@@ -1,4 +1,4 @@
-import { ORG_INITIALS } from "@/lib/orgInitials";
+import { DEPARTMENT_NAME_ALIASES, ORG_INITIALS } from "@/lib/orgInitials";
 import type { DisplayStatus, OrgType } from "@/types";
 
 const TZ = "Asia/Seoul";
@@ -40,10 +40,13 @@ export const STATUS_LABEL: Record<DisplayStatus, string> = {
   ENDED: "종료",
 };
 
-/** Avatar badge for an organization: the editable table in lib/orgInitials.ts first, else the first two letters. */
+/** 학과 학생회도 학과 약칭을 사용하고, 미등록 발행처만 자동 축약한다. */
 export function orgInitials(name: string): string {
   const n = name.trim();
   if (ORG_INITIALS[n]) return ORG_INITIALS[n];
+  const department = n.replace(/\s*학생회$/, "");
+  const canonical = DEPARTMENT_NAME_ALIASES[department] ?? department;
+  if (ORG_INITIALS[canonical]) return ORG_INITIALS[canonical];
   const latin = n.match(/^[A-Za-z]+/);
   if (latin) return latin[0].slice(0, 3).toUpperCase();
   if (/^총학생회/.test(n)) return "총학";
