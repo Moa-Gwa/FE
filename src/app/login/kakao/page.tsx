@@ -20,13 +20,13 @@ function KakaoCallback() {
       queueMicrotask(() => setError("카카오 인증 코드가 없습니다."));
       return;
     }
-    api<{ nickname: string; onboarded: boolean; verified: boolean }>("/auth/kakao", {
+    api<{ nickname: string; onboarded: boolean; verified: boolean; consented: boolean }>("/auth/kakao", {
       method: "POST",
       auth: false,
       body: { code, redirectUri: `${window.location.origin}/login/kakao` },
     })
       .then((res) => {
-        setSession({ role: "STUDENT", name: res.nickname, onboarded: res.onboarded, verified: res.verified });
+        setSession({ role: "STUDENT", name: res.nickname, onboarded: res.onboarded, verified: res.verified, consented: res.consented });
         router.replace(res.onboarded ? "/home" : "/my/interests?welcome=1");
       })
       .catch((e: Error) => setError(e.message));

@@ -90,6 +90,8 @@ export interface OrganizationView {
   college: string | null;
   /** BE #112: 운영자처럼 구독을 해제할 수 없는 단체 */
   required?: boolean;
+  /** 학과의 학과 학생회 id. 학과가 아니거나 학생회가 없으면 null */
+  studentGovernmentId?: number | null;
 }
 
 export interface ScheduleEntry {
@@ -210,6 +212,8 @@ export interface Session {
   organization?: OrgRef;
   /** 서비스 운영자 관리자. 날짜 교정 검토 화면이 이 값을 확인한다. */
   operator?: boolean;
+  /** 현재 버전 약관에 동의했는지. false거나 없으면 동의 화면으로 보냄 */
+  consented?: boolean;
 }
 
 /* ---- 생활거래 (중고거래 · 같이 사기) ---- */
