@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { loginAs, seed } from './support';
+import { loginAdmin, loginAs, seed } from './support';
 
 // 준비 단계에서 만든 실제 데이터 id로 경로를 만듦
 const studentPages = () => {
@@ -93,7 +93,8 @@ for (const width of [390,768,1280]) {
     await expect(hour).toHaveAttribute('aria-activedescendant', 'wheel-시-1');
     expect(await hour.locator('button').first().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole('button',{name:'일정 창 닫기'}).click();
-    await loginAs(page, 'ADMIN');
+    // 시드 공지는 총학생회 계정이 작성함. 운영자는 별도 단체라 이 공지를 수정할 수 없음
+    await loginAdmin(page);
     await page.goto(`/admin/notices/${seed().notices.wide}/edit`);
     await page.locator('.writer-title').fill('반응형 공지 작성 테스트');
     await page.getByRole('button',{name:'저장하기',exact:true}).click({ timeout: 10_000 });
