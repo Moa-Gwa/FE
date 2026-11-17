@@ -17,7 +17,8 @@ function toggle(list: number[], id: number) {
 }
 
 type Option = { id: number; name: string; required?: boolean };
-const ADMISSION_YEARS = Array.from({ length: 9 }, (_, index) => String(2018 + index));
+// 올해와 이전 8년. 그 밖의 연도는 직접 입력
+const ADMISSION_YEARS = Array.from({ length: 9 }, (_, index) => String(new Date().getFullYear() - 8 + index));
 
 /** Multi-select list: search box + scrollable rows with a trailing check. Selected rows float to the top. Required rows stay checked and locked. */
 function PickList({ options, value, onToggle, searchLabel, empty }: { options: Option[]; value: number[]; onToggle: (id: number) => void; searchLabel?: string; empty: string }) {

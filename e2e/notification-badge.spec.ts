@@ -4,7 +4,7 @@ for (const width of [390, 768, 1280]) {
   test(`home unread badge stays attached to the bell at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.addInitScript(() => localStorage.setItem('moagwa-session', JSON.stringify({
-      role: 'STUDENT', name: '알림 검사', onboarded: true, verified: false,
+      role: 'STUDENT', name: '알림 검사', onboarded: true, verified: false, consented: true,
     })));
     let unreadCount = 2;
     await page.route('**/api/**', async route => {
