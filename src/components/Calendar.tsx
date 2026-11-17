@@ -3,6 +3,9 @@
 import { useRef } from "react";
 import type { ScheduleEntry } from "@/types";
 import { scheduleKey, weekSegments } from "@/lib/calendarEvents";
+
+/** 펼치지 않은 주에 보여 줄 일정 줄 수 */
+const COMPACT_LANES = 2;
 import { colorText, scheduleColor } from "@/lib/scheduleColors";
 import { kstDay } from "@/lib/format";
 
@@ -110,15 +113,20 @@ export default function Calendar({
           const days = cells.slice(week * 7, week * 7 + 7);
           const segments = weekSegments(entries, days);
           const highlight = days.indexOf(selected ?? today);
-          return <div className="calendar-week" key={week}>
+          // 선택한 날(없으면 오늘)이 있는 주만 펼치고, 나머지 주는 일정을 COMPACT_LANES줄까지만 보여 줌
+          const expanded = highlight >= 0;
+          const shown = expanded ? segments : segments.filter(s => s.lane < COMPACT_LANES);
+          const hidden = days.map((_, i) => segments.filter(s => s.lane >= COMPACT_LANES && s.start <= i && i < s.start + s.span).length);
+          return <div className={`calendar-week ${expanded ? "expanded" : ""}`} key={week}>
             {highlight >= 0 && <span className="calendar-day-highlight" aria-hidden="true" style={{ left: `${highlight * 100 / 7}%` }} />}
             <div className="calendar-grid calendar-week-days">{days.map((day, i) => day ? renderDay(day) : <div key={`blank-${i}`} />)}</div>
             <div className="calendar-week-bars">
-              {segments.map(s => <button type="button" key={scheduleKey(s.entry)}
+              {shown.map(s => <button type="button" key={scheduleKey(s.entry)}
                 className={`calendar-event-bar kind-${s.entry.type.toLowerCase()} ${s.before ? "continues-before" : ""} ${s.after ? "continues-after" : ""}`}
                 style={{ gridColumn: `${s.start + 1} / span ${s.span}`, gridRow: s.lane + 1 }}
                 title={s.entry.title} aria-label={`${s.entry.title} 일정 보기`}
                 onClick={() => onEntrySelect?.(s.entry)}><span className="calendar-event-label" style={{ background: scheduleColor(s.entry), color: colorText(scheduleColor(s.entry)) }}>{s.entry.title}</span></button>)}
+              {!expanded && hidden.map((n, i) => n > 0 && <span key={`more-${i}`} className="calendar-more" aria-label={`일정 ${n}개 더 있음`} style={{ gridColumn: i + 1, gridRow: COMPACT_LANES + 1 }}>+{n}</span>)}
             </div>
           </div>;
         })}
