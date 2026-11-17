@@ -58,6 +58,13 @@ function Detail({ id }: { id: string }) {
       refresh();
     },
   });
+  const reject = useMutation({
+    mutationFn: (rid: number) => api<void>(`/market/requests/${rid}/reject`, { method: "POST" }),
+    onSuccess: () => {
+      toast("거래 요청을 거절했어요.");
+      refresh();
+    },
+  });
   const remove = useMutation({
     mutationFn: () => api<void>(`/market/items/${id}`, { method: "DELETE" }),
     onSuccess: () => {
@@ -144,10 +151,17 @@ function Detail({ id }: { id: string }) {
                   <strong>{r.buyerNickname}</strong>
                   <p className="life-sub">{r.message || "메시지 없음"}</p>
                 </div>
-                {r.status === "PENDING" && d.status === "ON_SALE" ? (
-                  <button className="life-btn small" onClick={() => accept.mutate(r.id)}>
-                    수락
-                  </button>
+                {r.status === "PENDING" ? (
+                  <div className="life-req-actions">
+                    <button className="life-btn small ghost" disabled={reject.isPending} onClick={() => confirm("이 거래 요청을 거절할까요?") && reject.mutate(r.id)}>
+                      거절
+                    </button>
+                    {d.status === "ON_SALE" && (
+                      <button className="life-btn small" disabled={accept.isPending} onClick={() => accept.mutate(r.id)}>
+                        수락
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <span className="life-sub">{REQUEST_LABEL[r.status]}</span>
                 )}
@@ -156,7 +170,10 @@ function Detail({ id }: { id: string }) {
           ) : (
             <p className="life-empty small">{requests.isError ? "거래 요청을 불러오지 못했어요." : "아직 받은 요청이 없어요."}</p>
           )}
-          <InlineError error={latestError(status, accept, remove)} />
+          <InlineError error={latestError(status, accept, reject, remove)} />
+          <Link href={`/life/items/${id}/edit`} className="life-btn ghost">
+            물품 수정
+          </Link>
           <button className="life-btn ghost danger" onClick={() => confirm("이 물품을 삭제할까요?") && remove.mutate()}>
             물품 삭제
           </button>

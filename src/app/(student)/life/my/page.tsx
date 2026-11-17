@@ -1,11 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import Badge from "@/components/Badge";
+import InlineError from "@/components/InlineError";
+import { useToast } from "@/components/Providers";
 import GroupRow from "@/components/market/GroupRow";
 import ItemRow from "@/components/market/ItemRow";
 import VerifyGate from "@/components/market/VerifyGate";
@@ -20,6 +22,43 @@ const TABS: [Tab, string][] = [
   ["requests", "내 요청"],
   ["groups", "같이 사기"],
 ];
+
+/** 내가 보낸 거래 요청. 대기 중이거나 수락된 요청은 취소할 수 있음(거래 완료 후 취소는 서버가 거부) */
+function RequestRow({ r }: { r: TradeRequestView }) {
+  const toast = useToast();
+  const qc = useQueryClient();
+  const cancel = useMutation({
+    mutationFn: () => api<void>(`/market/requests/${r.id}/cancel`, { method: "POST" }),
+    onSuccess: () => {
+      toast("거래 요청을 취소했어요.");
+      qc.invalidateQueries({ queryKey: ["market"] });
+    },
+  });
+  const cancellable = r.status === "PENDING" || r.status === "ACCEPTED";
+  return (
+    <>
+      <div className="life-req">
+        <Link href={`/life/items/${r.itemId}`} className="life-req-main">
+          <strong>{r.itemTitle}</strong>
+          <p className="life-sub">{timeAgo(r.createdAt)}</p>
+        </Link>
+        <div className="life-req-actions">
+          <Badge color={r.status === "ACCEPTED" ? "blue" : "elephant"}>{REQUEST_LABEL[r.status]}</Badge>
+          {cancellable && (
+            <button
+              className="life-btn small ghost"
+              disabled={cancel.isPending}
+              onClick={() => confirm(r.status === "ACCEPTED" ? "수락된 거래를 취소할까요? 물품이 다시 판매 중으로 바뀌어요." : "이 거래 요청을 취소할까요?") && cancel.mutate()}
+            >
+              취소
+            </button>
+          )}
+        </div>
+      </div>
+      <InlineError error={cancel.error} />
+    </>
+  );
+}
 
 function Body({ tab }: { tab: Tab }) {
   const q = useQuery({
@@ -60,13 +99,7 @@ function Body({ tab }: { tab: Tab }) {
     <div className="life-card">
       {rows.map((r) =>
         tab === "requests" ? (
-          <Link key={r.id} href={`/life/items/${(r as TradeRequestView).itemId}`} className="life-req link">
-            <div>
-              <strong>{(r as TradeRequestView).itemTitle}</strong>
-              <p className="life-sub">{timeAgo((r as TradeRequestView).createdAt)}</p>
-            </div>
-            <Badge color={(r as TradeRequestView).status === "ACCEPTED" ? "blue" : "elephant"}>{REQUEST_LABEL[(r as TradeRequestView).status]}</Badge>
-          </Link>
+          <RequestRow key={r.id} r={r as TradeRequestView} />
         ) : tab === "groups" ? (
           <GroupRow key={r.id} group={r as GroupBuySummary} />
         ) : (
