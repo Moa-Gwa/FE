@@ -125,6 +125,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
 
   // 주전공을 고르거나 바꾸면 관심 학과와 학과 학생회를 함께 체크하고, 예전 주전공 것은 해제함. 그 뒤 해제는 학생 선택대로 둠
   const choosePrimary = (id: number | null) => {
+    if (id === primary) return; // 같은 학과를 다시 고르면 학생이 해제한 학생회를 되살리지 않음
     const councilOf = (dept: number | null) => departments.data?.find((d) => d.id === dept)?.studentGovernmentId ?? null;
     const add = (list: number[], value: number | null) => (value === null || list.includes(value) ? list : [...list, value]);
     setDepts(add(depts.filter((d) => d !== primary), id));
