@@ -65,10 +65,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 3px;
+  padding: 8px 0;
+  border-radius: 999px;
+  background-clip: content-box;
 }
 .switch i {
   flex: none;
+  margin: 0 3px;
 }
 .setting-row {
   gap: 12px;
