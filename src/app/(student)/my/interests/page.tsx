@@ -123,6 +123,15 @@ function InterestsForm({ profile }: { profile: Profile }) {
   const [orgs, setOrgs] = useState(profile.organizationIds);
   const [cats, setCats] = useState(profile.categoryIds);
 
+  // 주전공을 고르거나 바꾸면 관심 학과와 학과 학생회를 함께 체크하고, 예전 주전공 것은 해제함. 그 뒤 해제는 학생 선택대로 둠
+  const choosePrimary = (id: number | null) => {
+    const councilOf = (dept: number | null) => departments.data?.find((d) => d.id === dept)?.studentGovernmentId ?? null;
+    const add = (list: number[], value: number | null) => (value === null || list.includes(value) ? list : [...list, value]);
+    setDepts(add(depts.filter((d) => d !== primary), id));
+    setOrgs(add(orgs.filter((o) => o !== councilOf(primary)), councilOf(id)));
+    setPrimary(id);
+  };
+
   const save = useMutation({
     mutationFn: () =>
       api<Profile>("/me/profile", {
@@ -174,7 +183,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
             </div>
             <div className="form-group">
               <label htmlFor="primary">주전공</label>
-              <SheetSelect id="primary" options={departments.data ?? []} value={primary} onChange={setPrimary} placeholder="주전공을 선택해 주세요" />
+              <SheetSelect id="primary" options={departments.data ?? []} value={primary} onChange={choosePrimary} placeholder="주전공을 선택해 주세요" />
               <span className="hint">복수전공·전과 예정이라면 아래 관심 학과에 추가하세요.</span>
             </div>
           </div>
