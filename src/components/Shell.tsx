@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminMobileMenu from "@/components/AdminMobileMenu";
 import AppNotices from "@/components/AppNotices";
+import ChatbotWidget from "@/components/ChatbotWidget";
 import Icon, { type IconName } from "@/components/Icon";
 import InlineError from "@/components/InlineError";
 import Logo from "@/components/Logo";
@@ -96,6 +97,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
             </div>
           </aside>
           <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
+          {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지 */}
+          <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />
           <nav className="m-nav" aria-label="주 메뉴">
             {nav.map((n) => link(n))}
           </nav>

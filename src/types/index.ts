@@ -90,6 +90,8 @@ export interface OrganizationView {
   college: string | null;
   /** BE #112: 운영자처럼 구독을 해제할 수 없는 단체 */
   required?: boolean;
+  /** 학과의 학과 학생회 id. 학과가 아니거나 학생회가 없으면 null */
+  studentGovernmentId?: number | null;
 }
 
 export interface ScheduleEntry {
