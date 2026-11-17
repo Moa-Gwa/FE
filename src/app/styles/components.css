@@ -341,11 +341,11 @@ select[aria-invalid="true"] {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* 공지 정보 줄(조회 옆) 작은 글자 링크 */
+/* 공지 정보 줄(조회 옆) 작은 글자 링크. 터치 영역 44px은 음수 여백으로 줄 높이에 영향 없이 확보 */
 .correction-chip {
-  margin-left: auto;
+  margin: -13px 0 -13px auto;
   height: auto;
-  min-height: 0;
+  min-height: 44px;
   padding: 0;
   border: 0;
   background: none;

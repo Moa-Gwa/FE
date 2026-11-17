@@ -58,22 +58,18 @@
   width: auto;
   flex: none;
 }
-/* 막대는 52x28 그대로 그리고, 터치 영역(44px)은 보이지 않는 ::before로 넓힘 */
+/* 터치 영역은 44px, 막대는 위아래 8px 안쪽 52x28로 그림.
+   세로 반지름을 8px 크게 잡아야 안쪽 막대 모서리가 14px 원이 되어 찌그러지지 않음 */
 .switch {
-  position: relative;
   flex: none;
-  min-width: 0;
-  min-height: 0;
+  min-width: 44px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0;
-  border-radius: 999px;
-}
-.switch::before {
-  content: "";
-  position: absolute;
-  inset: -8px 0;
+  padding: 8px 0;
+  border-radius: 14px / 22px;
+  background-clip: content-box;
 }
 .switch i {
   flex: none;
