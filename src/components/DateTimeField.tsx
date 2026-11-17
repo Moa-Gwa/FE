@@ -121,7 +121,7 @@ export default function DateTimeField({
 
   return (
     <div className="dt-field" ref={box}>
-      <button type="button" className={`select-field ${value ? "" : "empty"}`} aria-label={ariaLabel} aria-haspopup="dialog" aria-expanded={open} onClick={() => (open ? setOpen(false) : openPicker())}>
+      <button type="button" className={`select-field ${value ? "" : "is-placeholder"}`} aria-label={ariaLabel} aria-haspopup="dialog" aria-expanded={open} onClick={() => (open ? setOpen(false) : openPicker())}>
         <span>{value ? label(value) : placeholder}</span>
         <Icon name="calendar" />
       </button>
