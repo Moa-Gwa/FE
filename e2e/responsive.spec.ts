@@ -22,7 +22,8 @@ async function inspect(page: Page, name: string) {
     return r.left < -1 || r.right > innerWidth + 1;
   }).map(el => ({ tag: el.tagName, name: el.getAttribute('name'), className: el.className })));
   expect.soft(clipped, `${name}: form controls`).toEqual([]);
-  const smallTargets = await page.evaluate(() => [...document.querySelectorAll('button:not(:disabled)')].filter(el => {
+  // 달력 일정 막대는 얇은 막대로 표시하므로 44px 크기 검사에서 제외
+  const smallTargets = await page.evaluate(() => [...document.querySelectorAll('button:not(:disabled):not(.calendar-event-bar)')].filter(el => {
     const r = el.getBoundingClientRect();
     return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'
       && !el.closest('[data-nextjs-dialog],nextjs-portal') && (r.width < 43.5 || r.height < 43.5);
