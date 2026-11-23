@@ -61,10 +61,14 @@ function Notices() {
   };
   const close = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/close`, { method: "POST" }), onSuccess: done("공지를 마감했어요.") });
   const duplicate = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}/duplicate`, { method: "POST" }), onSuccess: done("공지를 복제했어요. 임시저장 상태예요.") });
+  const renotify = useMutation({
+    mutationFn: (id: number) => api<{ recipients: number }>(`/admin/notices/${id}/renotify`, { method: "POST" }),
+    onSuccess: ({ recipients }) => toast(recipients > 0 ? `학생 ${recipients}명에게 알림을 다시 보냈어요.` : "알림을 받을 학생이 없어요."),
+  });
   const remove = useMutation({ mutationFn: (id: number) => api<void>(`/admin/notices/${id}`, { method: "DELETE" }), onSuccess: done("공지를 삭제했어요.") });
   // 행 작업 실패는 해당 공지 제목 아래에 표시
-  const rowError = latestError(close, duplicate, remove);
-  const rowErrorId = [close, duplicate, remove].find((m) => m.error && m.error === rowError)?.variables;
+  const rowError = latestError(close, duplicate, renotify, remove);
+  const rowErrorId = [close, duplicate, renotify, remove].find((m) => m.error && m.error === rowError)?.variables;
 
   return (
     <>
@@ -146,6 +150,15 @@ function Notices() {
                             {n.status === "PUBLISHED" && (
                               <button role="menuitem" onClick={() => close.mutate(n.id)}>
                                 마감 처리
+                              </button>
+                            )}
+                            {n.status === "PUBLISHED" && (
+                              <button
+                                role="menuitem"
+                                disabled={renotify.isPending}
+                                onClick={() => confirm("이 공지의 알림을 학생들에게 다시 보낼까요?") && renotify.mutate(n.id)}
+                              >
+                                알림 다시 보내기
                               </button>
                             )}
                             {(n.status === "PUBLISHED" || n.status === "CLOSED") && (
