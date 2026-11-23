@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Providers from "@/components/Providers";
+import IosInputZoomLock, { VIEWPORT_SCALE } from "@/components/IosInputZoomLock";
 import "./globals.css";
 
 // Spoqa Han Sans Neo (SIL OFL), self-hosted subset
@@ -26,7 +27,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   // 모바일 화면이 커 보여 PC 브라우저 80% 축소와 같은 배율로 그림(PC는 이 값을 무시함)
-  initialScale: 0.8,
+  initialScale: VIEWPORT_SCALE,
+  // 입력창 초점 시 확대 방지(maximum-scale)는 iOS에서만 IosInputZoomLock이 건다
   viewportFit: "cover",
   themeColor: "#ffffff",
 };
@@ -34,6 +36,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${spoqa.variable}`}>
+      <head>
+        <IosInputZoomLock />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
