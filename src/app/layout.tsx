@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 };
 
 // 노치·홈 인디케이터 영역까지 그리고, 여백은 safe-area-inset으로 처리함
+// iOS는 IosInputZoomLock의 IOS_VIEWPORT가 마지막 태그로 적용되므로, 값을 바꾸면 그쪽도 같이 수정
 export const viewport: Viewport = {
   width: "device-width",
   // 모바일 화면이 커 보여 PC 브라우저 80% 축소와 같은 배율로 그림(PC는 이 값을 무시함)
