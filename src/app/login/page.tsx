@@ -94,6 +94,9 @@ export default function LoginPage() {
                 <Icon name="chevron" />
               </span>
             </button>
+            <Link href="/home" className="link-btn">
+              로그인 없이 둘러보기 →
+            </Link>
           </div>
         )}
 

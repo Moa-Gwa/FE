@@ -25,6 +25,9 @@ const STUDENT_NAV: NavItem[] = [
   ["/my", "user", "MY"],
 ];
 
+// 로그인 없이 볼 수 있는 학생 화면. BE도 이 화면의 조회 API를 비로그인에 허용함
+const GUEST_PATHS = ["/home", "/explore", "/notices", "/schedule"];
+
 const ADMIN_NAV: NavItem[] = [
   ["/admin/dashboard", "grid", "대시보드"],
   ["/admin/notices", "list", "공지 관리"],
@@ -67,12 +70,15 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
       root.style.removeProperty("--m-nav-h");
     };
   }, []);
+  const guest = role === "STUDENT" && session === null
+    && GUEST_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
   useEffect(() => {
+    if (guest) return;
     if (session === null || (session && session.role !== role)) router.replace("/login");
     else if (needsConsent) router.replace(`/consent?next=${encodeURIComponent(pathname + window.location.search)}`);
-  }, [session, role, router, needsConsent, pathname]);
+  }, [guest, session, role, router, needsConsent, pathname]);
 
-  if (!session || session.role !== role || needsConsent) return null;
+  if (!guest && (!session || session.role !== role || needsConsent)) return null;
 
   const signOut = async () => {
     setLogoutError(null);
@@ -102,14 +108,20 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
             <Logo />
             <nav className="nav" aria-label="학생 메뉴">{nav.map(n => link(n))}</nav>
             <div className="side-bottom">
-              <div className="profile-mini"><strong>{session.name}</strong></div>
-              <button className="logout" onClick={signOut}>로그아웃</button>
-              <InlineError error={logoutError} />
+              {session ? (
+                <>
+                  <div className="profile-mini"><strong>{session.name}</strong></div>
+                  <button className="logout" onClick={signOut}>로그아웃</button>
+                  <InlineError error={logoutError} />
+                </>
+              ) : (
+                <Link className="logout" href="/login">로그인</Link>
+              )}
             </div>
           </aside>
           <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
-          {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지 */}
-          <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />
+          {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지. 챗봇 API는 로그인 필요 */}
+          {session && <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />}
           <nav className="m-nav" aria-label="주 메뉴" ref={measureNav}>
             {nav.map((n) => link(n))}
           </nav>
@@ -118,6 +130,7 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
     );
   }
 
+  if (!session) return null;
   // 데스크톱 사이드바와 모바일 메뉴가 같은 내용을 씀
   const sidebar = (
     <>
