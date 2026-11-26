@@ -31,8 +31,9 @@ export default function StudentHome() {
   const session = useSession();
   const router = useRouter();
   const { categories } = useCategories();
-  const now = useQuery({ queryKey: ["feed", "now"], queryFn: () => api<FeedItem[]>("/feed/now") });
   const isStudent = session?.role === "STUDENT";
+  // 학내 NOW는 긴급 공지와 관심 공지 중 지금 챙길 것. 비로그인은 로그인 안내로 대체
+  const now = useQuery({ queryKey: ["feed", "now"], queryFn: () => api<FeedItem[]>("/feed/now"), enabled: isStudent });
   // 맞춤 공지는 로그인한 학생만 조회 가능(비로그인은 401)
   const forMe = useQuery({ queryKey: ["feed", "for-me-preview"], queryFn: () => api<FeedPage>("/feed/for-me?size=4"), enabled: isStudent });
 
@@ -76,7 +77,15 @@ export default function StudentHome() {
             전체 보기 <Icon name="chevron" />
           </Link>
         </div>
-        {now.isPending ? (
+        {!isStudent ? (
+          <div className="empty">
+            로그인하면 긴급 공지와 관심 학과, 단체의 마감 임박, 진행 중 공지를 모아 알려드려요.
+            <br />
+            <Link href="/login" className="link-btn">
+              로그인하고 알림 받기 →
+            </Link>
+          </div>
+        ) : now.isPending ? (
           <div className="empty">불러오는 중…</div>
         ) : now.isError ? (
           <InlineError error={now.error} />
@@ -87,7 +96,7 @@ export default function StudentHome() {
             ))}
           </div>
         ) : (
-          <div className="empty"><img className="empty-mascot" src="/mascot-sleep.webp" alt="" />지금 확인할 중요·진행 중 공지가 없어요.</div>
+          <div className="empty"><img className="empty-mascot" src="/mascot-sleep.webp" alt="" />지금 챙길 긴급 공지나 관심 공지가 없어요.</div>
         )}
       </section>
 

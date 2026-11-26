@@ -6,6 +6,7 @@ test('guest starts at home and is sent to login only for login-only screens', as
   await page.goto('/');
   await expect(page).toHaveURL(/\/home$/);
   await expect(page.getByRole('link', { name: '로그인하러 가기 →' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '로그인하고 알림 받기 →' })).toBeVisible();
 
   await page.goto(`/notices/MANUAL/${seed().notices.single}`);
   await expect(page.getByRole('link', { name: /로그인하고 저장/ })).toHaveAttribute('href', '/login');
