@@ -7,7 +7,7 @@ import { useSession } from "@/lib/session";
 
 const FEATURES: [IconName, string, string][] = [
   ["tag", "중고거래", "안 쓰는 물건을 학교 안에서 사고팔아요."],
-  ["users", "같이 사기", "여럿이 모여 함께 사요. 참여할 때 참가비 500원이 들어요."],
+  ["users", "같이 사기", "여럿이 모여 함께 사요."],
   ["chat", "채팅", "거래가 수락되거나 같이 사기에 참여하면 채팅으로 약속을 잡아요."],
 ];
 
