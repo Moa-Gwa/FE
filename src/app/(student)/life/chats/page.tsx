@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
 import Thumb from "@/components/market/Thumb";
@@ -43,7 +44,7 @@ export default function ChatsPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>채팅</h1>

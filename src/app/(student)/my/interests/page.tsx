@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { Suspense, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
@@ -231,7 +232,7 @@ function InterestsForm({ profile }: { profile: Profile }) {
 
         <InlineError error={save.error} />
         <div className="cta-bar">
-          <button type="button" className="ghost" onClick={() => router.back()}>
+          <button type="button" className="ghost" onClick={() => goBack(router, "/my")}>
             취소
           </button>
           <button className="primary" disabled={save.isPending}>

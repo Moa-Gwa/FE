@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import InlineError from "@/components/InlineError";
@@ -64,7 +65,7 @@ export default function NewGroupPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>같이 사기 열기</h1>

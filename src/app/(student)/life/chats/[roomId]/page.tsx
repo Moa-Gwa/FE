@@ -3,6 +3,7 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
 import InlineError from "@/components/InlineError";
@@ -173,7 +174,7 @@ export default function ChatRoomPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life/chats")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>{room ? (room.type === "GROUP" ? room.title : room.partner) : "채팅"}</h1>

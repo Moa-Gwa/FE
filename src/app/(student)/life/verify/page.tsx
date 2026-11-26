@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { useEffect, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Badge from "@/components/Badge";
@@ -60,7 +61,7 @@ export default function VerifyPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>재학생 인증</h1>

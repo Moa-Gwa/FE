@@ -43,6 +43,10 @@ function isActive(pathname: string, href: string, all: NavItem[]) {
   return !moreSpecific && pathname.startsWith(href + "/");
 }
 
+/** 로그인 없이 둘러볼 수 있는 학생 화면. 서버도 이 화면의 조회 API는 공개함 */
+const GUEST_PATHS = ["/home", "/explore", "/schedule", "/notices"];
+const isGuestPath = (pathname: string) => GUEST_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
 export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; children: React.ReactNode }) {
   const session = useSession();
   const router = useRouter();
@@ -67,12 +71,14 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
       root.style.removeProperty("--m-nav-h");
     };
   }, []);
+  const guest = session === null && role === "STUDENT" && isGuestPath(pathname);
   useEffect(() => {
-    if (session === null || (session && session.role !== role)) router.replace("/login");
+    if (session === null && !guest) router.replace(role === "ADMIN" ? "/login?admin=1" : "/login");
+    else if (session && session.role !== role) router.replace(session.role === "ADMIN" ? "/admin/dashboard" : "/home");
     else if (needsConsent) router.replace(`/consent?next=${encodeURIComponent(pathname + window.location.search)}`);
-  }, [session, role, router, needsConsent, pathname]);
+  }, [session, guest, role, router, needsConsent, pathname]);
 
-  if (!session || session.role !== role || needsConsent) return null;
+  if (!guest && (!session || session.role !== role || needsConsent)) return null;
 
   const signOut = async () => {
     setLogoutError(null);
@@ -102,14 +108,20 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
             <Logo />
             <nav className="nav" aria-label="학생 메뉴">{nav.map(n => link(n))}</nav>
             <div className="side-bottom">
-              <div className="profile-mini"><strong>{session.name}</strong></div>
-              <button className="logout" onClick={signOut}>로그아웃</button>
-              <InlineError error={logoutError} />
+              {session ? (
+                <>
+                  <div className="profile-mini"><strong>{session.name}</strong></div>
+                  <button className="logout" onClick={signOut}>로그아웃</button>
+                  <InlineError error={logoutError} />
+                </>
+              ) : (
+                <Link href="/login" className="secondary">로그인</Link>
+              )}
             </div>
           </aside>
           <main className="main-m" data-page={pathname}><AppNotices role="STUDENT" />{children}</main>
-          {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지 */}
-          <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />
+          {/* 생활 탭과 관심사 화면은 아래쪽 고정 버튼이 있어 챗봇 버튼만 숨기고 대화는 유지. 챗봇은 로그인 필요 */}
+          {session && <ChatbotWidget showButton={!pathname.startsWith("/life") && pathname !== "/my/interests"} />}
           <nav className="m-nav" aria-label="주 메뉴" ref={measureNav}>
             {nav.map((n) => link(n))}
           </nav>
@@ -117,6 +129,8 @@ export default function Shell({ role, children }: { role: "STUDENT" | "ADMIN"; c
       </div>
     );
   }
+
+  if (!session) return null; // 관리자 화면은 비로그인 둘러보기 없음
 
   // 데스크톱 사이드바와 모바일 메뉴가 같은 내용을 씀
   const sidebar = (

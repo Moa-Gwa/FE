@@ -32,12 +32,12 @@ export default function StudentHome() {
   const router = useRouter();
   const { categories } = useCategories();
   const now = useQuery({ queryKey: ["feed", "now"], queryFn: () => api<FeedItem[]>("/feed/now") });
-  const forMe = useQuery({ queryKey: ["feed", "for-me-preview"], queryFn: () => api<FeedPage>("/feed/for-me?size=4") });
+  const forMe = useQuery({ queryKey: ["feed", "for-me-preview"], queryFn: () => api<FeedPage>("/feed/for-me?size=4"), enabled: !!session });
 
   return (
     <>
       <div className="home-top">
-        <TopBar title={`안녕하세요, ${session?.name ?? ""}님`} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
+        <TopBar title={session ? `안녕하세요, ${session.name}님` : "안녕하세요"} sub="오늘도 필요한 학교 소식을 모아봤어요." home />
 
         <section className="hero">
           <img className="hero-art" src="/mascot-guide.webp" alt="" />
@@ -115,7 +115,15 @@ export default function StudentHome() {
             관심 설정
           </Link>
         </div>
-        {forMe.isError ? (
+        {session === null ? (
+          <div className="empty">
+            로그인하고 관심 단체를 등록하면 맞춤 공지와 푸시 알림을 받을 수 있어요.
+            <br />
+            <Link href="/login" className="link-btn">
+              로그인하고 알림 받기 →
+            </Link>
+          </div>
+        ) : forMe.isError ? (
           <InlineError error={forMe.error} />
         ) : forMe.data && forMe.data.items.length > 0 ? (
           <div className="grid two">

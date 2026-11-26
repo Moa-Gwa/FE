@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { Suspense, useEffect, useRef, useState } from "react";
 import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
@@ -100,7 +101,7 @@ export default function PayPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>결제하기</h1>

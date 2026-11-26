@@ -15,6 +15,16 @@ import {
   unregisterPushToken,
 } from "@/lib/push";
 
+const ASKED_KEY = "moagwa.push-asked";
+
+function wasAsked() {
+  try {
+    return localStorage.getItem(ASKED_KEY) === "1";
+  } catch {
+    return true; // 저장소를 못 쓰면 매번 묻지 않음
+  }
+}
+
 const isSafari = () => /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent);
 
 function hint(status: FcmStatus): string | null {
@@ -44,6 +54,7 @@ export default function PushToggleRow() {
   const [busy, setBusy] = useState(false);
   const [testing, setTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [asked, setAsked] = useState(wasAsked);
 
   // FCM이 토큰을 갱신했다면 서버에도 반영함
   useEffect(() => {
@@ -55,6 +66,17 @@ export default function PushToggleRow() {
   const pending = busy || testing || fcm.status === "checking" || fcm.status === "loading";
   const on = !!stored && !unavailable && fcm.status !== "checking" && fcm.status !== "denied";
   const message = hint(fcm.status);
+  // 권한을 아직 안 정한 기기에서만 처음 한 번 물어봄. 브라우저 권한창 차단은 되돌리기 어려워 먼저 확인함
+  const askNow = !asked && !stored && fcm.status === "idle" && Notification.permission === "default";
+
+  function closeAsk() {
+    try {
+      localStorage.setItem(ASKED_KEY, "1");
+    } catch {
+      // 저장 실패 시 이번 화면에서만 닫음
+    }
+    setAsked(true);
+  }
 
   async function toggle() {
     setBusy(true);
@@ -68,7 +90,9 @@ export default function PushToggleRow() {
       const token = await fcm.enable();
       if (!token) return;
       await registerPushToken(token);
-      toast("이 기기에서 푸시 알림을 받아요.");
+      toast("푸시 알림을 켰어요. 테스트 알림이 곧 도착해요.");
+      // 켜자마자 실제로 오는지 확인용. 실패해도 등록은 유지되고 아래 오류와 수동 버튼이 남음
+      await sendTestPush(token);
     } catch (e) {
       setError(e instanceof Error ? e.message : "푸시 알림 설정에 실패했어요.");
     } finally {
@@ -101,6 +125,29 @@ export default function PushToggleRow() {
 
   return (
     <>
+      {askNow && (
+        <div className="modal-back" onClick={closeAsk}>
+          <div className="modal" role="dialog" aria-label="푸시 알림 받기" onClick={(e) => e.stopPropagation()}>
+            <div className="section-heading">
+              <h2>푸시 알림을 받으시겠어요?</h2>
+            </div>
+            <p className="hint">관심 단체의 새 공지와 저장한 공지의 마감 알림을 이 기기로 보내 드려요.</p>
+            <div className="form-actions">
+              <button type="button" className="secondary" onClick={closeAsk}>나중에</button>
+              <button
+                type="button"
+                className="primary"
+                onClick={() => {
+                  closeAsk();
+                  void toggle();
+                }}
+              >
+                예
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="setting-row">
         <span>이 기기에서 푸시 알림 받기</span>
         <button

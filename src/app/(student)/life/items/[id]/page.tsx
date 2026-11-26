@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { useState } from "react";
 import Badge from "@/components/Badge";
 import Icon from "@/components/Icon";
@@ -217,7 +218,7 @@ export default function ItemPage() {
   return (
     <>
       <div className="life-back-row">
-        <button className="life-back" onClick={() => router.back()} aria-label="뒤로">
+        <button className="life-back" onClick={() => goBack(router, "/life")} aria-label="뒤로">
           <Icon name="back" size={24} />
         </button>
         <h1>물품 상세</h1>

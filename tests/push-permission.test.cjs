@@ -87,9 +87,27 @@ test('404 only forgets registration; 410 discards the expired SDK token', async 
       forgetPushToken: () => calls.push('forget'),
       discardExpiredPushToken: async () => calls.push('discard'),
     });
-    await tree.props.children[3].props.children[1].props.onClick();
+    await tree.props.children[4].props.children[1].props.onClick();
     assert.deepEqual(calls, status === 404 ? ['forget'] : status === 410 ? ['discard'] : []);
   }
+});
+
+test('turning push on registers the token before sending the test push', async () => {
+  const calls = [];
+  const component = load('components/PushToggleRow.tsx', {
+    react: { ...React, useEffect: () => {}, useState: value => [value, () => {}], useSyncExternalStore: () => null },
+    '@/components/InlineError': () => null,
+    '@/components/Providers': { useToast: () => () => {} },
+    '@/hooks/useFcmToken': { useFcmToken: () => ({ status: 'idle', token: null, error: null, enable: async () => 'new-token' }) },
+    '@/lib/api': { ApiError },
+    '@/lib/push': {
+      registerPushToken: async token => calls.push(['register', token]),
+      sendTestPush: async token => calls.push(['test', token]),
+    },
+  }).default;
+  const tree = component();
+  await tree.props.children[1].props.children[1].props.onClick();
+  assert.deepEqual(calls, [['register', 'new-token'], ['test', 'new-token']]);
 });
 
 test('expired-token cleanup deletes Firebase cache before clearing local registration', async () => {
