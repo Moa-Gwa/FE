@@ -20,10 +20,12 @@ function browser(href) {
   globalThis.location = { get href() { return entries[i].href; } };
   globalThis.history = {
     get state() { return entries[i].state; },
+    get length() { return entries.length; },
     replaceState(state) { entries[i].state = state; },
   };
   return {
     push(next) { entries.splice(i + 1); entries.push({ href: next, state: { __NA: true } }); i++; },
+    replace(next) { entries[i] = { href: next, state: { __NA: true } }; },
     pop() { i--; },
   };
 }
@@ -50,6 +52,19 @@ test('entry page falls back, in-app page goes back, returning to entry falls bac
   nav.pop(); // 브라우저 뒤로로 처음 화면에 돌아옴
   trackHistory();
   r = router();
+  goBack(r, '/home');
+  assert.deepEqual(r.calls, ['/home']);
+});
+
+test('redirects by replace on a fresh tab keep the entry page as the first page', () => {
+  const { trackHistory, goBack } = load();
+  const nav = browser('/notices/crawled/1');
+  trackHistory();
+  nav.replace('/consent?next=/notices/crawled/1');
+  trackHistory();
+  nav.replace('/notices/crawled/1');
+  trackHistory();
+  const r = router();
   goBack(r, '/home');
   assert.deepEqual(r.calls, ['/home']);
 });
