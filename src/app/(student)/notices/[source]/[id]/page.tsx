@@ -187,9 +187,15 @@ export default function NoticePage() {
           <AttachmentList attachments={n.attachments} />
 
           <div className="btn-row">
-            <button className="primary with-icon" aria-pressed={n.bookmarked} disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
-              <Icon name="bookmark" /> {n.bookmarked ? "저장됨" : "내 공지에 저장"}
-            </button>
+            {session === null ? (
+              <Link className="primary with-icon" href="/login">
+                <Icon name="bookmark" /> 로그인하고 저장
+              </Link>
+            ) : (
+              <button className="primary with-icon" aria-pressed={n.bookmarked} disabled={toggle.isPending} onClick={() => toggle.mutate(n.bookmarked)}>
+                <Icon name="bookmark" /> {n.bookmarked ? "저장됨" : "내 공지에 저장"}
+              </button>
+            )}
             <button className="secondary" onClick={share}>
               공유
             </button>

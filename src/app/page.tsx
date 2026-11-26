@@ -10,7 +10,8 @@ export default function Index() {
 
   useEffect(() => {
     if (session === undefined) return;
-    router.replace(!session ? "/login" : session.role === "ADMIN" ? "/admin/dashboard" : "/home");
+    // 비로그인도 홈부터 둘러봄. 관리자는 /login?admin=1 로 직접 들어옴
+    router.replace(session?.role === "ADMIN" ? "/admin/dashboard" : "/home");
   }, [session, router]);
 
   return null;
