@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import { useEffect, useRef, useState } from "react";
 import ReminderToggle from "@/components/ReminderToggle";
 import AttachmentList from "@/components/AttachmentList";
@@ -82,7 +83,7 @@ export default function NoticePage() {
   return (
     <>
       <TopBar title="공지 상세" back />
-      <button className="back" onClick={() => router.back()}>
+      <button className="back" onClick={() => goBack(router, "/home")}>
         ← 뒤로
       </button>
 

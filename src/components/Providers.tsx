@@ -1,7 +1,9 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { trackHistory } from "@/lib/backNav";
 import "@/lib/installPrompt";
 import { onSessionChange } from "@/lib/session";
 
@@ -14,6 +16,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
   // 세션이 바뀌면 이전 계정으로 받은 조회 결과가 그려지기 전에 비우고 다시 불러옴
   useEffect(() => onSessionChange(() => client.resetQueries()), [client]);
+  const pathname = usePathname();
+  useEffect(trackHistory, [pathname]);
   const [message, setMessage] = useState("");
   const [shown, setShown] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);

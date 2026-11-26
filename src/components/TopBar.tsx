@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/backNav";
 import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
@@ -57,8 +58,8 @@ export default function TopBar({ title, sub, actions, home = false, back = false
       <header className="topbar student">
         <div className="topbar-actions">
           {back && (
-            // 웹앱 전체 화면에는 브라우저 뒤로 가기가 없음. 알림 등으로 바로 열린 경우 홈으로 이동
-            <button className="life-back" aria-label="뒤로" onClick={() => (history.length > 1 ? router.back() : router.replace("/home"))}>
+            // 웹앱 전체 화면에는 브라우저 뒤로 가기가 없음. 알림 등으로 바로 열린 경우 홈으로 이동함
+            <button className="life-back" aria-label="뒤로" onClick={() => goBack(router)}>
               <Icon name="back" size={24} />
             </button>
           )}
