@@ -4,7 +4,7 @@ import { getMessaging, isSupported, onMessage } from "firebase/messaging";
 import { useEffect, useSyncExternalStore } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getFirebaseApp, isFirebaseConfigured } from "@/lib/firebase";
-import { getStoredPushToken, subscribePushToken } from "@/lib/push";
+import { getStoredPushToken, refreshPushToken, subscribePushToken } from "@/lib/push";
 
 /** 페이지 이동과 무관하게 학생 화면 전체에서 포그라운드 푸시를 표시한다. */
 export function useForegroundPush(enabled: boolean) {
@@ -16,6 +16,7 @@ export function useForegroundPush(enabled: boolean) {
     let unsubscribe: (() => void) | undefined;
     async function listen() {
       if (!await isSupported() || cancelled || Notification.permission !== "granted") return;
+      void refreshPushToken().catch(error => console.error("푸시 토큰 재등록 실패", error));
       unsubscribe = onMessage(getMessaging(getFirebaseApp()), async payload => {
         void client.invalidateQueries({ queryKey: ["notifications"] });
         const title = payload.data?.title ?? payload.notification?.title;

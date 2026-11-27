@@ -1,10 +1,12 @@
-import { deleteToken, getMessaging, isSupported } from "firebase/messaging";
+import { deleteToken, getMessaging, getToken, isSupported } from "firebase/messaging";
 import { api } from "@/lib/api";
-import { getFirebaseApp, isFirebaseConfigured } from "@/lib/firebase";
+import { getFirebaseApp, isFirebaseConfigured, VAPID_KEY } from "@/lib/firebase";
 
 /** 이 기기에서 서버에 등록한 FCM 토큰. 있으면 "이 기기 푸시 켜짐". */
 const STORAGE_KEY = "moagwa.fcmToken";
 const CHANGE_EVENT = "moagwa:push-token";
+const SYNCED_KEY = "moagwa.fcmTokenSyncedAt";
+const SYNC_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export function getStoredPushToken(): string | null {
   try {
@@ -38,7 +40,10 @@ export async function discardExpiredPushToken() {
 function storePushToken(token: string | null) {
   try {
     if (token) localStorage.setItem(STORAGE_KEY, token);
-    else localStorage.removeItem(STORAGE_KEY);
+    else {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SYNCED_KEY);
+    }
   } catch {
     /* 저장소 사용 불가 (시크릿 모드 등) */
   }
@@ -49,6 +54,23 @@ function storePushToken(token: string | null) {
 export async function registerPushToken(token: string) {
   await api<void>("/me/push-tokens", { method: "PUT", body: { token } });
   storePushToken(token);
+}
+
+/**
+ * 푸시를 켠 기기는 하루 한 번 현재 FCM 토큰을 서버에 다시 등록함.
+ * 서버가 만료 처리로 토큰을 지웠거나 FCM이 토큰을 바꿔도 앱을 열면 다시 받게 됨(FCM 권장 방식).
+ */
+export async function refreshPushToken() {
+  try {
+    if (!getStoredPushToken() || Date.now() - Number(localStorage.getItem(SYNCED_KEY)) < SYNC_INTERVAL_MS) return;
+    // 실패해도 하루 뒤 재시도. 같은 화면이 여러 번 그려질 때 중복 요청을 막으려고 먼저 기록함
+    localStorage.setItem(SYNCED_KEY, String(Date.now()));
+  } catch {
+    return;
+  }
+  const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+  const token = await getToken(getMessaging(getFirebaseApp()), { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+  if (token) await registerPushToken(token);
 }
 
 /** 이 기기로 테스트 알림을 보냄 */
