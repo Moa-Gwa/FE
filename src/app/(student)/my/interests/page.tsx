@@ -2,13 +2,15 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useSyncExternalStore } from "react";
 import InlineError from "@/components/InlineError";
 import Icon from "@/components/Icon";
 import { useToast } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
+import { useFcmToken } from "@/hooks/useFcmToken";
 import { useCategories, useOrganizations } from "@/hooks/useMeta";
 import { api } from "@/lib/api";
+import { getStoredPushToken, registerPushToken, subscribePushToken } from "@/lib/push";
 import { getSession, setSession } from "@/lib/session";
 import type { Profile } from "@/types";
 
@@ -124,6 +126,31 @@ function InterestsForm({ profile }: { profile: Profile }) {
   const [depts, setDepts] = useState(profile.departmentIds);
   const [orgs, setOrgs] = useState(profile.organizationIds);
   const [cats, setCats] = useState(profile.categoryIds);
+  const fcm = useFcmToken();
+  const pushOn = useSyncExternalStore(subscribePushToken, getStoredPushToken, () => null) !== null;
+  const [askPush, setAskPush] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
+
+  // 권한 요청은 사용자 클릭에서만 허용되므로 저장 뒤 "받기" 버튼을 눌렀을 때 요청함
+  const enablePush = async () => {
+    setPushBusy(true);
+    setPushError(null);
+    try {
+      const token = await fcm.enable();
+      if (!token) {
+        setPushError("알림을 켜지 못했어요. MY의 알림 설정에서 다시 켤 수 있어요.");
+        return;
+      }
+      await registerPushToken(token);
+      toast("이 기기에서 푸시 알림을 받아요.");
+      router.replace("/home");
+    } catch (e) {
+      setPushError(e instanceof Error ? e.message : "알림을 켜지 못했어요.");
+    } finally {
+      setPushBusy(false);
+    }
+  };
 
   // 주전공을 고르거나 바꾸면 관심 학과와 학과 학생회를 함께 체크하고, 예전 주전공 것은 해제함. 그 뒤 해제는 학생 선택대로 둠
   const choosePrimary = (id: number | null) => {
@@ -153,7 +180,9 @@ function InterestsForm({ profile }: { profile: Profile }) {
       if (s) setSession({ ...s, name: p.nickname, onboarded: p.primaryDepartmentId !== null });
       qc.invalidateQueries();
       toast("관심정보를 저장했어요.");
-      router.replace("/home");
+      // 이 기기에서 푸시를 켤 수 있는데 아직 안 켰으면 알림 받기를 물어봄
+      if (!pushOn && (fcm.status === "idle" || fcm.status === "ready")) setAskPush(true);
+      else router.replace("/home");
     },
   });
 
@@ -239,6 +268,25 @@ function InterestsForm({ profile }: { profile: Profile }) {
           </button>
         </div>
       </form>
+      {askPush && (
+        <div className="modal-back">
+          <div className="modal" role="dialog" aria-label="푸시 알림 받기">
+            <div className="section-heading">
+              <h2>푸시 알림으로 받으시겠어요?</h2>
+            </div>
+            <p className="muted">관심 학과와 단체에 새 공지가 올라오면 이 기기로 바로 알려드려요.</p>
+            <InlineError error={pushError} />
+            <div className="form-actions">
+              <button type="button" className="secondary" disabled={pushBusy} onClick={() => router.replace("/home")}>
+                나중에
+              </button>
+              <button type="button" className="primary" disabled={pushBusy} onClick={enablePush}>
+                받기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

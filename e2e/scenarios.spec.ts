@@ -17,6 +17,10 @@ test('new student onboards, finds a notice, saves it and sees it on the schedule
   const sheet = page.getByRole('dialog', { name: '주전공 선택' });
   await sheet.getByRole('option').nth(1).click();
   await page.getByRole('button', { name: '저장', exact: true }).click();
+  // 푸시를 켤 수 있는 브라우저면 저장 뒤 알림 받기를 물어봄
+  await page.waitForFunction(() => location.pathname === '/home' || !!document.querySelector('[aria-label="푸시 알림 받기"]'));
+  const askPush = page.getByRole('dialog', { name: '푸시 알림 받기' });
+  if (await askPush.isVisible()) await askPush.getByRole('button', { name: '나중에' }).click();
   await expect(page).toHaveURL(/\/home$/);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('moagwa-session')!).onboarded)).toBe(true);
 

@@ -94,7 +94,8 @@ test('404 only forgets registration; 410 discards the expired SDK token', async 
 
 test('expired-token cleanup deletes Firebase cache before clearing local registration', async () => {
   const calls = [];
-  globalThis.localStorage = { removeItem: () => calls.push('forget') };
+  // 등록 토큰과 마지막 재등록 시각을 함께 지움
+  globalThis.localStorage = { removeItem: key => { if (key === 'moagwa.fcmToken') calls.push('forget'); } };
   globalThis.window = { dispatchEvent: () => {} };
   let fail = false;
   const push = load('lib/push.ts', {
@@ -107,4 +108,30 @@ test('expired-token cleanup deletes Firebase cache before clearing local registr
   fail = true;
   await assert.rejects(push.discardExpiredPushToken());
   assert.deepEqual(calls, ['delete']);
+});
+
+test('push token is re-registered at most once a day and only when push is on', async () => {
+  const store = new Map();
+  globalThis.localStorage = { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: k => store.delete(k) };
+  globalThis.window = { dispatchEvent: () => {} };
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { serviceWorker: { register: async () => ({}) } } });
+  const puts = [];
+  const push = load('lib/push.ts', {
+    'firebase/messaging': { getMessaging: () => ({}), getToken: async () => 'fresh-token' },
+    '@/lib/api': { api: async (path, init) => { puts.push([path, init.body.token]); } },
+    '@/lib/firebase': { getFirebaseApp: () => ({}), VAPID_KEY: 'key' },
+  });
+
+  await push.refreshPushToken();
+  assert.deepEqual(puts, []); // 푸시를 켜지 않은 기기는 건너뜀
+
+  store.set('moagwa.fcmToken', 'old-token');
+  await push.refreshPushToken();
+  await push.refreshPushToken();
+  assert.deepEqual(puts, [['/me/push-tokens', 'fresh-token']]);
+  assert.equal(store.get('moagwa.fcmToken'), 'fresh-token');
+
+  store.set('moagwa.fcmTokenSyncedAt', String(Date.now() - 25 * 60 * 60 * 1000));
+  await push.refreshPushToken();
+  assert.equal(puts.length, 2);
 });
